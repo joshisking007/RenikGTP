@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RenikGPT — Nigerian Compliance AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!--
+=============================================================
+  RENIKGPT — SUPABASE SETUP
+  Run this SQL in your Supabase SQL Editor before using the app.
+=============================================================
+
+create table if not exists regulations (
+  id uuid default gen_random_uuid() primary key,
+  agency text not null,
+  title text not null,
+  reference text,
+  summary text,
+  category text,
+  effective_date date,
+  severity text default 'info',
+  created_at timestamptz default now()
+);
+
+create table if not exists checklists (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade,
+  business_name text,
+  business_type text,
+  industry text,
+  stage text,
+  items jsonb,
+  created_at timestamptz default now()
+);
+
+create table if not exists uploaded_docs (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade,
+  file_name text,
+  agency text,
+  summary text,
+  key_points jsonb,
+  created_at timestamptz default now()
+);
+
+create table if not exists reg_alerts (
+  id uuid default gen_random_uuid() primary key,
+  agency text not null,
+  title text not null,
+  description text,
+  severity text default 'info',
+  published_at timestamptz default now()
+);
+
+alter table regulations enable row level security;
+alter table checklists enable row level security;
+alter table uploaded_docs enable row level security;
+alter table reg_alerts enable row level security;
+
+create policy "Public read regulations" on regulations for select using (true);
+create policy "Public read alerts" on reg_alerts for select using (true);
+create policy "Users own checklists" on checklists for all using (auth.uid() = user_id);
+create policy "Users own docs" on uploaded_docs for all using (auth.uid() = user_id);
+
+-- Seed data
+insert into regulations (agency,title,reference,summary,category,effective_date,severity) values
+('CAC','Company Registration','CAMA 2020 §18–40','All businesses must register with CAC before commencing operations. Sole traders must register within 28 days of starting trade.','registration','2020-08-07','critical'),
+('FIRS','Company Income Tax','CITA Cap C21 LFN 2004','Companies taxed at 30% of assessable profits. Small companies (turnover <₦25M) pay 0%; medium (₦25M–₦100M) pay 20%.','tax','2020-01-01','critical'),
+('FIRS','VAT Registration Threshold','Finance Act 2020','Businesses with annual turnover above ₦25 million must register for VAT and charge 7.5% on all taxable goods and services.','tax','2020-01-01','high'),
+('CBN','Payment Service Bank Regulation','CBN PSB Guidelines 2019','PSBs may accept deposits and process payments but cannot grant loans. Minimum capital of ₦5 billion required.','banking','2019-10-25','high'),
+('CBN','BVN Requirement for Business Accounts','CBN Circular FPR/DIR/GEN/CIR/06/010','All corporate bank accounts must be linked to director BVN. Non-compliance results in account restrictions.','banking','2015-02-14','critical'),
+('NITDA','Nigeria Data Protection Regulation','NDPR 2019','Organizations processing personal data must obtain consent, implement security, and appoint a DPO if handling >10,000 records/year.','data_protection','2019-01-25','high'),
+('NITDA','NDPR Annual Audit','NDPR 2019 Art. 4.1','Organizations handling personal data must file an annual compliance audit with NITDA. Fine: up to 2% of annual gross revenue.','data_protection','2019-01-25','high'),
+('SEC','Crowdfunding Rules','SEC Rules on Crowdfunding 2021','Startups can raise up to ₦100M via SEC-registered platforms. Individual investors capped at ₦200,000 per issuer per offering.','investment','2021-02-11','medium'),
+('NAFDAC','Food Business Registration','NAFDAC Act Cap N1 LFN 2004','All food products must be NAFDAC-registered before sale. Registration valid 5 years. Non-compliance: ₦500,000 fine or 2 years imprisonment.','product','2004-01-01','high'),
+('CAC','Annual Returns Filing','CAMA 2020 §417','All companies must file annual returns within 42 days of AGM. Late filing penalty: ₦10,000 + ₦5,000 per day.','compliance','2020-08-07','high');
+
+insert into reg_alerts (agency,title,description,severity,published_at) values
+('FIRS','Updated Transfer Pricing Regulations 2024','FIRS has issued updated TP rules affecting companies with related-party transactions above ₦500M. New forms required from Q1 2025.','high',now()-interval '2 days'),
+('CBN','Enhanced KYC for Fintechs','CBN circular requires enhanced due diligence for all crypto-adjacent transactions effective January 2025.','critical',now()-interval '5 days'),
+('CAC','New Online Registration Portal','CAC has launched a new digital portal. All new incorporations must use the updated system from March 2025.','info',now()-interval '10 days'),
+('NITDA','NDPR Amendment Draft Released','NITDA has released a draft amendment to the NDPR for public consultation. Comments accepted until end of Q1 2025.','medium',now()-interval '14 days');
+
+=============================================================
+-->
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FFFFFF;
+  --bg-surface: #F5F5F5;
+  --bg-card: #FAFAFA;
+  --bg-hover: #F0F0F0;
+  --border: rgba(0,0,0,0.09);
+  --border-em: rgba(0,0,0,0.16);
+
+  --green: #CC1F1F;
+  --green-dim: rgba(204,31,31,0.08);
+  --green-glow: rgba(204,31,31,0.18);
+  --gold: #B45309;
+  --gold-dim: rgba(180,83,9,0.10);
+  --red: #CC1F1F;
+  --red-dim: rgba(204,31,31,0.08);
+  --blue: #1D4ED8;
+  --blue-dim: rgba(29,78,216,0.10);
+
+  --text: #111111;
+  --text-sub: #555555;
+  --text-muted: #999999;
+
+  --font-d: 'Playfair Display', serif;
+  --font: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --r: 10px;
+  --r-lg: 16px;
+}
+
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); overflow: hidden; }
+
+/* ── AUTH ── */
+#auth-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(255,255,255,0.95);
+  display: flex; align-items: flex-start; justify-content: center;
+  backdrop-filter: blur(4px);
+  overflow-y: auto;
+  padding: 20px 0 40px;
+}
+#auth-box {
+  background: #FFFFFF;
+  border: 1px solid var(--border-em);
+  border-radius: 20px;
+  padding: 40px;
+  width: 420px;
+  max-width: 95vw;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+  margin: auto;
+  flex-shrink: 0;
+}
+#auth-box .auth-logo { font-family: var(--font-d); font-size: 30px; color: var(--red); margin-bottom: 4px; font-weight: 700; }
+#auth-box .auth-sub { font-size: 14px; color: var(--text-sub); margin-bottom: 32px; }
+.auth-tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--bg-surface); border-radius: var(--r); padding: 4px; }
+.auth-tab { flex: 1; padding: 8px; text-align: center; font-size: 14px; font-weight: 600; border-radius: 7px; cursor: pointer; color: var(--text-sub); }
+.auth-tab.active { background: #FFFFFF; color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.10); }
+.auth-field { margin-bottom: 14px; }
+.auth-field label { display: block; font-size: 13px; color: var(--text-sub); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.03em; }
+.auth-field input {
+  width: 100%; padding: 12px 14px; background: var(--bg-surface);
+  border: 1px solid var(--border-em); border-radius: var(--r);
+  color: var(--text); font-family: var(--font); font-size: 15px;
+}
+.auth-field input:focus { outline: none; border-color: var(--red); }
+.auth-btn {
+  width: 100%; padding: 13px; background: var(--red); color: #FFFFFF;
+  border: none; border-radius: var(--r); font-family: var(--font);
+  font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px;
+}
+.auth-btn:hover { opacity: 0.88; }
+.auth-btn:disabled { opacity: 0.5; cursor: default; }
+.auth-error { font-size: 12px; color: var(--red); margin-top: 10px; text-align: center; }
+
+/* ── LAYOUT ── */
+#app { display: flex; height: 100vh; }
+
+#sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  padding: 0;
+}
+.sidebar-logo {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo .logo-name { font-family: var(--font-d); font-size: 22px; color: var(--red); font-weight: 700; }
+.sidebar-logo .logo-tag { font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+
+#nav { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 10px;
+  border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-sub);
+  position: relative;
+}
+.nav-item:hover { background: var(--bg-hover); color: var(--text); }
+.nav-item.active { background: var(--red-dim); color: var(--red); font-weight: 600; }
+.nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; background: var(--red); color: #fff;
+  font-size: 10px; font-weight: 600; padding: 1px 6px;
+  border-radius: 10px; min-width: 18px; text-align: center;
+}
+
+.sidebar-bottom {
+  padding: 12px 8px;
+  border-top: 1px solid var(--border);
+}
+.user-pill {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  border-radius: 8px; cursor: pointer;
+}
+.user-pill:hover { background: var(--bg-hover); }
+.user-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--red-dim); border: 1.5px solid var(--red);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--red); flex-shrink: 0;
+}
+.user-name { font-size: 13px; color: var(--text-sub); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.logout-btn { font-size: 12px; color: var(--text-muted); cursor: pointer; padding: 2px 4px; }
+.logout-btn:hover { color: var(--red); }
+
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── VIEWS ── */
+.view { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+.view.active { display: flex; }
+
+/* ── CHAT ── */
+#view-chat { flex-direction: column; }
+#chat-header {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+  background: var(--bg-surface);
+}
+.chat-logo-circle {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--red-dim); border: 1.5px solid var(--red);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-d); font-size: 14px; color: var(--red); font-weight: 700;
+}
+.chat-header-info h2 { font-size: 17px; font-weight: 700; color: var(--text); }
+.chat-header-info p { font-size: 12px; color: var(--text-sub); }
+.chat-status { margin-left: auto; display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--red); font-weight: 600; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); }
+
+#pills {
+  padding: 10px 16px; display: flex; gap: 6px; overflow-x: auto;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+  scrollbar-width: none;
+}
+#pills::-webkit-scrollbar { display: none; }
+.pill {
+  flex-shrink: 0; padding: 6px 14px; border-radius: 20px;
+  border: 1px solid var(--border-em); font-size: 13px; font-weight: 500;
+  cursor: pointer; color: var(--text-sub);
+  white-space: nowrap;
+}
+.pill:hover { background: var(--red-dim); color: var(--red); border-color: var(--red); }
+
+#messages {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+#messages::-webkit-scrollbar { width: 4px; }
+#messages::-webkit-scrollbar-track { background: transparent; }
+#messages::-webkit-scrollbar-thumb { background: var(--border-em); border-radius: 2px; }
+
+.msg { display: flex; gap: 10px; max-width: 85%; }
+.msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+.msg-avatar {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  margin-top: 2px; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+.msg.bot .msg-avatar { background: var(--red-dim); color: var(--red); border: 1.5px solid rgba(204,31,31,0.3); }
+.msg.user .msg-avatar { background: var(--bg-surface); color: var(--text-sub); border: 1px solid var(--border-em); }
+
+.bubble {
+  padding: 12px 16px; border-radius: 14px;
+  font-size: 15px; line-height: 1.7;
+}
+.msg.bot .bubble {
+  background: var(--bg-surface); color: var(--text);
+  border: 1px solid var(--border); border-bottom-left-radius: 4px;
+}
+.msg.user .bubble {
+  background: var(--red); color: #FFFFFF;
+  border-bottom-right-radius: 4px; font-weight: 500;
+}
+
+.msg-meta { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+
+.agency-tag {
+  display: inline-block; padding: 2px 8px; border-radius: 6px;
+  font-size: 12px; font-weight: 700; margin: 1px 2px 0 0;
+  font-family: var(--font-mono);
+}
+.tag-cbn { background: var(--blue-dim); color: var(--blue); }
+.tag-firs { background: var(--gold-dim); color: var(--gold); }
+.tag-cac { background: var(--red-dim); color: var(--red); }
+.tag-nitda { background: rgba(109,40,217,0.08); color: #6D28D9; }
+.tag-sec { background: var(--red-dim); color: var(--red); }
+.tag-nafdac { background: rgba(180,83,9,0.08); color: #B45309; }
+
+#typing-indicator {
+  display: none; padding: 0 16px 10px;
+  align-items: center; gap: 8px;
+}
+#typing-indicator span { font-size: 13px; color: var(--text-muted); font-style: italic; }
+.t-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--red); opacity: 0.4; animation: tdot 1.2s infinite; }
+.t-dot:nth-child(2){animation-delay:.2s} .t-dot:nth-child(3){animation-delay:.4s}
+@keyframes tdot { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+#chat-input-area {
+  padding: 12px 16px; border-top: 1px solid var(--border);
+  display: flex; gap: 8px; align-items: center;
+  background: var(--bg-surface); flex-shrink: 0;
+}
+#chat-input {
+  flex: 1; padding: 11px 16px; border-radius: 24px;
+  background: #FFFFFF; border: 1px solid var(--border-em);
+  color: var(--text); font-family: var(--font); font-size: 15px;
+}
+#chat-input::placeholder { color: var(--text-muted); }
+#chat-input:focus { outline: none; border-color: var(--red); }
+#send-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--red); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+#send-btn:disabled { opacity: 0.4; cursor: default; }
+#send-btn svg { fill: #FFFFFF; }
+
+/* ── REGULATIONS DB ── */
+#view-regulations { flex-direction: column; }
+.view-header {
+  padding: 18px 24px 14px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0; background: var(--bg-surface);
+  display: flex; align-items: center; gap: 12px;
+}
+.view-title { font-size: 20px; font-weight: 700; color: var(--text); flex: 1; }
+.view-sub { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
+.search-input {
+  padding: 9px 14px; background: #FFFFFF;
+  border: 1px solid var(--border-em); border-radius: 24px;
+  color: var(--text); font-family: var(--font); font-size: 14px;
+  width: 240px;
+}
+.search-input:focus { outline: none; border-color: var(--red); }
+.search-input::placeholder { color: var(--text-muted); }
+
+.filter-bar {
+  padding: 10px 24px; display: flex; gap: 6px; overflow-x: auto;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-chip {
+  flex-shrink: 0; padding: 6px 14px; border-radius: 20px;
+  border: 1px solid var(--border-em); font-size: 13px; font-weight: 500;
+  cursor: pointer; color: var(--text-sub);
+}
+.filter-chip.active { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+
+#reg-grid {
+  flex: 1; overflow-y: auto; padding: 16px 24px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px,1fr)); gap: 12px;
+  align-content: start;
+}
+#reg-grid::-webkit-scrollbar { width: 4px; }
+#reg-grid::-webkit-scrollbar-thumb { background: var(--border-em); border-radius: 2px; }
+
+.reg-card {
+  background: #FFFFFF; border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 18px; cursor: pointer;
+}
+.reg-card:hover { border-color: var(--red); }
+.reg-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.reg-card-title { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.4; }
+.severity-dot {
+  width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 4px;
+}
+.sev-critical { background: var(--red); }
+.sev-high { background: var(--gold); }
+.sev-medium { background: var(--blue); }
+.sev-info { background: var(--text-muted); }
+
+.reg-ref {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.reg-summary { font-size: 13.5px; color: var(--text-sub); line-height: 1.65; }
+.reg-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border);
+}
+.reg-date { font-size: 12px; color: var(--text-muted); }
+.ask-ai-btn {
+  padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  background: var(--red-dim); color: var(--red); border: 1px solid rgba(204,31,31,0.2);
+  cursor: pointer;
+}
+.ask-ai-btn:hover { background: rgba(204,31,31,0.15); }
+
+/* ── PDF UPLOAD ── */
+#view-upload { flex-direction: column; }
+.upload-body { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+#drop-zone {
+  border: 2px dashed var(--border-em); border-radius: var(--r-lg);
+  padding: 48px 32px; text-align: center; cursor: pointer;
+}
+#drop-zone:hover, #drop-zone.drag-over { border-color: var(--red); background: var(--red-dim); }
+#drop-zone .dz-icon { font-size: 40px; margin-bottom: 12px; }
+#drop-zone .dz-title { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+#drop-zone .dz-sub { font-size: 14px; color: var(--text-sub); }
+#drop-zone .dz-btn {
+  display: inline-block; margin-top: 16px; padding: 10px 22px;
+  background: var(--red); color: #FFFFFF; border-radius: var(--r);
+  font-size: 14px; font-weight: 700;
+}
+#file-input { display: none; }
+
+.agency-select-row { display: flex; gap: 10px; align-items: center; }
+.agency-select-row label { font-size: 14px; color: var(--text-sub); white-space: nowrap; font-weight: 500; }
+.agency-select-row select {
+  flex: 1; padding: 10px 12px; background: #FFFFFF;
+  border: 1px solid var(--border-em); border-radius: var(--r);
+  color: var(--text); font-family: var(--font); font-size: 14px;
+}
+.agency-select-row select:focus { outline: none; border-color: var(--red); }
+
+#pdf-result {
+  background: #FFFFFF; border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 20px; display: none;
+}
+#pdf-result .result-title { font-size: 17px; font-weight: 700; color: var(--red); margin-bottom: 4px; }
+#pdf-result .result-file { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+#pdf-result .result-body { font-size: 14.5px; color: var(--text-sub); line-height: 1.7; }
+.key-points { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.key-point {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--bg-surface);
+  border-radius: 8px; border-left: 3px solid var(--red);
+}
+.key-point-text { font-size: 14px; color: var(--text); line-height: 1.5; }
+
+.save-reg-btn {
+  margin-top: 16px; padding: 10px 22px;
+  background: var(--red-dim); color: var(--red);
+  border: 1px solid rgba(204,31,31,0.3); border-radius: var(--r);
+  font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font);
+}
+.save-reg-btn:hover { background: rgba(204,31,31,0.15); }
+.save-reg-btn:disabled { opacity: 0.5; cursor: default; }
+
+#upload-history { display: flex; flex-direction: column; gap: 8px; }
+.history-title { font-size: 13px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.05em; }
+.history-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; background: #FFFFFF;
+  border: 1px solid var(--border); border-radius: var(--r);
+}
+.history-icon { font-size: 18px; }
+.history-info { flex: 1; }
+.history-name { font-size: 14px; color: var(--text); font-weight: 500; }
+.history-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* ── CHECKLIST ── */
+#view-checklist { flex-direction: column; }
+.checklist-body { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+.checklist-body::-webkit-scrollbar { width: 4px; }
+.checklist-body::-webkit-scrollbar-thumb { background: var(--border-em); border-radius: 2px; }
+
+.cl-form-card {
+  background: #FFFFFF; border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 20px;
+}
+.cl-form-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-field label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.03em; }
+.form-field input,
+.form-field select {
+  width: 100%; padding: 10px 12px; background: var(--bg-surface);
+  border: 1px solid var(--border-em); border-radius: var(--r);
+  color: var(--text); font-family: var(--font); font-size: 14px;
+}
+.form-field input:focus,
+.form-field select:focus { outline: none; border-color: var(--red); }
+.form-field.full { grid-column: 1/-1; }
+.generate-btn {
+  width: 100%; padding: 13px; margin-top: 16px;
+  background: var(--red); color: #FFFFFF;
+  border: none; border-radius: var(--r);
+  font-family: var(--font); font-size: 15px; font-weight: 700;
+  cursor: pointer;
+}
+.generate-btn:hover { opacity: 0.88; }
+.generate-btn:disabled { opacity: 0.5; cursor: default; }
+
+#checklist-output { display: none; flex-direction: column; gap: 16px; }
+.cl-section {
+  background: #FFFFFF; border: 1px solid var(--border);
+  border-radius: var(--r-lg); overflow: hidden;
+}
+.cl-section-header {
+  padding: 13px 16px; display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.cl-section-title { font-size: 15px; font-weight: 700; color: var(--text); flex: 1; }
+.cl-progress {
+  font-size: 13px; color: var(--text-sub);
+  font-family: var(--font-mono);
+}
+.cl-items { padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+.cl-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 10px; border-radius: 8px; cursor: pointer;
+}
+.cl-item:hover { background: var(--bg-hover); }
+.cl-checkbox {
+  width: 19px; height: 19px; border-radius: 5px;
+  border: 2px solid var(--border-em); flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cl-item.done .cl-checkbox { background: var(--red); border-color: var(--red); }
+.cl-item.done .cl-checkbox::after { content: '✓'; font-size: 11px; color: #FFFFFF; font-weight: 700; }
+.cl-item-text { flex: 1; font-size: 14px; color: var(--text); line-height: 1.5; }
+.cl-item.done .cl-item-text { color: var(--text-muted); text-decoration: line-through; }
+.cl-item-ref { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.cl-priority {
+  padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: 700;
+  flex-shrink: 0; margin-top: 2px;
+}
+.pri-critical { background: var(--red-dim); color: var(--red); }
+.pri-high { background: var(--gold-dim); color: var(--gold); }
+.pri-medium { background: var(--blue-dim); color: var(--blue); }
+
+.cl-save-row { display: flex; justify-content: flex-end; gap: 8px; }
+.cl-save-btn {
+  padding: 10px 20px; background: var(--red-dim); color: var(--red);
+  border: 1px solid rgba(204,31,31,0.3); border-radius: var(--r);
+  font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font);
+}
+
+/* ── ALERTS ── */
+#view-alerts { flex-direction: column; }
+.alerts-body { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 10px; }
+.alert-card {
+  background: #FFFFFF; border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 18px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.alert-icon {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 17px;
+}
+.alert-icon.sev-critical { background: var(--red-dim); }
+.alert-icon.sev-high { background: var(--gold-dim); }
+.alert-icon.sev-medium { background: var(--blue-dim); }
+.alert-icon.sev-info { background: var(--bg-surface); }
+.alert-content { flex: 1; }
+.alert-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.alert-agency { font-family: var(--font-mono); font-size: 12px; font-weight: 600; }
+.alert-time { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+.alert-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+.alert-desc { font-size: 13.5px; color: var(--text-sub); line-height: 1.6; }
+.alert-ask {
+  padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 600;
+  background: var(--red-dim); color: var(--red); border: 1px solid rgba(204,31,31,0.2);
+  cursor: pointer; white-space: nowrap; flex-shrink: 0; margin-top: 4px;
+  font-family: var(--font);
+}
+.subscribe-bar {
+  background: #FFFFFF; border: 1px solid var(--border-em);
+  border-radius: var(--r-lg); padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px;
+  margin: 0 24px 20px; flex-shrink: 0;
+}
+.subscribe-bar .sub-icon { font-size: 22px; }
+.subscribe-bar .sub-info { flex: 1; }
+.subscribe-bar .sub-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.subscribe-bar .sub-sub { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
+.sub-toggle-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; color: var(--text-sub); }
+.sub-toggle { width: 40px; height: 22px; background: var(--bg-hover); border-radius: 11px; position: relative; cursor: pointer; border: 1px solid var(--border-em); }
+.sub-toggle.on { background: var(--red); border-color: var(--red); }
+.sub-toggle::after { content:''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; background: #fff; border-radius: 50%; }
+.sub-toggle.on::after { left: 21px; }
+
+/* ── LOADING ── */
+.spinner {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--border-em); border-top-color: var(--red);
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-row { display: flex; align-items: center; gap: 10px; padding: 20px; color: var(--text-sub); font-size: 14px; }
+
+.toast {
+  position: fixed; bottom: 20px; right: 20px; z-index: 999;
+  padding: 13px 18px; background: #FFFFFF;
+  border: 1px solid var(--border-em); border-radius: var(--r);
+  font-size: 14px; color: var(--text); display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+.toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay">
+  <div id="auth-box">
+    <div class="auth-logo">RenikGPT</div>
+    <div class="auth-sub">Nigerian Compliance AI — CBN · FIRS · CAC · SEC · NITDA · NAFDAC</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchAuthTab('login')">Sign in</div>
+      <div class="auth-tab" onclick="switchAuthTab('signup')">Create account</div>
+      <div class="auth-tab" onclick="switchAuthTab('magic')">Magic link</div>
+    </div>
+
+    <!-- Password login -->
+    <div id="auth-login">
+      <div class="auth-field"><label>EMAIL</label><input id="login-email" type="email" placeholder="you@company.com"></div>
+      <div class="auth-field"><label>PASSWORD</label><input id="login-pass" type="password" placeholder="••••••••"></div>
+      <button class="auth-btn" onclick="doLogin()">Sign in</button>
+      <div style="text-align:center;margin-top:12px">
+        <span style="font-size:13px;color:var(--text-muted)">Prefer passwordless? </span>
+        <span style="font-size:13px;color:var(--red);cursor:pointer;font-weight:600" onclick="switchAuthTab('magic')">Use magic link →</span>
+      </div>
+    </div>
+
+    <!-- Signup -->
+    <div id="auth-signup" style="display:none">
+      <div class="auth-field"><label>FULL NAME</label><input id="signup-name" type="text" placeholder="Ada Obi"></div>
+      <div class="auth-field"><label>WORK EMAIL</label><input id="signup-email" type="email" placeholder="you@company.com"></div>
+      <div class="auth-field"><label>COMPANY (OPTIONAL)</label><input id="signup-company" type="text" placeholder="Acme Ltd"></div>
+      <div class="auth-field"><label>PASSWORD</label><input id="signup-pass" type="password" placeholder="Min. 6 characters"></div>
+      <button class="auth-btn" onclick="doSignup()">Create account</button>
+    </div>
+
+    <!-- Magic link -->
+    <div id="auth-magic" style="display:none">
+      <div style="font-size:14px;color:var(--text-sub);margin-bottom:18px;line-height:1.6">Enter your work email and we'll send you a secure one-click sign-in link. No password needed.</div>
+      <div class="auth-field"><label>WORK EMAIL</label><input id="magic-email" type="email" placeholder="you@company.com"></div>
+      <button class="auth-btn" onclick="doMagicLink()">Send magic link</button>
+      <div id="magic-sent" style="display:none;text-align:center;margin-top:14px;font-size:14px;color:var(--text-sub)">
+        ✅ Link sent! Check your inbox and click the link to sign in.
+      </div>
+    </div>
+
+    <div id="auth-error" class="auth-error"></div>
+    <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:14px">Not legal advice. For informational purposes only.</p>
+    <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:14px;text-align:center">
+      <span style="font-size:12px;color:var(--text-muted)">Testing without Supabase? </span>
+      <span style="font-size:12px;color:var(--red);cursor:pointer;font-weight:600" onclick="enterGuestMode()">Continue as guest →</span>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-name">RenikGPT</div>
+      <div class="logo-tag">Nigeria Compliance AI</div>
+    </div>
+    <div id="nav">
+      <div class="nav-item active" onclick="setView('chat')" data-view="chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Ask RenikGPT
+      </div>
+      <div class="nav-item" onclick="setView('regulations')" data-view="regulations">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Regulatory DB
+      </div>
+      <div class="nav-item" onclick="setView('upload')" data-view="upload">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload Regulation
+      </div>
+      <div class="nav-item" onclick="setView('checklist')" data-view="checklist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Compliance Checklist
+      </div>
+      <div class="nav-item" onclick="setView('alerts')" data-view="alerts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Reg Alerts
+        <div class="nav-badge" id="alert-badge">4</div>
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-pill">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <div class="user-name" id="user-name">Loading...</div>
+        <span class="logout-btn" onclick="doLogout()" title="Sign out">⏻</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- CHAT VIEW -->
+    <div class="view active" id="view-chat">
+      <div id="chat-header">
+        <div class="chat-logo-circle">RG</div>
+        <div class="chat-header-info">
+          <h2>RenikGPT</h2>
+          <p>CBN · FIRS · CAC · SEC · NITDA · NAFDAC</p>
+        </div>
+        <div class="chat-status"><div class="status-dot"></div> Online</div>
+      </div>
+      <div id="pills">
+        <div class="pill" onclick="quickAsk(this)">Do I need to register my startup?</div>
+        <div class="pill" onclick="quickAsk(this)">CBN fintech licensing requirements</div>
+        <div class="pill" onclick="quickAsk(this)">How to file company tax (FIRS)</div>
+        <div class="pill" onclick="quickAsk(this)">NITDA data protection for my app</div>
+        <div class="pill" onclick="quickAsk(this)">SEC crowdfunding rules Nigeria</div>
+        <div class="pill" onclick="quickAsk(this)">NAFDAC registration for food products</div>
+        <div class="pill" onclick="quickAsk(this)">What is the penalty for late filing?</div>
+      </div>
+      <div id="messages">
+        <div class="msg bot">
+          <div class="msg-avatar">RG</div>
+          <div>
+            <div class="bubble">
+              Hello! I'm <strong>RenikGPT</strong> — your AI guide to Nigerian business compliance.<br><br>
+              Ask me anything about <strong>CBN, FIRS, CAC, SEC, NITDA, or NAFDAC</strong> regulations. I'll explain it in plain language with specific citations, deadlines, and penalties.<br><br>
+              You can also browse the <strong>Regulatory DB</strong>, upload new PDFs, generate a <strong>Compliance Checklist</strong> for your business, or check the latest <strong>Reg Alerts</strong>.
+            </div>
+            <div class="msg-meta">RenikGPT · Not legal advice</div>
+          </div>
+        </div>
+      </div>
+      <div id="typing-indicator">
+        <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+        <span>RenikGPT is thinking…</span>
+      </div>
+      <div id="chat-input-area">
+        <input id="chat-input" type="text" placeholder="Ask about any Nigerian regulation…">
+        <button id="send-btn" onclick="sendChat()">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- REGULATIONS VIEW -->
+    <div class="view" id="view-regulations">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Regulatory Database</div>
+          <div class="view-sub">Browse Nigerian compliance requirements by agency</div>
+        </div>
+        <input class="search-input" type="text" placeholder="Search regulations…" oninput="filterRegs(this.value)">
+      </div>
+      <div class="filter-bar">
+        <div class="filter-chip active" onclick="filterByAgency('all', this)">All Agencies</div>
+        <div class="filter-chip" onclick="filterByAgency('CAC', this)">CAC</div>
+        <div class="filter-chip" onclick="filterByAgency('FIRS', this)">FIRS</div>
+        <div class="filter-chip" onclick="filterByAgency('CBN', this)">CBN</div>
+        <div class="filter-chip" onclick="filterByAgency('NITDA', this)">NITDA</div>
+        <div class="filter-chip" onclick="filterByAgency('SEC', this)">SEC</div>
+        <div class="filter-chip" onclick="filterByAgency('NAFDAC', this)">NAFDAC</div>
+      </div>
+      <div id="reg-grid">
+        <div class="loading-row"><div class="spinner"></div> Loading regulations…</div>
+      </div>
+    </div>
+
+    <!-- UPLOAD VIEW -->
+    <div class="view" id="view-upload">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Upload Regulation PDF</div>
+          <div class="view-sub">Upload a PDF regulation — RenikGPT will extract and summarise it</div>
+        </div>
+      </div>
+      <div class="upload-body">
+        <div class="agency-select-row">
+          <label>Agency:</label>
+          <select id="upload-agency">
+            <option value="CBN">CBN</option>
+            <option value="FIRS">FIRS</option>
+            <option value="CAC">CAC</option>
+            <option value="NITDA">NITDA</option>
+            <option value="SEC">SEC</option>
+            <option value="NAFDAC">NAFDAC</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div id="drop-zone" onclick="document.getElementById('file-input').click()">
+          <div class="dz-icon">📄</div>
+          <div class="dz-title">Drop a PDF regulation here</div>
+          <div class="dz-sub">CBN circulars, FIRS guidelines, NITDA frameworks, CAC forms…</div>
+          <div class="dz-btn">Choose PDF file</div>
+          <input type="file" id="file-input" accept=".pdf" onchange="handlePDFUpload(this.files[0])">
+        </div>
+        <div id="pdf-result"></div>
+        <div id="upload-history">
+          <div class="history-title">Previously uploaded</div>
+          <div id="history-list"><div style="font-size:13px;color:var(--text-muted);padding:4px 0">No documents uploaded yet.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECKLIST VIEW -->
+    <div class="view" id="view-checklist">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Compliance Checklist Generator</div>
+          <div class="view-sub">Get a personalised regulatory checklist for your business</div>
+        </div>
+      </div>
+      <div class="checklist-body">
+        <div class="cl-form-card">
+          <h3>Tell us about your business</h3>
+          <div class="form-grid">
+            <div class="form-field full">
+              <label>BUSINESS NAME</label>
+              <input id="cl-biz-name" type="text" placeholder="e.g. Kolade Ventures Ltd">
+            </div>
+            <div class="form-field">
+              <label>BUSINESS TYPE</label>
+              <select id="cl-biz-type">
+                <option value="">Select type…</option>
+                <option>Sole Proprietorship</option>
+                <option>Partnership</option>
+                <option>Private Limited Company (Ltd)</option>
+                <option>Public Limited Company (PLC)</option>
+                <option>NGO / Non-Profit</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>INDUSTRY</label>
+              <select id="cl-industry">
+                <option value="">Select industry…</option>
+                <option>Fintech / Payments</option>
+                <option>E-commerce / Retail</option>
+                <option>Food & Beverages</option>
+                <option>Healthcare / Pharma</option>
+                <option>Technology / SaaS</option>
+                <option>Agriculture</option>
+                <option>Real Estate</option>
+                <option>Media / Entertainment</option>
+                <option>Education</option>
+                <option>Logistics / Transport</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>BUSINESS STAGE</label>
+              <select id="cl-stage">
+                <option value="">Select stage…</option>
+                <option>Pre-launch (idea stage)</option>
+                <option>Just started (0-6 months)</option>
+                <option>Early stage (6-24 months)</option>
+                <option>Growing (2+ years)</option>
+                <option>Scaling / Fundraising</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>ANNUAL TURNOVER</label>
+              <select id="cl-turnover">
+                <option value="">Select range…</option>
+                <option>Not yet trading</option>
+                <option>Under ₦5 million</option>
+                <option>₦5M – ₦25M</option>
+                <option>₦25M – ₦100M</option>
+                <option>Above ₦100M</option>
+              </select>
+            </div>
+          </div>
+          <button class="generate-btn" id="gen-btn" onclick="generateChecklist()">Generate My Compliance Checklist →</button>
+        </div>
+        <div id="checklist-output"></div>
+      </div>
+    </div>
+
+    <!-- ALERTS VIEW -->
+    <div class="view" id="view-alerts">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Regulation Alerts</div>
+          <div class="view-sub">Latest changes from CBN, FIRS, CAC, SEC, NITDA, NAFDAC</div>
+        </div>
+      </div>
+      <div class="subscribe-bar">
+        <div class="sub-icon">🔔</div>
+        <div class="sub-info">
+          <div class="sub-title">Email alerts for regulation changes</div>
+          <div class="sub-sub">Get notified instantly when a new regulation is published</div>
+        </div>
+        <label class="sub-toggle-label">
+          <span>Enabled</span>
+          <div class="sub-toggle on" onclick="this.classList.toggle('on')"></div>
+        </label>
+      </div>
+      <div class="alerts-body" id="alerts-list">
+        <div class="loading-row"><div class="spinner"></div> Loading alerts…</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// CONFIG — Paste your Supabase credentials here
+// Get these from: Supabase Dashboard → Settings → API
+// ──────────────────────────────────────────────
+const SUPABASE_URL  = 'YOUR_SUPABASE_URL';   // e.g. https://abcdefgh.supabase.co
+const SUPABASE_KEY  = 'YOUR_SUPABASE_ANON_KEY'; // the long "anon public" JWT key
+
+const SUPABASE_CONFIGURED = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_KEY !== 'YOUR_SUPABASE_ANON_KEY';
+
+// If credentials aren't set, create a dummy client so the app doesn't crash
+const sb = SUPABASE_CONFIGURED
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  : { auth: { getSession: async()=>({data:{session:null}}), onAuthStateChange:()=>{}, signInWithPassword:async()=>({error:{message:'Supabase not configured'}}), signUp:async()=>({error:{message:'Supabase not configured'}}), signInWithOtp:async()=>({error:{message:'Supabase not configured'}}), signOut:async()=>{} }, from:()=>({ select:()=>({ order:()=>({data:null,error:{message:'Not configured'}}) }), insert:async()=>({error:null}) }) };
+
+// Guest mode — bypasses auth to let you explore the UI
+function enterGuestMode() {
+  const guestUser = { id: 'guest', email: 'guest@demo.com', user_metadata: { full_name: 'Guest' } };
+  onAuth(guestUser);
+  showToast('Guest mode — sign in to save data', 'var(--gold)');
+}
+
+// ──────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────
+let currentUser = null;
+let chatHistory = [];
+let allRegs = [];
+let activeAgency = 'all';
+let searchQuery = '';
+let pdfAnalysisResult = null;
+
+// ──────────────────────────────────────────────
+// AUTH
+// ──────────────────────────────────────────────
+let authTab = 'login';
+function switchAuthTab(tab) {
+  authTab = tab;
+  // Match tabs by their onclick attribute value
+  document.querySelectorAll('.auth-tab').forEach(t => {
+    const fn = t.getAttribute('onclick') || '';
+    t.classList.toggle('active', fn.includes(`'${tab}'`));
+  });
+  document.getElementById('auth-login').style.display  = tab==='login'  ? 'block' : 'none';
+  document.getElementById('auth-signup').style.display = tab==='signup' ? 'block' : 'none';
+  document.getElementById('auth-magic').style.display  = tab==='magic'  ? 'block' : 'none';
+  document.getElementById('auth-error').textContent = '';
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const btn   = document.querySelector('#auth-login .auth-btn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) { showAuthError(error.message); btn.disabled=false; btn.textContent='Sign in'; return; }
+  onAuth(data.user);
+}
+
+async function doSignup() {
+  const name    = document.getElementById('signup-name').value.trim();
+  const email   = document.getElementById('signup-email').value.trim();
+  const company = document.getElementById('signup-company').value.trim();
+  const pass    = document.getElementById('signup-pass').value;
+  const btn     = document.querySelector('#auth-signup .auth-btn');
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  const { data, error } = await sb.auth.signUp({
+    email, password: pass,
+    options: { data: { full_name: name, company } }
+  });
+  if (error) { showAuthError(error.message); btn.disabled=false; btn.textContent='Create account'; return; }
+  if (data.user && data.session) {
+    onAuth(data.user);
+  } else {
+    btn.disabled=false; btn.textContent='Create account';
+    showAuthError('✅ Check your email to confirm your account, then sign in.');
+  }
+}
+
+async function doMagicLink() {
+  const email = document.getElementById('magic-email').value.trim();
+  if (!email) { showAuthError('Please enter your email address.'); return; }
+  const btn = document.querySelector('#auth-magic .auth-btn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  // Dynamically build redirect URL so it works on any host (Cloudflare Pages, custom domain, localhost)
+  const redirectTo = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/') ;
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: redirectTo }
+  });
+  btn.disabled = false; btn.textContent = 'Send magic link';
+  if (error) { showAuthError(error.message); return; }
+  document.getElementById('magic-sent').style.display = 'block';
+  document.getElementById('auth-error').textContent = '';
+}
+
+function showAuthError(msg) {
+  document.getElementById('auth-error').textContent = msg;
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  document.getElementById('auth-overlay').style.display = 'flex';
+}
+
+function onAuth(user) {
+  currentUser = user;
+  document.getElementById('auth-overlay').style.display = 'none';
+  const name = user.user_metadata?.full_name || user.email.split('@')[0];
+  document.getElementById('user-name').textContent = name;
+  document.getElementById('user-avatar').textContent = name[0].toUpperCase();
+  loadRegs();
+  loadAlerts();
+  loadUploadHistory();
+}
+
+// ──────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────
+function setView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelector(`[data-view="${name}"]`).classList.add('active');
+  if (name==='alerts') document.getElementById('alert-badge').style.display='none';
+}
+
+// ──────────────────────────────────────────────
+// CHAT
+// ──────────────────────────────────────────────
+const SYSTEM = `You are RenikGPT — Nigeria's premier AI compliance assistant. You help SMEs, startups, and entrepreneurs understand Nigerian business regulations in plain language.
+
+Rules:
+1. Be concise and practical. 2-4 sentences per point.
+2. Always cite the specific regulation, law, or circular (e.g. "CAMA 2020 Section 27", "NDPR 2019 Article 3.1", "CBN Circular FPR/DIR/GEN/CIR/06/010").
+3. Use agency tags at the start of relevant points: [CBN], [FIRS], [CAC], [NITDA], [SEC], [NAFDAC]
+4. Clearly state deadlines, fines, and penalties with naira amounts where applicable.
+5. End every response with one bold "Next Step" action.
+6. Use bullet points for lists of requirements.
+7. Focus exclusively on Nigeria-specific regulations.
+8. Always end with: "⚖️ Not legal advice — consult a qualified solicitor for your specific situation."`;
+
+function addMsg(role, text) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg '+role;
+  const av = document.createElement('div');
+  av.className = 'msg-avatar';
+  av.textContent = role==='bot'?'RG':'You';
+  const inner = document.createElement('div');
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+  bub.innerHTML = fmtText(text);
+  inner.appendChild(bub);
+  if (role==='bot') {
+    const meta = document.createElement('div');
+    meta.className = 'msg-meta';
+    meta.textContent = 'RenikGPT · '+new Date().toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'}) + ' · Not legal advice';
+    inner.appendChild(meta);
+  }
+  div.appendChild(av);
+  div.appendChild(inner);
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function fmtText(t) {
+  return t
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\[CBN\]/g,'<span class="agency-tag tag-cbn">CBN</span>')
+    .replace(/\[FIRS\]/g,'<span class="agency-tag tag-firs">FIRS</span>')
+    .replace(/\[CAC\]/g,'<span class="agency-tag tag-cac">CAC</span>')
+    .replace(/\[NITDA\]/g,'<span class="agency-tag tag-nitda">NITDA</span>')
+    .replace(/\[SEC\]/g,'<span class="agency-tag tag-sec">SEC</span>')
+    .replace(/\[NAFDAC\]/g,'<span class="agency-tag tag-nafdac">NAFDAC</span>')
+    .replace(/\n\n/g,'<br><br>')
+    .replace(/\n- /g,'<br>• ')
+    .replace(/\n/g,'<br>');
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  document.getElementById('send-btn').disabled = true;
+  addMsg('user', q);
+  const typing = document.getElementById('typing-indicator');
+  typing.style.display = 'flex';
+  chatHistory.push({ role:'user', content:q });
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, system:SYSTEM, messages:chatHistory })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Sorry, I could not get a response. Please try again.';
+    chatHistory.push({ role:'assistant', content:reply });
+    typing.style.display = 'none';
+    addMsg('bot', reply);
+  } catch(e) {
+    typing.style.display = 'none';
+    addMsg('bot', 'Connection error. Please try again.');
+  }
+  document.getElementById('send-btn').disabled = false;
+  input.focus();
+}
+
+function quickAsk(el) {
+  setView('chat');
+  document.getElementById('chat-input').value = el.textContent;
+  sendChat();
+}
+
+document.getElementById('chat-input').addEventListener('keydown', e => { if(e.key==='Enter') sendChat(); });
+
+// ──────────────────────────────────────────────
+// REGULATIONS DB
+// ──────────────────────────────────────────────
+const SEED_REGS = [
+  { id:'s1', agency:'CAC', title:'Company Registration', reference:'CAMA 2020 §18–40', summary:'All businesses must register with CAC before commencing operations. Sole traders must register within 28 days of starting trade.', category:'registration', effective_date:'2020-08-07', severity:'critical' },
+  { id:'s2', agency:'FIRS', title:'Company Income Tax', reference:'CITA Cap C21 LFN 2004', summary:'Companies taxed at 30% of assessable profits. Small companies (turnover <₦25M) pay 0%; medium (₦25M–₦100M) pay 20%.', category:'tax', effective_date:'2020-01-01', severity:'critical' },
+  { id:'s3', agency:'FIRS', title:'VAT Registration Threshold', reference:'Finance Act 2020', summary:'Businesses with annual turnover above ₦25 million must register for VAT and charge 7.5% on all taxable goods and services.', category:'tax', effective_date:'2020-01-01', severity:'high' },
+  { id:'s4', agency:'CBN', title:'Payment Service Bank Regulation', reference:'CBN PSB Guidelines 2019', summary:'PSBs may accept deposits and process payments but cannot grant loans. Minimum capital of ₦5 billion required.', category:'banking', effective_date:'2019-10-25', severity:'high' },
+  { id:'s5', agency:'CBN', title:'BVN Requirement for Business Accounts', reference:'CBN Circular FPR/DIR/GEN/CIR/06/010', summary:'All corporate bank accounts must be linked to director BVN. Non-compliance results in account restrictions.', category:'banking', effective_date:'2015-02-14', severity:'critical' },
+  { id:'s6', agency:'NITDA', title:'Nigeria Data Protection Regulation', reference:'NDPR 2019', summary:'Organizations processing personal data must obtain consent, implement security, and appoint a DPO if handling >10,000 records/year.', category:'data_protection', effective_date:'2019-01-25', severity:'high' },
+  { id:'s7', agency:'NITDA', title:'NDPR Annual Audit Requirement', reference:'NDPR 2019 Art. 4.1', summary:'Organizations handling personal data must file an annual compliance audit with NITDA. Fine: up to 2% of annual gross revenue.', category:'data_protection', effective_date:'2019-01-25', severity:'high' },
+  { id:'s8', agency:'SEC', title:'Crowdfunding Regulation', reference:'SEC Rules on Crowdfunding 2021', summary:'Startups can raise up to ₦100M via SEC-registered platforms. Individual investors capped at ₦200,000 per issuer per offering.', category:'investment', effective_date:'2021-02-11', severity:'medium' },
+  { id:'s9', agency:'NAFDAC', title:'Food Business Registration', reference:'NAFDAC Act Cap N1 LFN 2004', summary:'All food products must be NAFDAC-registered before sale. Registration valid 5 years. Non-compliance: ₦500,000 fine or 2 years imprisonment.', category:'product', effective_date:'2004-01-01', severity:'high' },
+  { id:'s10', agency:'CAC', title:'Annual Returns Filing', reference:'CAMA 2020 §417', summary:'All companies must file annual returns within 42 days of AGM. Late filing penalty: ₦10,000 + ₦5,000 per day.', category:'compliance', effective_date:'2020-08-07', severity:'high' },
+];
+
+async function loadRegs() {
+  try {
+    const { data, error } = await sb.from('regulations').select('*').order('created_at', { ascending:false });
+    allRegs = (error || !data || data.length===0) ? SEED_REGS : data;
+  } catch(e) { allRegs = SEED_REGS; }
+  renderRegs();
+}
+
+function renderRegs() {
+  const grid = document.getElementById('reg-grid');
+  let filtered = allRegs;
+  if (activeAgency !== 'all') filtered = filtered.filter(r => r.agency === activeAgency);
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    filtered = filtered.filter(r =>
+      r.title.toLowerCase().includes(q) ||
+      r.summary.toLowerCase().includes(q) ||
+      r.reference?.toLowerCase().includes(q)
+    );
+  }
+  if (!filtered.length) { grid.innerHTML = '<div style="padding:24px;color:var(--text-muted);font-size:13px">No regulations found.</div>'; return; }
+  const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
+  grid.innerHTML = filtered.map(r => `
+    <div class="reg-card">
+      <div class="reg-card-top">
+        <div>
+          <span class="agency-tag ${agClass[r.agency]||'tag-cac'}" style="margin-bottom:6px;display:inline-block">${r.agency}</span>
+          <div class="reg-card-title">${r.title}</div>
+        </div>
+        <div class="severity-dot sev-${r.severity}"></div>
+      </div>
+      <div class="reg-ref">${r.reference || ''}</div>
+      <div class="reg-summary">${r.summary}</div>
+      <div class="reg-card-footer">
+        <div class="reg-date">Effective: ${r.effective_date ? new Date(r.effective_date).toLocaleDateString('en-NG',{year:'numeric',month:'short',day:'numeric'}) : 'N/A'}</div>
+        <div class="ask-ai-btn" onclick="askAboutReg('${r.title.replace(/'/g,"\\'")}', '${r.reference||''}')">Ask AI →</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterByAgency(agency, el) {
+  activeAgency = agency;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderRegs();
+}
+
+function filterRegs(q) {
+  searchQuery = q;
+  renderRegs();
+}
+
+function askAboutReg(title, ref) {
+  setView('chat');
+  const q = `Explain the "${title}" regulation (${ref}) in detail — requirements, penalties, and what I need to do.`;
+  document.getElementById('chat-input').value = q;
+  sendChat();
+}
+
+// ──────────────────────────────────────────────
+// PDF UPLOAD
+// ──────────────────────────────────────────────
+const dropZone = document.getElementById('drop-zone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f&&f.type==='application/pdf') handlePDFUpload(f); });
+
+async function handlePDFUpload(file) {
+  if (!file) return;
+  const resultDiv = document.getElementById('pdf-result');
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = '<div class="loading-row"><div class="spinner"></div> Analysing PDF with RenikGPT…</div>';
+  const agency = document.getElementById('upload-agency').value;
+
+  try {
+    const base64 = await fileToBase64(file);
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:'You are a Nigerian regulatory expert. Extract and summarise regulations from documents. Always respond in strict JSON only — no markdown, no backticks.',
+        messages:[{
+          role:'user',
+          content:[
+            { type:'document', source:{ type:'base64', media_type:'application/pdf', data:base64 } },
+            { type:'text', text:`Extract the key compliance requirements from this ${agency} regulation document. Return ONLY a JSON object in this exact format: {"title":"<regulation title>","agency":"${agency}","summary":"<2-3 sentence plain-language summary>","key_points":[{"point":"<requirement>","ref":"<section/article reference>","priority":"critical|high|medium"},...],"penalties":"<summary of penalties if any>"}` }
+          ]
+        }]
+      })
+    });
+    const data = await res.json();
+    let raw = data.content?.[0]?.text || '{}';
+    raw = raw.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(raw);
+    pdfAnalysisResult = { ...parsed, file_name: file.name, agency };
+    renderPDFResult(pdfAnalysisResult);
+  } catch(e) {
+    resultDiv.innerHTML = `<div style="color:var(--red);font-size:13px;padding:8px">Error analysing PDF: ${e.message}. Make sure the file is a text-based PDF.</div>`;
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result.split(',')[1]);
+    r.onerror = () => reject(new Error('Failed to read file'));
+    r.readAsDataURL(file);
+  });
+}
+
+function renderPDFResult(d) {
+  const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
+  const points = (d.key_points||[]).map(p => `
+    <div class="key-point">
+      <div>
+        <div class="key-point-text">${p.point}</div>
+        ${p.ref?`<div style="font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);margin-top:3px">${p.ref}</div>`:''}
+      </div>
+      <span class="cl-priority pri-${p.priority||'medium'}">${(p.priority||'medium').toUpperCase()}</span>
+    </div>
+  `).join('');
+  document.getElementById('pdf-result').innerHTML = `
+    <div class="result-title">${d.title||'Regulation Extracted'}</div>
+    <div class="result-file">📄 ${d.file_name} · <span class="agency-tag ${agClass[d.agency]||'tag-cac'}">${d.agency}</span></div>
+    <div class="result-body">${d.summary||''}</div>
+    ${d.penalties?`<div style="margin-top:12px;padding:10px 14px;background:var(--red-dim);border-radius:8px;border-left:2px solid var(--red);font-size:13px;color:var(--text)"><strong>Penalties:</strong> ${d.penalties}</div>`:''}
+    <div class="key-points">${points}</div>
+    <button class="save-reg-btn" onclick="savePDFToSupabase()">Save to Regulatory Database</button>
+  `;
+}
+
+async function savePDFToSupabase() {
+  if (!pdfAnalysisResult || !currentUser) return;
+  const btn = document.querySelector('.save-reg-btn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const { error: regErr } = await sb.from('regulations').insert({
+      agency: pdfAnalysisResult.agency,
+      title: pdfAnalysisResult.title,
+      reference: 'Uploaded document',
+      summary: pdfAnalysisResult.summary,
+      category: 'uploaded',
+      severity: 'info'
+    });
+    await sb.from('uploaded_docs').insert({
+      user_id: currentUser.id,
+      file_name: pdfAnalysisResult.file_name,
+      agency: pdfAnalysisResult.agency,
+      summary: pdfAnalysisResult.summary,
+      key_points: pdfAnalysisResult.key_points
+    });
+    if (!regErr) {
+      btn.textContent = '✓ Saved to Regulatory Database';
+      showToast('Saved to Regulatory Database', 'var(--red)');
+      loadRegs();
+      loadUploadHistory();
+    } else {
+      btn.textContent = 'Save to Regulatory Database';
+      btn.disabled = false;
+      showToast('Error saving to database', 'var(--red)');
+    }
+  } catch(e) {
+    btn.textContent = 'Save to Regulatory Database';
+    btn.disabled = false;
+  }
+}
+
+async function loadUploadHistory() {
+  const list = document.getElementById('history-list');
+  try {
+    const { data } = await sb.from('uploaded_docs').select('*').eq('user_id', currentUser.id).order('created_at',{ascending:false}).limit(10);
+    if (!data || !data.length) { list.innerHTML = '<div style="font-size:13px;color:var(--text-muted);padding:4px 0">No documents uploaded yet.</div>'; return; }
+    const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
+    list.innerHTML = data.map(d => `
+      <div class="history-item">
+        <div class="history-icon">📄</div>
+        <div class="history-info">
+          <div class="history-name">${d.file_name}</div>
+          <div class="history-meta"><span class="agency-tag ${agClass[d.agency]||'tag-cac'}">${d.agency}</span> · ${new Date(d.created_at).toLocaleDateString('en-NG')}</div>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) { list.innerHTML = ''; }
+}
+
+// ──────────────────────────────────────────────
+// CHECKLIST GENERATOR
+// ──────────────────────────────────────────────
+async function generateChecklist() {
+  const bizName  = document.getElementById('cl-biz-name').value.trim();
+  const bizType  = document.getElementById('cl-biz-type').value;
+  const industry = document.getElementById('cl-industry').value;
+  const stage    = document.getElementById('cl-stage').value;
+  const turnover = document.getElementById('cl-turnover').value;
+  if (!bizType || !industry || !stage) { showToast('Please fill in all required fields', 'var(--gold)'); return; }
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true; btn.textContent = 'Generating…';
+  const output = document.getElementById('checklist-output');
+  output.style.display = 'flex';
+  output.innerHTML = '<div class="loading-row"><div class="spinner"></div> RenikGPT is building your checklist…</div>';
+  try {
+    const prompt = `Generate a comprehensive Nigerian regulatory compliance checklist for:
+- Business: ${bizName||'Unnamed Business'}
+- Type: ${bizType}
+- Industry: ${industry}
+- Stage: ${stage}
+- Annual Turnover: ${turnover||'Unknown'}
+
+Return ONLY valid JSON (no markdown, no backticks) in this format:
+{
+  "sections": [
+    {
+      "agency": "CAC",
+      "title": "Company Registration & Corporate Compliance",
+      "items": [
+        { "text": "Register your business name with CAC", "ref": "CAMA 2020 §18", "priority": "critical" },
+        ...
+      ]
+    },
+    ...
+  ]
+}
+
+Include sections for all relevant agencies (CAC, FIRS, CBN if fintech, NITDA if collecting data, SEC if fundraising, NAFDAC if food/pharma). Each section should have 3-6 actionable items. Priority must be: critical, high, or medium.`;
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:'You are a Nigerian compliance expert. Always respond with strict JSON only. No markdown. No backticks. No preamble.',
+        messages:[{ role:'user', content:prompt }]
+      })
+    });
+    const data = await res.json();
+    let raw = data.content?.[0]?.text || '{}';
+    raw = raw.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(raw);
+    renderChecklist(parsed, bizName, bizType, industry, stage, turnover);
+    btn.disabled = false; btn.textContent = 'Regenerate Checklist →';
+  } catch(e) {
+    output.innerHTML = `<div style="color:var(--red);font-size:13px;padding:8px">Error generating checklist: ${e.message}</div>`;
+    btn.disabled = false; btn.textContent = 'Generate My Compliance Checklist →';
+  }
+}
+
+function renderChecklist(data, bizName, bizType, industry, stage, turnover) {
+  const sections = data.sections || [];
+  const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
+  const output = document.getElementById('checklist-output');
+  let html = `<div style="font-size:14px;color:var(--text-sub);padding:0 0 4px">Compliance checklist for <strong style="color:var(--text)">${bizName||bizType}</strong> · ${industry} · ${stage}</div>`;
+  sections.forEach((sec, si) => {
+    const total = sec.items?.length || 0;
+    html += `
+      <div class="cl-section">
+        <div class="cl-section-header">
+          <span class="agency-tag ${agClass[sec.agency]||'tag-cac'}">${sec.agency}</span>
+          <div class="cl-section-title">${sec.title}</div>
+          <div class="cl-progress" id="prog-${si}">0/${total}</div>
+        </div>
+        <div class="cl-items">
+          ${(sec.items||[]).map((item,ii) => `
+            <div class="cl-item" id="cli-${si}-${ii}" onclick="toggleCLItem(${si},${ii},${total})">
+              <div class="cl-checkbox"></div>
+              <div style="flex:1">
+                <div class="cl-item-text">${item.text}</div>
+                ${item.ref?`<div class="cl-item-ref">${item.ref}</div>`:''}
+              </div>
+              <span class="cl-priority pri-${item.priority||'medium'}">${(item.priority||'medium').toUpperCase()}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  });
+  html += `
+    <div class="cl-save-row">
+      <button class="cl-save-btn" onclick="saveChecklist(${JSON.stringify(data).replace(/"/g,'&quot;')}, '${bizName}','${bizType}','${industry}','${stage}')">Save Checklist</button>
+    </div>
+  `;
+  output.innerHTML = html;
+  output.style.display = 'flex';
+}
+
+function toggleCLItem(si, ii, total) {
+  const el = document.getElementById(`cli-${si}-${ii}`);
+  el.classList.toggle('done');
+  const done = document.querySelectorAll(`[id^="cli-${si}-"]`).length ?
+    [...document.querySelectorAll(`[id^="cli-${si}-"]`)].filter(e=>e.classList.contains('done')).length : 0;
+  const prog = document.getElementById(`prog-${si}`);
+  if (prog) prog.textContent = `${done}/${total}`;
+}
+
+async function saveChecklist(data, bizName, bizType, industry, stage) {
+  if (!currentUser) { showToast('Sign in to save checklists', 'var(--gold)'); return; }
+  await sb.from('checklists').insert({ user_id:currentUser.id, business_name:bizName, business_type:bizType, industry, stage, items:data });
+  showToast('Checklist saved!', 'var(--red)');
+}
+
+// ──────────────────────────────────────────────
+// ALERTS
+// ──────────────────────────────────────────────
+const SEED_ALERTS = [
+  { id:'a1', agency:'FIRS', title:'Updated Transfer Pricing Regulations 2024', description:'FIRS has issued updated TP rules affecting companies with related-party transactions above ₦500M. New forms required from Q1 2025.', severity:'high', published_at: new Date(Date.now()-2*86400000).toISOString() },
+  { id:'a2', agency:'CBN', title:'Enhanced KYC for Fintechs', description:'CBN circular requires enhanced due diligence for all crypto-adjacent transactions effective January 2025. All PSBs must update their onboarding flows.', severity:'critical', published_at: new Date(Date.now()-5*86400000).toISOString() },
+  { id:'a3', agency:'CAC', title:'New Online Registration Portal', description:'CAC has launched a new digital portal. All new incorporations must use the updated system from March 2025. Old portal decommissioned.', severity:'info', published_at: new Date(Date.now()-10*86400000).toISOString() },
+  { id:'a4', agency:'NITDA', title:'NDPR Amendment Draft Released', description:'NITDA has released a draft amendment to the NDPR for public consultation. Comments accepted until end of Q1 2025. Key changes include mandatory breach notification.', severity:'medium', published_at: new Date(Date.now()-14*86400000).toISOString() },
+];
+
+async function loadAlerts() {
+  const list = document.getElementById('alerts-list');
+  let alerts = SEED_ALERTS;
+  try {
+    const { data, error } = await sb.from('reg_alerts').select('*').order('published_at',{ascending:false});
+    if (!error && data && data.length) alerts = data;
+  } catch(e) {}
+  document.getElementById('alert-badge').textContent = alerts.length;
+  const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
+  const icons = { critical:'🚨', high:'⚠️', medium:'ℹ️', info:'📢' };
+  list.innerHTML = alerts.map(a => `
+    <div class="alert-card">
+      <div class="alert-icon sev-${a.severity}">${icons[a.severity]||'📢'}</div>
+      <div class="alert-content">
+        <div class="alert-meta">
+          <span class="agency-tag ${agClass[a.agency]||'tag-cac'}">${a.agency}</span>
+          <span class="alert-time">${timeSince(a.published_at)}</span>
+        </div>
+        <div class="alert-title">${a.title}</div>
+        <div class="alert-desc">${a.description}</div>
+        <button class="alert-ask" data-title="${a.title.replace(/"/g,'&quot;')}" onclick="quickAsk({textContent:'Explain the impact of: '+this.dataset.title})" style="margin-top:10px">Ask RenikGPT →</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function timeSince(dateStr) {
+  const d = new Date(dateStr), now = new Date();
+  const diff = Math.floor((now-d)/1000);
+  if (diff < 3600) return Math.floor(diff/60)+'m ago';
+  if (diff < 86400) return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+
+// Supabase realtime subscription for new alerts
+try {
+  sb.channel('reg_alerts').on('postgres_changes',{ event:'INSERT', schema:'public', table:'reg_alerts' }, payload => {
+    showToast(`New alert: ${payload.new.agency} — ${payload.new.title}`, 'var(--red)');
+    document.getElementById('alert-badge').style.display = 'block';
+    loadAlerts();
+  }).subscribe();
+} catch(e) {}
+
+// ──────────────────────────────────────────────
+// UTILS
+// ──────────────────────────────────────────────
+function showToast(msg, color) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<div class="toast-dot" style="background:${color}"></div>${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ──────────────────────────────────────────────
+// INIT — session check + magic link callback
+// ──────────────────────────────────────────────
+(async () => {
+  // In Supabase JS v2, magic link tokens in the URL hash are handled automatically
+  // by onAuthStateChange — no need for getSessionFromUrl (it was removed in v2).
+
+  try {
+    // Restore existing session for returning users
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) onAuth(session.user);
+  } catch(e) {}
+
+  // Listen for auth events: magic link callback, token refresh, sign-out
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session?.user) {
+      // Clean the URL hash so the token isn't visible after magic link redirect
+      if (window.location.hash) {
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+      }
+      onAuth(session.user);
+    }
+    if (event === 'SIGNED_OUT') {
+      currentUser = null;
+      document.getElementById('auth-overlay').style.display = 'flex';
+    }
+  });
+})();
+</script>
+</body>
+</html>
