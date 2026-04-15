@@ -121,32 +121,8 @@ insert into reg_alerts (agency,title,description,severity,published_at) values
 
 html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); overflow: hidden; }
 
-/* ── MOBILE NAV ── */
-#mobile-nav {
-  display: none;
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
-  background: var(--bg-surface);
-  border-top: 1px solid var(--border);
-  height: 60px;
-  flex-direction: row;
-  align-items: stretch;
-}
-.mnav-item {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 3px; cursor: pointer; position: relative;
-  color: var(--text-muted); font-size: 10px; font-weight: 600;
-  letter-spacing: 0.03em; padding: 6px 2px;
-  -webkit-tap-highlight-color: transparent;
-}
-.mnav-item.active { color: var(--red); }
-.mnav-item svg { width: 20px; height: 20px; }
-.mnav-badge {
-  position: absolute; top: 5px; right: calc(50% - 18px);
-  background: var(--red); color: #fff;
-  font-size: 9px; font-weight: 700; padding: 1px 4px;
-  border-radius: 8px; min-width: 15px; text-align: center;
-}
+/* ── MOBILE NAV — removed; hamburger handles navigation ── */
+#mobile-nav { display: none !important; }
 
 /* ── MOBILE DRAWER ── */
 #sidebar-backdrop {
@@ -167,9 +143,8 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     box-shadow: 4px 0 20px rgba(0,0,0,0.12);
   }
   #main {
-    width: 100%; padding-bottom: 60px;
+    width: 100%; padding-bottom: 0;
   }
-  #mobile-nav { display: flex; }
   .chat-header-menu { display: flex !important; }
   .view-header { flex-wrap: wrap; gap: 10px; }
   .search-input { width: 100% !important; }
@@ -669,7 +644,65 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   font-size: 14px; color: var(--text); display: flex; align-items: center; gap: 8px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.12);
 }
-.toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+/* ── WELCOME MODAL ── */
+#welcome-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+#welcome-overlay.open { display: flex; }
+#welcome-box {
+  background: #FFFFFF; border-radius: 24px;
+  width: 520px; max-width: 96vw;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+  overflow: hidden;
+  animation: wm-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes wm-in {
+  from { opacity:0; transform:scale(0.88) translateY(24px); }
+  to   { opacity:1; transform:scale(1)    translateY(0);    }
+}
+.wm-top {
+  background: var(--red); padding: 32px 36px 28px; position: relative; overflow: hidden;
+}
+.wm-top::before {
+  content:''; position:absolute; right:-40px; top:-40px;
+  width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,0.07);
+}
+.wm-top::after {
+  content:''; position:absolute; right:40px; bottom:-60px;
+  width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,0.05);
+}
+.wm-logo   { font-family:var(--font-d); font-size:28px; color:#fff; font-weight:700; position:relative; z-index:1; }
+.wm-tagline{ font-size:13px; color:rgba(255,255,255,0.78); margin-top:4px; position:relative; z-index:1; letter-spacing:0.02em; }
+.wm-body   { padding: 30px 36px 24px; }
+.wm-slide  { display:none; }
+.wm-slide.active { display:block; animation: sl-in 0.28s ease; }
+@keyframes sl-in { from{opacity:0;transform:translateX(14px)} to{opacity:1;transform:translateX(0)} }
+.wm-num   { font-size:11px; font-weight:700; letter-spacing:0.1em; color:var(--red); text-transform:uppercase; margin-bottom:10px; }
+.wm-icon  { font-size:34px; margin-bottom:12px; }
+.wm-title { font-family:var(--font-d); font-size:21px; font-weight:700; color:var(--text); margin-bottom:10px; line-height:1.3; }
+.wm-desc  { font-size:14.5px; color:var(--text-sub); line-height:1.72; }
+.wm-desc strong { color:var(--text); }
+.wm-bullets { margin-top:14px; display:flex; flex-direction:column; gap:9px; }
+.wm-bullet  { display:flex; gap:10px; align-items:flex-start; font-size:13.5px; color:var(--text-sub); line-height:1.55; }
+.wm-bullet-dot { width:7px; height:7px; border-radius:50%; background:var(--red); flex-shrink:0; margin-top:5px; }
+.wm-footer { display:flex; align-items:center; justify-content:space-between; padding: 0 36px 28px; }
+.wm-dots   { display:flex; gap:6px; align-items:center; }
+.wm-dot    { height:7px; width:7px; border-radius:4px; background:var(--border-em); transition:all 0.25s; }
+.wm-dot.active { background:var(--red); width:20px; }
+.wm-btns   { display:flex; gap:8px; }
+.wm-skip   {
+  padding:10px 18px; border-radius:var(--r); background:transparent;
+  color:var(--text-muted); border:1px solid var(--border-em);
+  font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer;
+}
+.wm-skip:hover { background:var(--bg-hover); color:var(--text); }
+.wm-next   {
+  padding:10px 24px; border-radius:var(--r); background:var(--red);
+  color:#fff; border:none; font-family:var(--font); font-size:14px; font-weight:700; cursor:pointer;
+}
+.wm-next:hover { opacity:0.88; }
 </style>
 </head>
 <body>
@@ -1002,6 +1035,76 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 <!-- SIDEBAR BACKDROP (mobile drawer) -->
 <div id="sidebar-backdrop" onclick="closeSidebar()"></div>
 
+<!-- WELCOME MODAL -->
+<div id="welcome-overlay">
+  <div id="welcome-box">
+    <div class="wm-top">
+      <div class="wm-logo">RenikGPT</div>
+      <div class="wm-tagline">Nigeria's Compliance Intelligence Platform — Built for Business</div>
+    </div>
+    <div class="wm-body">
+
+      <div class="wm-slide active" id="wm-slide-1">
+        <div class="wm-num">01 / 03 &nbsp;·&nbsp; WHAT WE DO</div>
+        <div class="wm-icon">⚖️</div>
+        <div class="wm-title">Nigerian compliance, in plain language</div>
+        <div class="wm-desc">
+          Navigating CBN, FIRS, CAC, NITDA, SEC, and NAFDAC costs Nigerian businesses
+          <strong>thousands of hours and millions in avoidable fines</strong> every year.
+          <div class="wm-bullets">
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div>Ask RenikGPT anything — get answers with specific law citations, deadlines, and penalty amounts</div>
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div>No legal jargon. No vague summaries. Actionable guidance your team can act on today</div>
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div>All 6 major Nigerian regulatory agencies covered in one place</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wm-slide" id="wm-slide-2">
+        <div class="wm-num">02 / 03 &nbsp;·&nbsp; THE TOOLS</div>
+        <div class="wm-icon">🏢</div>
+        <div class="wm-title">Built for founders, CFOs, and compliance teams</div>
+        <div class="wm-desc">
+          RenikGPT is a <strong>B2B compliance platform</strong> — every tool is designed around how Nigerian businesses actually operate.
+          <div class="wm-bullets">
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div><strong>AI Chat</strong> — ask any compliance question and get cited, specific answers in seconds</div>
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div><strong>Compliance Checklist Generator</strong> — personalised to your industry, structure, and turnover stage</div>
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div><strong>Regulatory Database</strong> — searchable index of current Nigerian regulations by agency and severity</div>
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div><strong>PDF Analyser</strong> — upload any CBN circular or FIRS guideline and get a plain-English summary</div>
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div><strong>Reg Alerts</strong> — stay ahead of new regulations before they become a liability</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wm-slide" id="wm-slide-3">
+        <div class="wm-num">03 / 03 &nbsp;·&nbsp; THE VALUE</div>
+        <div class="wm-icon">🚀</div>
+        <div class="wm-title">Stay compliant. Stay focused on growth.</div>
+        <div class="wm-desc">
+          Every day a compliance gap goes unaddressed is a day your business is exposed to fines, licence revocations, or operational shutdowns.
+          <div class="wm-bullets">
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div>Start with the <strong>Compliance Checklist</strong> — 2 minutes to surface your highest-risk gaps</div>
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div>Use <strong>AI Chat</strong> before any major business decision that touches regulation</div>
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div>Set up <strong>Reg Alerts</strong> so your team is never caught off guard by a new circular</div>
+            <div class="wm-bullet"><div class="wm-bullet-dot"></div>RenikGPT makes sure you walk into every conversation with your solicitor — or your board — fully informed</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="wm-footer">
+      <div class="wm-dots">
+        <div class="wm-dot active" id="wmd-1"></div>
+        <div class="wm-dot" id="wmd-2"></div>
+        <div class="wm-dot" id="wmd-3"></div>
+      </div>
+      <div class="wm-btns">
+        <button class="wm-skip" onclick="closeWelcome()">Skip</button>
+        <button class="wm-next" id="wm-next-btn" onclick="wmNext()">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ──────────────────────────────────────────────
 // CONFIG — Paste your Supabase credentials here
@@ -1130,7 +1233,46 @@ function onAuth(user) {
   document.getElementById('user-avatar').textContent = (name[0]||'U').toUpperCase();
   loadRegs();
   loadAlerts();
-  if (user.id !== 'guest') loadUploadHistory();
+  if (user.id !== 'guest') {
+    loadUploadHistory();
+    // Show welcome modal for first 3 sign-ins
+    const key = `renik_logins_${user.id}`;
+    const count = parseInt(localStorage.getItem(key) || '0', 10) + 1;
+    localStorage.setItem(key, String(count));
+    if (count <= 3) showWelcome();
+  }
+}
+
+// ──────────────────────────────────────────────
+// WELCOME MODAL
+// ──────────────────────────────────────────────
+let _wmSlide = 1;
+
+function showWelcome() {
+  _wmSlide = 1;
+  wmSetSlide(1);
+  document.getElementById('welcome-overlay').classList.add('open');
+}
+
+function closeWelcome() {
+  document.getElementById('welcome-overlay').classList.remove('open');
+}
+
+function wmNext() {
+  if (_wmSlide < 3) {
+    _wmSlide++;
+    wmSetSlide(_wmSlide);
+  } else {
+    closeWelcome();
+  }
+}
+
+function wmSetSlide(n) {
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById(`wm-slide-${i}`).classList.toggle('active', i === n);
+    document.getElementById(`wmd-${i}`).classList.toggle('active', i === n);
+  }
+  document.getElementById('wm-next-btn').textContent = n === 3 ? 'Get Started →' : 'Next →';
 }
 
 // ──────────────────────────────────────────────
@@ -1213,12 +1355,17 @@ function fmtText(t) {
     .replace(/\n/g,'<br>');
 }
 
-// ── AI PROXY: routes through Cloudflare Worker at /api/chat ──
-// This avoids CORS and keeps the API key server-side.
+// ── AI PROXY: routes through Supabase Edge Function (API key stays server-side) ──
 async function callAI(payload) {
-  const res = await fetch('/api/chat', {
+  const { data: { session } } = await sb.auth.getSession().catch(() => ({ data: { session: null } }));
+  const token = session?.access_token;
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/ai`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token || SUPABASE_KEY}`,
+      'apikey': SUPABASE_KEY
+    },
     body: JSON.stringify(payload)
   });
   if (!res.ok) {
@@ -1246,7 +1393,7 @@ async function sendChat() {
     addMsg('bot', reply);
   } catch(e) {
     typing.style.display = 'none';
-    addMsg('bot', '⚠️ Could not reach the AI. Check that your Cloudflare Worker is deployed and ANTHROPIC_API_KEY secret is set.');
+    addMsg('bot', '⚠️ Could not reach the AI. Ensure your Supabase Edge Function is deployed and ANTHROPIC_API_KEY secret is set.');
   }
   document.getElementById('send-btn').disabled = false;
   input.focus();
