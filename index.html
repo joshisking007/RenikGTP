@@ -1007,21 +1007,35 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 // CONFIG — Paste your Supabase credentials here
 // Get these from: Supabase Dashboard → Settings → API
 // ──────────────────────────────────────────────
-const SUPABASE_URL  = 'https://fifevmdyawpiqvezuqjs.supabase.co';   // e.g. https://abcdefgh.supabase.co
-const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpZmV2bWR5YXdwaXF2ZXp1cWpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNzc2NzQsImV4cCI6MjA5MTc1MzY3NH0.PsfDWwGet_0Zrv4VnMVUg6LXf86L4m7MZVTIDwdYX0g'; // the long "anon public" JWT key
+const SUPABASE_URL  = 'YOUR_SUPABASE_URL';   // e.g. https://abcdefgh.supabase.co
+const SUPABASE_KEY  = 'YOUR_SUPABASE_ANON_KEY'; // the long "anon public" JWT key
 
 const SUPABASE_CONFIGURED = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_KEY !== 'YOUR_SUPABASE_ANON_KEY';
 
-// If credentials aren't set, create a dummy client so the app doesn't crash
-const sb = SUPABASE_CONFIGURED
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-  : { auth: { getSession: async()=>({data:{session:null}}), onAuthStateChange:()=>{}, signInWithPassword:async()=>({error:{message:'Supabase not configured'}}), signUp:async()=>({error:{message:'Supabase not configured'}}), signInWithOtp:async()=>({error:{message:'Supabase not configured'}}), signOut:async()=>{} }, from:()=>({ select:()=>({ order:()=>({data:null,error:{message:'Not configured'}}) }), insert:async()=>({error:null}) }) };
+// Robust dummy client — prevents all crashes when Supabase isn't configured
+const makeDummy = () => {
+  const noopQ = () => ({ data: null, error: { message: 'Supabase not configured' } });
+  const chain = () => { const c = { select:chain, order:chain, eq:chain, limit:chain, insert:async()=>noopQ(), update:async()=>noopQ() }; c.then = async(fn) => fn(noopQ()); return c; };
+  return {
+    auth: {
+      getSession: async()=>({data:{session:null},error:null}),
+      onAuthStateChange: ()=>({ data:{ subscription:{ unsubscribe:()=>{} } } }),
+      signInWithPassword: async()=>({data:null, error:{message:'Supabase not configured — enter your credentials in the HTML file.'}}),
+      signUp: async()=>({data:null, error:{message:'Supabase not configured — enter your credentials in the HTML file.'}}),
+      signInWithOtp: async()=>({data:null, error:{message:'Supabase not configured.'}}),
+      signOut: async()=>{}
+    },
+    from: () => chain(),
+    channel: () => ({ on: function(){ return this; }, subscribe: ()=>{} })
+  };
+};
+const sb = SUPABASE_CONFIGURED ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : makeDummy();
 
-// Guest mode — bypasses auth to let you explore the UI
+// Guest mode — bypasses auth so you can explore the full UI immediately
 function enterGuestMode() {
   const guestUser = { id: 'guest', email: 'guest@demo.com', user_metadata: { full_name: 'Guest' } };
   onAuth(guestUser);
-  showToast('Guest mode — sign in to save data', 'var(--gold)');
+  showToast('Guest mode — AI chat works, saving requires Supabase setup', 'var(--gold)');
 }
 
 // ──────────────────────────────────────────────
@@ -1111,12 +1125,12 @@ async function doLogout() {
 function onAuth(user) {
   currentUser = user;
   document.getElementById('auth-overlay').style.display = 'none';
-  const name = user.user_metadata?.full_name || user.email.split('@')[0];
+  const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
   document.getElementById('user-name').textContent = name;
-  document.getElementById('user-avatar').textContent = name[0].toUpperCase();
+  document.getElementById('user-avatar').textContent = (name[0]||'U').toUpperCase();
   loadRegs();
   loadAlerts();
-  loadUploadHistory();
+  if (user.id !== 'guest') loadUploadHistory();
 }
 
 // ──────────────────────────────────────────────
@@ -1199,6 +1213,21 @@ function fmtText(t) {
     .replace(/\n/g,'<br>');
 }
 
+// ── AI PROXY: routes through Cloudflare Worker at /api/chat ──
+// This avoids CORS and keeps the API key server-side.
+async function callAI(payload) {
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`AI proxy error ${res.status}: ${err}`);
+  }
+  return await res.json();
+}
+
 async function sendChat() {
   const input = document.getElementById('chat-input');
   const q = input.value.trim();
@@ -1210,19 +1239,14 @@ async function sendChat() {
   typing.style.display = 'flex';
   chatHistory.push({ role:'user', content:q });
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, system:SYSTEM, messages:chatHistory })
-    });
-    const data = await res.json();
-    const reply = data.content?.[0]?.text || 'Sorry, I could not get a response. Please try again.';
+    const data = await callAI({ model:'claude-sonnet-4-20250514', max_tokens:1024, system:SYSTEM, messages:chatHistory });
+    const reply = data.content?.[0]?.text || 'Sorry, I could not get a response.';
     chatHistory.push({ role:'assistant', content:reply });
     typing.style.display = 'none';
     addMsg('bot', reply);
   } catch(e) {
     typing.style.display = 'none';
-    addMsg('bot', 'Connection error. Please try again.');
+    addMsg('bot', '⚠️ Could not reach the AI. Check that your Cloudflare Worker is deployed and ANTHROPIC_API_KEY secret is set.');
   }
   document.getElementById('send-btn').disabled = false;
   input.focus();
@@ -1329,12 +1353,9 @@ async function handlePDFUpload(file) {
 
   try {
     const base64 = await fileToBase64(file);
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
+    const data = await callAI({
         model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
+        max_tokens:1024,
         system:'You are a Nigerian regulatory expert. Extract and summarise regulations from documents. Always respond in strict JSON only — no markdown, no backticks.',
         messages:[{
           role:'user',
@@ -1343,9 +1364,7 @@ async function handlePDFUpload(file) {
             { type:'text', text:`Extract the key compliance requirements from this ${agency} regulation document. Return ONLY a JSON object in this exact format: {"title":"<regulation title>","agency":"${agency}","summary":"<2-3 sentence plain-language summary>","key_points":[{"point":"<requirement>","ref":"<section/article reference>","priority":"critical|high|medium"},...],"penalties":"<summary of penalties if any>"}` }
           ]
         }]
-      })
-    });
-    const data = await res.json();
+      });
     let raw = data.content?.[0]?.text || '{}';
     raw = raw.replace(/```json|```/g,'').trim();
     const parsed = JSON.parse(raw);
@@ -1479,17 +1498,12 @@ Return ONLY valid JSON (no markdown, no backticks) in this format:
 }
 
 Include sections for all relevant agencies (CAC, FIRS, CBN if fintech, NITDA if collecting data, SEC if fundraising, NAFDAC if food/pharma). Each section should have 3-6 actionable items. Priority must be: critical, high, or medium.`;
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
+    const data = await callAI({
         model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
+        max_tokens:1500,
         system:'You are a Nigerian compliance expert. Always respond with strict JSON only. No markdown. No backticks. No preamble.',
         messages:[{ role:'user', content:prompt }]
-      })
-    });
-    const data = await res.json();
+      });
     let raw = data.content?.[0]?.text || '{}';
     raw = raw.replace(/```json|```/g,'').trim();
     const parsed = JSON.parse(raw);
