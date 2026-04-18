@@ -703,6 +703,152 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   color:#fff; border:none; font-family:var(--font); font-size:14px; font-weight:700; cursor:pointer;
 }
 .wm-next:hover { opacity:0.88; }
+
+/* ── LAWYER CONNECT ── */
+.lawyer-card {
+  background:#FFFFFF; border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:18px;
+  display:flex; flex-direction:column; gap:12px;
+}
+.lawyer-card:hover { border-color:var(--red); }
+.lc-top { display:flex; gap:12px; align-items:flex-start; }
+.lc-avatar {
+  width:46px; height:46px; border-radius:50%; flex-shrink:0;
+  background:var(--red-dim); border:2px solid var(--red);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; color:var(--red);
+}
+.lc-name { font-size:15px; font-weight:700; color:var(--text); }
+.lc-title { font-size:12px; color:var(--text-sub); margin-top:2px; }
+.lc-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+.lc-tag {
+  padding:2px 8px; border-radius:5px; font-size:11px; font-weight:700;
+  background:var(--red-dim); color:var(--red); font-family:var(--font-mono);
+}
+.lc-bio { font-size:13.5px; color:var(--text-sub); line-height:1.6; }
+.lc-meta { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--text-muted); }
+.lc-actions { display:flex; gap:8px; }
+.lc-btn-primary {
+  flex:1; padding:9px; background:var(--red); color:#fff;
+  border:none; border-radius:var(--r); font-family:var(--font);
+  font-size:13px; font-weight:700; cursor:pointer;
+}
+.lc-btn-primary:hover { opacity:0.88; }
+.lc-btn-sec {
+  padding:9px 14px; background:transparent; color:var(--text-sub);
+  border:1px solid var(--border-em); border-radius:var(--r);
+  font-family:var(--font); font-size:13px; cursor:pointer;
+}
+.lc-btn-sec:hover { background:var(--bg-hover); }
+
+/* ── LAWYER MODAL ── */
+#lawyer-modal {
+  display:none; position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,0.45); align-items:center; justify-content:center;
+  padding:20px;
+}
+#lawyer-modal.open { display:flex; }
+#lawyer-modal-box {
+  background:#fff; border-radius:20px; padding:32px;
+  width:460px; max-width:95vw;
+  box-shadow:0 8px 40px rgba(0,0,0,0.18);
+}
+#lawyer-modal-box h3 { font-size:18px; font-weight:700; margin-bottom:4px; }
+#lawyer-modal-box p { font-size:13px; color:var(--text-sub); margin-bottom:20px; }
+.lm-field { margin-bottom:14px; }
+.lm-field label { display:block; font-size:12px; color:var(--text-sub); font-weight:600; margin-bottom:5px; letter-spacing:0.03em; }
+.lm-field input, .lm-field textarea, .lm-field select {
+  width:100%; padding:10px 12px; background:var(--bg-surface);
+  border:1px solid var(--border-em); border-radius:var(--r);
+  color:var(--text); font-family:var(--font); font-size:14px;
+}
+.lm-field textarea { resize:vertical; min-height:80px; }
+.lm-field input:focus, .lm-field textarea:focus, .lm-field select:focus { outline:none; border-color:var(--red); }
+.lm-actions { display:flex; gap:8px; margin-top:6px; }
+
+/* ── PRICING ── */
+.price-card {
+  background:#fff; border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:22px;
+  display:flex; flex-direction:column; gap:14px;
+  position:relative;
+}
+.price-card-featured { border-color:var(--red); box-shadow:0 0 0 3px var(--red-dim); }
+.pc-badge {
+  position:absolute; top:-11px; left:50%; transform:translateX(-50%);
+  background:var(--red); color:#fff; font-size:11px; font-weight:700;
+  padding:3px 12px; border-radius:20px; white-space:nowrap;
+}
+.pc-tier { font-size:13px; font-weight:700; color:var(--text-sub); text-transform:uppercase; letter-spacing:0.08em; }
+.pc-price { font-size:28px; font-weight:700; color:var(--text); font-family:var(--font-d); }
+.pc-price span { font-size:14px; font-weight:400; color:var(--text-muted); }
+.pc-desc { font-size:13px; color:var(--text-sub); }
+.pc-features { list-style:none; display:flex; flex-direction:column; gap:7px; flex:1; }
+.pc-features li { font-size:13px; color:var(--text); }
+.pc-btn {
+  padding:11px; border-radius:var(--r); font-family:var(--font);
+  font-size:14px; font-weight:700; cursor:pointer;
+  background:var(--bg-surface); color:var(--text-sub);
+  border:1px solid var(--border-em); text-align:center;
+}
+.pc-btn-active { background:var(--red-dim); color:var(--red); border-color:rgba(204,31,31,0.3); }
+.pc-btn-featured { background:var(--red); color:#fff; border-color:var(--red); }
+.pc-btn:hover { opacity:0.85; }
+.report-card {
+  background:#fff; border:1px solid var(--border); border-radius:var(--r);
+  padding:14px; display:flex; flex-direction:column; gap:8px;
+}
+.rc-agency { display:inline-block; padding:2px 8px; border-radius:5px; font-size:11px; font-weight:700; font-family:var(--font-mono); }
+.rc-title { font-size:13px; color:var(--text); font-weight:600; flex:1; }
+.rc-price { font-size:16px; font-weight:700; color:var(--red); }
+.rc-btn {
+  padding:7px; border-radius:var(--r); font-size:13px; font-weight:600;
+  background:var(--red-dim); color:var(--red); border:1px solid rgba(204,31,31,0.2);
+  cursor:pointer; font-family:var(--font);
+}
+.rc-btn:hover { background:rgba(204,31,31,0.15); }
+
+/* ── DEADLINES ── */
+.deadline-card {
+  background:#fff; border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:16px 20px;
+  display:flex; align-items:center; gap:16px;
+}
+.deadline-card.overdue { border-color:var(--red); background:var(--red-dim); }
+.deadline-card.soon { border-color:var(--gold); background:var(--gold-dim); }
+.dl-countdown {
+  min-width:64px; text-align:center; flex-shrink:0;
+}
+.dl-days { font-size:26px; font-weight:700; color:var(--red); font-family:var(--font-d); line-height:1; }
+.dl-days.ok { color:var(--text-sub); }
+.dl-days.warn { color:var(--gold); }
+.dl-label { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px; }
+.dl-divider { width:1px; height:48px; background:var(--border); flex-shrink:0; }
+.dl-info { flex:1; }
+.dl-title { font-size:14px; font-weight:600; color:var(--text); }
+.dl-detail { font-size:12.5px; color:var(--text-sub); margin-top:3px; }
+.dl-date { font-size:12px; color:var(--text-muted); margin-top:4px; font-family:var(--font-mono); }
+
+/* ── PRINT / PDF EXPORT ── */
+.export-btn {
+  padding:8px 16px; background:var(--bg-surface); color:var(--text-sub);
+  border:1px solid var(--border-em); border-radius:var(--r);
+  font-family:var(--font); font-size:13px; font-weight:600;
+  cursor:pointer; display:flex; align-items:center; gap:6px;
+}
+.export-btn:hover { background:var(--bg-hover); }
+@media print {
+  #sidebar, #mobile-nav, #auth-overlay, #welcome-overlay,
+  #lawyer-modal, #pills, #chat-input-area, .view-header .export-btn,
+  .cl-save-row, .ask-ai-btn, .alert-ask, .lc-actions, .rc-btn,
+  .pc-btn, nav, #sidebar-backdrop { display:none !important; }
+  #app { display:block !important; }
+  #main { display:block !important; overflow:visible !important; }
+  .view { display:none !important; }
+  .view.print-active { display:block !important; overflow:visible !important; }
+  body { overflow:visible !important; }
+  .cl-section, .reg-card, .deadline-card { break-inside:avoid; }
+}
 </style>
 </head>
 <body>
@@ -787,6 +933,18 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         Reg Alerts
         <div class="nav-badge" id="alert-badge">4</div>
+      </div>
+      <div class="nav-item" onclick="setView('deadlines')" data-view="deadlines">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Deadline Tracker
+      </div>
+      <div class="nav-item" onclick="setView('lawyers')" data-view="lawyers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Legal Connect
+      </div>
+      <div class="nav-item" onclick="setView('pricing')" data-view="pricing">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Plans & Pricing
       </div>
     </div>
     <div class="sidebar-bottom">
@@ -914,6 +1072,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
           <div class="view-title">Compliance Checklist Generator</div>
           <div class="view-sub">Get a personalised regulatory checklist for your business</div>
         </div>
+        <button class="export-btn" onclick="exportChecklistPDF()" title="Export as PDF">🖨 Export PDF</button>
       </div>
       <div class="checklist-body">
         <div class="cl-form-card">
@@ -980,6 +1139,214 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       </div>
     </div>
 
+
+    <!-- DEADLINE TRACKER VIEW -->
+    <div class="view" id="view-deadlines">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Compliance Deadline Tracker</div>
+          <div class="view-sub">Key Nigerian regulatory filing dates — never miss a deadline again</div>
+        </div>
+      </div>
+      <div id="deadlines-body" style="flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:12px"></div>
+    </div>
+
+    <!-- LEGAL CONNECT VIEW -->
+    <div class="view" id="view-lawyers">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Legal Connect</div>
+          <div class="view-sub">Connect with verified Nigerian compliance lawyers and consultants</div>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:20px">
+
+        <!-- Banner -->
+        <div style="background:var(--red-dim);border:1px solid rgba(204,31,31,0.2);border-radius:var(--r-lg);padding:18px 20px;display:flex;gap:14px;align-items:flex-start">
+          <div style="font-size:28px;flex-shrink:0">⚖️</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--red);margin-bottom:4px">When RenikGPT says "consult a lawyer" — we mean it</div>
+            <div style="font-size:13.5px;color:var(--text-sub);line-height:1.6">AI gives you the map. A licensed professional walks the road with you. The lawyers below specialise in Nigerian corporate, tax, and regulatory law.</div>
+          </div>
+        </div>
+
+        <!-- Lawyer cards -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px" id="lawyer-cards">
+
+          <div class="lawyer-card">
+            <div class="lc-top">
+              <div class="lc-avatar">AO</div>
+              <div>
+                <div class="lc-name">Adaeze Okonkwo, Esq.</div>
+                <div class="lc-title">Corporate & Regulatory Law</div>
+                <div class="lc-tags"><span class="lc-tag">CAC</span><span class="lc-tag">FIRS</span><span class="lc-tag">CAMA 2020</span></div>
+              </div>
+            </div>
+            <div class="lc-bio">10+ years advising Nigerian SMEs on company registration, tax structuring, and CAC compliance. Former FIRS counsel.</div>
+            <div class="lc-meta"><span>📍 Lagos, Nigeria</span><span>💼 Okonkwo & Associates</span></div>
+            <div class="lc-actions">
+              <button class="lc-btn-primary" onclick="openLawyerModal('Adaeze Okonkwo')">Request Consultation</button>
+              <button class="lc-btn-sec" onclick="showToast('WhatsApp link copied','var(--green)')">WhatsApp</button>
+            </div>
+          </div>
+
+          <div class="lawyer-card">
+            <div class="lc-top">
+              <div class="lc-avatar" style="background:var(--blue-dim);color:var(--blue);border-color:var(--blue)">BU</div>
+              <div>
+                <div class="lc-name">Babatunde Usman, Esq.</div>
+                <div class="lc-title">Fintech & CBN Regulatory</div>
+                <div class="lc-tags"><span class="lc-tag" style="background:var(--blue-dim);color:var(--blue)">CBN</span><span class="lc-tag" style="background:var(--blue-dim);color:var(--blue)">SEC</span><span class="lc-tag" style="background:var(--blue-dim);color:var(--blue)">Fintech</span></div>
+              </div>
+            </div>
+            <div class="lc-bio">Specialist in CBN licensing, PSB applications, and fintech regulatory frameworks. Handled 30+ PSSP licence applications.</div>
+            <div class="lc-meta"><span>📍 Abuja, Nigeria</span><span>💼 Usman Legal Partners</span></div>
+            <div class="lc-actions">
+              <button class="lc-btn-primary" onclick="openLawyerModal('Babatunde Usman')">Request Consultation</button>
+              <button class="lc-btn-sec" onclick="showToast('WhatsApp link copied','var(--green)')">WhatsApp</button>
+            </div>
+          </div>
+
+          <div class="lawyer-card">
+            <div class="lc-top">
+              <div class="lc-avatar" style="background:rgba(109,40,217,0.08);color:#6D28D9;border-color:#6D28D9">CI</div>
+              <div>
+                <div class="lc-name">Chisom Ike, Esq.</div>
+                <div class="lc-title">Data Protection & NITDA</div>
+                <div class="lc-tags"><span class="lc-tag" style="background:rgba(109,40,217,0.08);color:#6D28D9">NDPR</span><span class="lc-tag" style="background:rgba(109,40,217,0.08);color:#6D28D9">NITDA</span><span class="lc-tag" style="background:rgba(109,40,217,0.08);color:#6D28D9">DPO</span></div>
+              </div>
+            </div>
+            <div class="lc-bio">Certified Data Protection Officer with expertise in NDPR audits, breach notification, and NITDA compliance for tech companies.</div>
+            <div class="lc-meta"><span>📍 Lagos, Nigeria</span><span>💼 Digital Compliance Hub</span></div>
+            <div class="lc-actions">
+              <button class="lc-btn-primary" onclick="openLawyerModal('Chisom Ike')">Request Consultation</button>
+              <button class="lc-btn-sec" onclick="showToast('WhatsApp link copied','var(--green)')">WhatsApp</button>
+            </div>
+          </div>
+
+          <div class="lawyer-card">
+            <div class="lc-top">
+              <div class="lc-avatar" style="background:var(--gold-dim);color:var(--gold);border-color:var(--gold)">KA</div>
+              <div>
+                <div class="lc-name">Kemi Adeyemi, Esq.</div>
+                <div class="lc-title">Food, Pharma & NAFDAC</div>
+                <div class="lc-tags"><span class="lc-tag" style="background:var(--gold-dim);color:var(--gold)">NAFDAC</span><span class="lc-tag" style="background:var(--gold-dim);color:var(--gold)">SON</span><span class="lc-tag" style="background:var(--gold-dim);color:var(--gold)">Import/Export</span></div>
+              </div>
+            </div>
+            <div class="lc-bio">20 years in NAFDAC product registration, food safety, and pharmaceutical import/export permits. Based in Lagos with national reach.</div>
+            <div class="lc-meta"><span>📍 Lagos, Nigeria</span><span>💼 Adeyemi Regulatory Counsel</span></div>
+            <div class="lc-actions">
+              <button class="lc-btn-primary" onclick="openLawyerModal('Kemi Adeyemi')">Request Consultation</button>
+              <button class="lc-btn-sec" onclick="showToast('WhatsApp link copied','var(--green)')">WhatsApp</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Are you a lawyer CTA -->
+        <div style="border:1.5px dashed var(--border-em);border-radius:var(--r-lg);padding:20px;text-align:center">
+          <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">Are you a compliance lawyer or consultant?</div>
+          <div style="font-size:13px;color:var(--text-sub);margin-bottom:14px">Join the RenikGPT Legal Network and get warm leads from businesses that already understand their compliance gaps.</div>
+          <button class="auth-btn" style="width:auto;padding:10px 24px;font-size:14px" onclick="showToast('Partner application coming soon — email hello@renikgpt.com','var(--red)')">Apply to Join Network →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRICING VIEW -->
+    <div class="view" id="view-pricing">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Plans & Pricing</div>
+          <div class="view-sub">Transparent compliance intelligence — from free to enterprise</div>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:20px 24px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;max-width:1000px;margin:0 auto">
+
+          <!-- Free -->
+          <div class="price-card">
+            <div class="pc-tier">Free</div>
+            <div class="pc-price">₦0<span>/mo</span></div>
+            <div class="pc-desc">For founders just starting out</div>
+            <ul class="pc-features">
+              <li>✓ AI compliance chat (10 questions/day)</li>
+              <li>✓ Regulatory database access</li>
+              <li>✓ Basic reg alerts</li>
+              <li>✓ 1 compliance checklist</li>
+              <li style="color:var(--text-muted)">✗ PDF export</li>
+              <li style="color:var(--text-muted)">✗ Deadline tracking</li>
+              <li style="color:var(--text-muted)">✗ Saved reports</li>
+            </ul>
+            <button class="pc-btn" onclick="showToast('You are on the Free plan','var(--text-muted)')">Current Plan</button>
+          </div>
+
+          <!-- Starter -->
+          <div class="price-card">
+            <div class="pc-tier">Starter</div>
+            <div class="pc-price">₦3,000<span>/mo</span></div>
+            <div class="pc-desc">For early-stage businesses</div>
+            <ul class="pc-features">
+              <li>✓ Unlimited AI chat</li>
+              <li>✓ Advanced checklists</li>
+              <li>✓ 5 saved reports</li>
+              <li>✓ PDF checklist export</li>
+              <li>✓ Deadline tracker</li>
+              <li style="color:var(--text-muted)">✗ Legal Connect</li>
+              <li style="color:var(--text-muted)">✗ Multi-user</li>
+            </ul>
+            <button class="pc-btn pc-btn-active" onclick="showToast('Subscription coming soon — email hello@renikgpt.com','var(--red)')">Get Started →</button>
+          </div>
+
+          <!-- Pro -->
+          <div class="price-card price-card-featured">
+            <div class="pc-badge">Most Popular</div>
+            <div class="pc-tier">Pro</div>
+            <div class="pc-price">₦8,000<span>/mo</span></div>
+            <div class="pc-desc">For growing SMEs</div>
+            <ul class="pc-features">
+              <li>✓ Everything in Starter</li>
+              <li>✓ Unlimited saved reports</li>
+              <li>✓ Legal Connect access</li>
+              <li>✓ Priority reg alerts</li>
+              <li>✓ PDF upload & analysis</li>
+              <li>✓ Compliance readiness reports</li>
+              <li style="color:var(--text-muted)">✗ Multi-user</li>
+            </ul>
+            <button class="pc-btn pc-btn-featured" onclick="showToast('Subscription coming soon — email hello@renikgpt.com','var(--red)')">Get Pro →</button>
+          </div>
+
+          <!-- Business -->
+          <div class="price-card">
+            <div class="pc-tier">Business</div>
+            <div class="pc-price">₦20,000<span>/mo</span></div>
+            <div class="pc-desc">For compliance teams</div>
+            <ul class="pc-features">
+              <li>✓ Everything in Pro</li>
+              <li>✓ Multi-user (up to 10)</li>
+              <li>✓ API access</li>
+              <li>✓ Priority support</li>
+              <li>✓ Custom reg alerts</li>
+              <li>✓ White-label reports</li>
+              <li>✓ Dedicated account manager</li>
+            </ul>
+            <button class="pc-btn pc-btn-active" onclick="showToast('Enterprise enquiry — email hello@renikgpt.com','var(--red)')">Contact Sales →</button>
+          </div>
+
+        </div>
+
+        <!-- One-time reports -->
+        <div style="margin-top:24px;max-width:1000px;margin-left:auto;margin-right:auto">
+          <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:12px">One-Time Compliance Reports</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+            <div class="report-card"><div class="rc-agency tag-cac">CAC</div><div class="rc-title">Company Registration & Corporate Compliance</div><div class="rc-price">₦2,000</div><button class="rc-btn" onclick="showToast('Coming soon','var(--gold)')">Buy Report</button></div>
+            <div class="report-card"><div class="rc-agency tag-firs">FIRS</div><div class="rc-title">Tax Compliance Readiness Report</div><div class="rc-price">₦2,500</div><button class="rc-btn" onclick="showToast('Coming soon','var(--gold)')">Buy Report</button></div>
+            <div class="report-card"><div class="rc-agency tag-cbn">CBN</div><div class="rc-title">Fintech & Banking Licence Readiness</div><div class="rc-price">₦5,000</div><button class="rc-btn" onclick="showToast('Coming soon','var(--gold)')">Buy Report</button></div>
+            <div class="report-card"><div class="rc-agency tag-nitda">NITDA</div><div class="rc-title">NDPR Data Protection Audit Report</div><div class="rc-price">₦3,000</div><button class="rc-btn" onclick="showToast('Coming soon','var(--gold)')">Buy Report</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ALERTS VIEW -->
     <div class="view" id="view-alerts">
       <div class="view-header">
@@ -1029,6 +1396,14 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     Alerts
     <div class="mnav-badge" id="mobile-alert-badge">4</div>
+  </div>
+  <div class="mnav-item" onclick="setView('deadlines')" data-view="deadlines">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Deadlines
+  </div>
+  <div class="mnav-item" onclick="setView('lawyers')" data-view="lawyers">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    Legal
   </div>
 </nav>
 
@@ -1233,6 +1608,7 @@ function onAuth(user) {
   document.getElementById('user-avatar').textContent = (name[0]||'U').toUpperCase();
   loadRegs();
   loadAlerts();
+  loadDeadlines();
   if (user.id !== 'guest') {
     loadUploadHistory();
     // Show welcome modal for first 3 sign-ins
@@ -1779,6 +2155,114 @@ function showToast(msg, color) {
   setTimeout(() => t.remove(), 3500);
 }
 
+
+// ──────────────────────────────────────────────
+// LAWYER MODAL
+// ──────────────────────────────────────────────
+function openLawyerModal(lawyerName) {
+  document.getElementById('lm-lawyer-name').textContent = lawyerName;
+  document.getElementById('lawyer-modal').classList.add('open');
+}
+function closeLawyerModal() {
+  document.getElementById('lawyer-modal').classList.remove('open');
+}
+function submitLawyerRequest() {
+  const name    = document.getElementById('lm-your-name').value.trim();
+  const email   = document.getElementById('lm-email').value.trim();
+  const issue   = document.getElementById('lm-issue').value;
+  const message = document.getElementById('lm-message').value.trim();
+  if (!name || !email || !issue) { showToast('Please fill all required fields', 'var(--gold)'); return; }
+  closeLawyerModal();
+  showToast('Request sent! The lawyer will contact you within 24 hours.', 'var(--red)');
+  // Reset
+  ['lm-your-name','lm-email','lm-message'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('lm-issue').selectedIndex = 0;
+}
+
+// ──────────────────────────────────────────────
+// DEADLINE TRACKER
+// ──────────────────────────────────────────────
+const DEADLINES = [
+  { agency:'FIRS',   title:'Annual Company Income Tax Return',         detail:'CIT return for companies with December year-end (CITA Cap C21)',         date:'2025-06-30', severity:'critical' },
+  { agency:'FIRS',   title:'Monthly VAT Return & Remittance',          detail:'VAT returns due on 21st of each month for the previous month',           date:'2025-05-21', severity:'high' },
+  { agency:'FIRS',   title:'Withholding Tax Remittance',               detail:'WHT deducted in April must be remitted by 21st May (CITA §78)',          date:'2025-05-21', severity:'high' },
+  { agency:'CAC',    title:'Annual Returns Filing',                    detail:'Due within 42 days of AGM. Penalty: ₦10,000 + ₦5,000/day (CAMA 2020 §417)', date:'2025-07-31', severity:'high' },
+  { agency:'CAC',    title:'Beneficial Ownership Register Update',     detail:'Annual update of BO register for companies with >5% shareholders',       date:'2025-06-30', severity:'medium' },
+  { agency:'PENCOM', title:'Monthly Pension Remittance',               detail:'Employer (10%) + Employee (8%) pension contributions — due 7 days after salary payment', date:'2025-05-07', severity:'critical' },
+  { agency:'NSITF',  title:'Monthly Employee Compensation Contribution',detail:'1% of total monthly payroll (ECA 2010 §33)',                            date:'2025-05-31', severity:'high' },
+  { agency:'NITDA',  title:'NDPR Annual Data Audit Submission',        detail:'Organizations handling personal data must file annual audit (NDPR 2019 Art. 4.1)', date:'2025-03-31', severity:'high' },
+  { agency:'FIRS',   title:'Transfer Pricing Documentation',           detail:'Annual TP filing for related-party transactions >₦300M (FIRS TP Regs 2018)', date:'2025-09-30', severity:'medium' },
+  { agency:'CBN',    title:'CBN Returns for Licensed Entities',        detail:'Monthly prudential returns for CBN-licensed companies',                  date:'2025-05-15', severity:'high' },
+];
+
+function loadDeadlines() {
+  const body = document.getElementById('deadlines-body');
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', PENCOM:'tag-nitda', NSITF:'tag-firs', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
+
+  const sorted = [...DEADLINES].sort((a,b) => new Date(a.date)-new Date(b.date));
+
+  body.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div style="font-size:13px;color:var(--text-sub)">Showing <strong>${sorted.length}</strong> upcoming compliance deadlines. Dates shown for current filing cycle.</div>
+      <button class="export-btn" onclick="exportDeadlinesPDF()">🖨 Print / Export PDF</button>
+    </div>
+  ` + sorted.map(dl => {
+    const due = new Date(dl.date);
+    due.setHours(0,0,0,0);
+    const diff = Math.round((due - today) / 86400000);
+    const overdue = diff < 0;
+    const soon = diff >= 0 && diff <= 14;
+    const cardClass = overdue ? 'deadline-card overdue' : soon ? 'deadline-card soon' : 'deadline-card';
+    const daysLabel = overdue ? `${Math.abs(diff)}` : `${diff}`;
+    const daysText = overdue ? 'days overdue' : diff === 0 ? 'DUE TODAY' : 'days left';
+    const daysClass = overdue ? 'dl-days' : soon ? 'dl-days warn' : 'dl-days ok';
+    return `
+      <div class="${cardClass}">
+        <div class="dl-countdown">
+          <div class="${daysClass}">${diff === 0 ? '!' : daysLabel}</div>
+          <div class="dl-label">${daysText}</div>
+        </div>
+        <div class="dl-divider"></div>
+        <div class="dl-info">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+            <span class="agency-tag ${agClass[dl.agency]||'tag-cac'}">${dl.agency}</span>
+            <span class="cl-priority pri-${dl.severity}" style="font-size:10px">${dl.severity.toUpperCase()}</span>
+          </div>
+          <div class="dl-title">${dl.title}</div>
+          <div class="dl-detail">${dl.detail}</div>
+          <div class="dl-date">Due: ${due.toLocaleDateString('en-NG',{weekday:'short',year:'numeric',month:'short',day:'numeric'})}</div>
+        </div>
+        <button class="ask-ai-btn" style="flex-shrink:0;align-self:center" onclick="quickAskDeadline('${dl.title.replace(/'/g,"\'")}','${dl.agency}')">Ask AI →</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function quickAskDeadline(title, agency) {
+  setView('chat');
+  document.getElementById('chat-input').value = `What do I need to do for the "${title}" (${agency}) deadline? What are the requirements, penalties for missing it, and how do I file?`;
+  sendChat();
+}
+
+function exportDeadlinesPDF() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('print-active'));
+  document.getElementById('view-deadlines').classList.add('print-active');
+  window.print();
+  setTimeout(() => document.getElementById('view-deadlines').classList.remove('print-active'), 1000);
+}
+
+// ──────────────────────────────────────────────
+// CHECKLIST PDF EXPORT — add export button after render
+// ──────────────────────────────────────────────
+function exportChecklistPDF() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('print-active'));
+  document.getElementById('view-checklist').classList.add('print-active');
+  window.print();
+  setTimeout(() => document.getElementById('view-checklist').classList.remove('print-active'), 1000);
+}
+
 // ──────────────────────────────────────────────
 // INIT — session check + magic link callback
 // ──────────────────────────────────────────────
@@ -1808,5 +2292,45 @@ function showToast(msg, color) {
   });
 })();
 </script>
+
+<!-- LAWYER CONTACT MODAL -->
+<div id="lawyer-modal">
+  <div id="lawyer-modal-box">
+    <h3>Request Consultation</h3>
+    <p>Send a brief to <strong id="lm-lawyer-name"></strong> — they will respond within 24 hours.</p>
+    <div class="lm-field">
+      <label>YOUR NAME *</label>
+      <input id="lm-your-name" type="text" placeholder="e.g. Emeka Obi">
+    </div>
+    <div class="lm-field">
+      <label>WORK EMAIL *</label>
+      <input id="lm-email" type="email" placeholder="you@company.com">
+    </div>
+    <div class="lm-field">
+      <label>COMPLIANCE ISSUE *</label>
+      <select id="lm-issue">
+        <option value="">Select issue type…</option>
+        <option>Company Registration / CAC</option>
+        <option>Tax Compliance / FIRS</option>
+        <option>CBN / Fintech Licensing</option>
+        <option>Data Protection / NDPR</option>
+        <option>NAFDAC Registration</option>
+        <option>SEC / Investment</option>
+        <option>Employment / Labour</option>
+        <option>General Corporate Law</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="lm-field">
+      <label>BRIEF DESCRIPTION (OPTIONAL)</label>
+      <textarea id="lm-message" placeholder="Describe your compliance situation briefly…"></textarea>
+    </div>
+    <div class="lm-actions">
+      <button class="auth-btn" style="flex:1" onclick="submitLawyerRequest()">Send Request →</button>
+      <button class="lc-btn-sec" style="padding:13px 18px" onclick="closeLawyerModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
