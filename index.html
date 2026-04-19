@@ -2882,7 +2882,7 @@ async function sendChat() {
   typing.style.display = 'flex';
   chatHistory.push({ role:'user', content: sendText });
   try {
-    const data = await callAI({ model:'claude-sonnet-4-20250514', max_tokens:1024, system:SYSTEM, messages:chatHistory });
+    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:1024, system:SYSTEM, messages:chatHistory });
     const reply = data.content?.[0]?.text || 'Sorry, I could not get a response.';
     chatHistory.push({ role:'assistant', content:reply });
     typing.style.display = 'none';
@@ -3038,7 +3038,7 @@ async function handlePDFUpload(file) {
   try {
     const base64 = await fileToBase64(file);
     const data = await callAI({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6',
         max_tokens:1024,
         system:'You are a Nigerian regulatory expert. Extract and summarise regulations from documents. Always respond in strict JSON only — no markdown, no backticks.',
         messages:[{
@@ -3184,7 +3184,7 @@ Return ONLY valid JSON (no markdown, no backticks) in this format:
 
 Include sections for all relevant agencies (CAC, FIRS, CBN if fintech, NITDA if collecting data, SEC if fundraising, NAFDAC if food/pharma). Each section should have 3-6 actionable items. Priority must be: critical, high, or medium.`;
     const data = await callAI({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6',
         max_tokens:1500,
         system:'You are a Nigerian compliance expert. Always respond with strict JSON only. No markdown. No backticks. No preamble.',
         messages:[{ role:'user', content:prompt }]
@@ -3636,7 +3636,7 @@ Respond ONLY with valid JSON. No markdown. No backticks. No explanation outside 
 
     // 4. Call AI
     const aiRes = await callAI({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: 'You are a Nigerian compliance expert. Always respond with strict JSON only. No markdown, no backticks, no preamble.',
       messages: [userMessage]
