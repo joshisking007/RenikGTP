@@ -85,6 +85,77 @@ insert into reg_alerts (agency,title,description,severity,published_at) values
 ('NITDA','NDPR Amendment Draft Released','NITDA has released a draft amendment to the NDPR for public consultation. Comments accepted until end of Q1 2025.','medium',now()-interval '14 days');
 
 =============================================================
+
+-- ── MULTI-USER / TEAM ACCOUNTS ──────────────────────────────
+-- Run this ADDITIONAL SQL in Supabase SQL Editor
+
+create table if not exists organizations (
+  id            uuid        default gen_random_uuid() primary key,
+  name          text        not null,
+  plan          text        default 'business' check (plan in ('starter','pro','business')),
+  owner_id      uuid        references auth.users(id) on delete cascade,
+  invite_code   text        unique default substring(gen_random_uuid()::text, 1, 8),
+  created_at    timestamptz default now()
+);
+
+create table if not exists org_members (
+  id            uuid        default gen_random_uuid() primary key,
+  org_id        uuid        references organizations(id) on delete cascade,
+  user_id       uuid        references auth.users(id) on delete cascade,
+  role          text        default 'member' check (role in ('owner','admin','member')),
+  email         text,
+  full_name     text,
+  joined_at     timestamptz default now(),
+  unique(org_id, user_id)
+);
+
+-- Add org_id to shared tables
+alter table checklists    add column if not exists org_id uuid references organizations(id) on delete cascade;
+alter table uploaded_docs add column if not exists org_id uuid references organizations(id) on delete cascade;
+
+-- RLS for orgs
+alter table organizations enable row level security;
+alter table org_members   enable row level security;
+
+create policy "Members read own org"
+  on organizations for select
+  using (id in (select org_id from org_members where user_id = auth.uid()));
+
+create policy "Owner manage org"
+  on organizations for all
+  using (owner_id = auth.uid());
+
+create policy "Members read org_members"
+  on org_members for select
+  using (org_id in (select org_id from org_members where user_id = auth.uid()));
+
+create policy "Owner manage members"
+  on org_members for all
+  using (org_id in (select org_id from organizations where owner_id = auth.uid()));
+
+-- Update checklist policy to include org members
+drop policy if exists "Users own checklists" on checklists;
+create policy "Users or org members access checklists"
+  on checklists for all
+  using (
+    auth.uid() = user_id
+    or (org_id is not null and org_id in (
+      select org_id from org_members where user_id = auth.uid()
+    ))
+  );
+
+-- Update uploaded_docs policy
+drop policy if exists "Users own docs" on uploaded_docs;
+create policy "Users or org members access docs"
+  on uploaded_docs for all
+  using (
+    auth.uid() = user_id
+    or (org_id is not null and org_id in (
+      select org_id from org_members where user_id = auth.uid()
+    ))
+  );
+
+=============================================================
 -->
 
 <style>
@@ -1118,6 +1189,76 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .admin-stat-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px; text-align: center; }
 .asc-num { font-size: 34px; font-weight: 700; color: var(--red); font-family: var(--font-d); line-height: 1; }
 .asc-label { font-size: 11px; color: var(--text-muted); margin-top: 5px; text-transform: uppercase; letter-spacing: .05em; }
+
+/* ═══════════ TEAM / MULTI-USER ═══════════ */
+.team-option-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r-lg);
+  padding: 22px; display: flex; flex-direction: column; gap: 10px;
+  transition: border-color 0.15s;
+}
+.team-option-card:hover { border-color: var(--red); }
+.toc-icon { font-size: 28px; }
+.toc-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.toc-desc { font-size: 13px; color: var(--text-sub); line-height: 1.6; flex: 1; }
+.toc-btn {
+  margin-top: 4px; padding: 10px 18px; background: var(--red); color: #fff;
+  border: none; border-radius: var(--r); font-family: var(--font);
+  font-size: 13px; font-weight: 700; cursor: pointer; text-align: center;
+}
+.toc-btn:hover { opacity: 0.88; }
+.toc-btn:disabled { opacity: 0.45; cursor: default; }
+@media (max-width: 640px) {
+  .team-option-card { grid-column: 1/-1; }
+}
+.team-field { display: flex; flex-direction: column; gap: 5px; }
+.team-field label { font-size: 11px; font-weight: 700; color: var(--text-sub); letter-spacing: .05em; text-transform: uppercase; }
+.team-input {
+  padding: 10px 13px; background: var(--bg-surface);
+  border: 1.5px solid var(--border-em); border-radius: var(--r);
+  color: var(--text); font-family: var(--font); font-size: 14px; width: 100%;
+}
+.team-input:focus { outline: none; border-color: var(--red); background: #fff; }
+
+/* Member row */
+.member-row {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+}
+.member-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: var(--red-dim); border: 1.5px solid var(--red);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--red);
+}
+.member-info { flex: 1; min-width: 0; }
+.member-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.member-email { font-size: 12px; color: var(--text-muted); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.member-role {
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em; flex-shrink: 0;
+}
+.role-owner  { background: var(--red-dim); color: var(--red); }
+.role-admin  { background: var(--gold-dim); color: var(--gold); }
+.role-member { background: var(--bg-surface); color: var(--text-muted); border: 1px solid var(--border-em); }
+
+/* Org context pill in sidebar */
+#org-context-pill {
+  display: none; margin: 0 8px 6px; padding: 8px 12px;
+  background: linear-gradient(135deg,rgba(204,31,31,.08),rgba(204,31,31,.04));
+  border: 1px solid rgba(204,31,31,.18); border-radius: 8px;
+  cursor: pointer;
+}
+#org-context-pill:hover { background: rgba(204,31,31,.13); }
+.ocp-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; }
+.ocp-name { font-size: 13px; font-weight: 700; color: var(--red); margin-top: 1px; }
+.ocp-role { font-size: 11px; color: var(--text-sub); margin-top: 1px; }
+
+/* Shared report row */
+.shared-report-row {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  padding: 12px 14px; display: flex; align-items: flex-start; gap: 12px;
+}
+.shared-report-row:hover { border-color: var(--border-em); }
 </style>
 </head>
 <body>
@@ -1241,6 +1382,11 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         Admin Panel
         <span style="font-size:9px;padding:1px 6px;background:var(--red);color:#fff;border-radius:4px;margin-left:auto;font-weight:700">ADMIN</span>
+      </div>
+      <div class="nav-item" onclick="setView('team')" data-view="team" style="margin-top:4px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Team
+        <div class="nav-badge" id="team-badge" style="display:none">0</div>
       </div>
     </div>
     <div class="sidebar-bottom">
@@ -2020,6 +2166,136 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       </div><!-- /admin-panel -->
     </div><!-- /view-admin -->
 
+    <!-- ════════════ TEAM VIEW ════════════ -->
+    <div class="view" id="view-team">
+
+      <!-- No org yet — create or join -->
+      <div id="team-no-org" style="flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:20px">
+        <div style="max-width:680px">
+          <div class="view-title" style="margin-bottom:6px">Team Accounts</div>
+          <div class="view-sub">Collaborate with your compliance team — shared checklists, docs, and reports across your whole organisation.</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:680px">
+          <!-- Create org card -->
+          <div class="team-option-card">
+            <div class="toc-icon">🏢</div>
+            <div class="toc-title">Create a Team</div>
+            <div class="toc-desc">Set up a new organisation workspace. Invite teammates, share checklists, and manage compliance together.</div>
+            <button class="toc-btn" onclick="showCreateOrg()">Create Organisation →</button>
+          </div>
+          <!-- Join org card -->
+          <div class="team-option-card">
+            <div class="toc-icon">🔗</div>
+            <div class="toc-title">Join a Team</div>
+            <div class="toc-desc">Got an invite code from your team owner? Enter it below to join your organisation's workspace.</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="join-code-input" class="team-input" type="text" placeholder="Enter invite code…" maxlength="8" style="flex:1;text-transform:uppercase;font-family:var(--font-mono)">
+              <button class="toc-btn" style="flex-shrink:0;margin-top:0;padding:10px 14px" onclick="joinOrg()">Join</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Create org form (hidden by default) -->
+        <div id="create-org-form" style="display:none;max-width:480px;background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;display:none;flex-direction:column;gap:14px">
+          <div style="font-size:16px;font-weight:700;color:var(--text)">Create your Organisation</div>
+          <div class="team-field">
+            <label>ORGANISATION NAME *</label>
+            <input id="org-name-input" class="team-input" type="text" placeholder="e.g. Kolade Ventures Ltd">
+          </div>
+          <div class="team-field">
+            <label>PLAN</label>
+            <select id="org-plan-input" class="team-input">
+              <option value="business">Business (₦20,000/mo) — up to 10 members</option>
+              <option value="pro">Pro (₦8,000/mo) — up to 3 members</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="toc-btn" id="create-org-btn" onclick="createOrg()" style="flex:1">Create & Get Invite Code →</button>
+            <button class="admin-btn-sec" onclick="hideCreateOrg()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Has org — full dashboard -->
+      <div id="team-org-panel" style="display:none;flex:1;overflow:hidden;flex-direction:column">
+
+        <!-- Org header bar -->
+        <div style="padding:14px 22px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-shrink:0">
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--red-dim);border:1.5px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🏢</div>
+          <div style="flex:1">
+            <div id="org-display-name" style="font-size:16px;font-weight:700;color:var(--text)">Organisation</div>
+            <div id="org-display-meta" style="font-size:12px;color:var(--text-sub);margin-top:1px"></div>
+          </div>
+          <div id="org-invite-pill" style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border-em);border-radius:20px;padding:6px 14px;cursor:pointer" onclick="copyInviteCode()" title="Click to copy invite code">
+            <span style="font-size:11px;color:var(--text-muted)">Invite code:</span>
+            <span id="org-invite-code" style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--red);letter-spacing:.08em"></span>
+            <span style="font-size:12px;color:var(--text-muted)">📋</span>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div style="display:flex;border-bottom:1px solid var(--border);background:var(--bg-surface);flex-shrink:0">
+          <div class="admin-tab active" id="ttab-members" onclick="teamSwitchTab('members')">👥 Members</div>
+          <div class="admin-tab" id="ttab-shared"  onclick="teamSwitchTab('shared')">📋 Shared Reports</div>
+          <div class="admin-tab" id="ttab-settings" onclick="teamSwitchTab('settings')">⚙️ Settings</div>
+        </div>
+
+        <!-- Tab: Members -->
+        <div class="admin-tab-body" id="team-body-members" style="overflow-y:auto">
+          <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;max-width:720px">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+              <div>
+                <div style="font-size:15px;font-weight:700;color:var(--text)">Team Members</div>
+                <div style="font-size:13px;color:var(--text-sub);margin-top:2px">Share the invite code with teammates so they can join.</div>
+              </div>
+              <button class="admin-btn-sec" onclick="teamLoadMembers()">↺ Refresh</button>
+            </div>
+            <!-- Invite banner -->
+            <div id="team-invite-banner" style="background:var(--red-dim);border:1px solid rgba(204,31,31,0.2);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px">
+              <div style="flex:1;font-size:13px;color:var(--text-sub)">
+                Share this invite code with your team:
+                <strong id="team-invite-banner-code" style="font-family:var(--font-mono);color:var(--red);letter-spacing:.08em;margin-left:4px"></strong>
+              </div>
+              <button class="toc-btn" style="margin-top:0;padding:8px 16px;font-size:12px" onclick="copyInviteCode()">Copy Code</button>
+            </div>
+            <!-- Member list -->
+            <div id="team-members-list" style="display:flex;flex-direction:column;gap:8px">
+              <div class="loading-row"><div class="spinner"></div> Loading members…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Shared Reports -->
+        <div class="admin-tab-body" id="team-body-shared" style="display:none;overflow-y:auto">
+          <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px;max-width:720px">
+            <div style="font-size:15px;font-weight:700;color:var(--text)">Shared Team Reports</div>
+            <div style="font-size:13px;color:var(--text-sub)">Compliance checklists and documents saved by any team member.</div>
+            <div id="team-shared-list" style="display:flex;flex-direction:column;gap:10px">
+              <div class="loading-row"><div class="spinner"></div> Loading shared reports…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Settings -->
+        <div class="admin-tab-body" id="team-body-settings" style="display:none;overflow-y:auto">
+          <div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px;max-width:480px">
+            <div style="font-size:15px;font-weight:700;color:var(--text)">Organisation Settings</div>
+            <div class="team-field">
+              <label>ORGANISATION NAME</label>
+              <input id="org-edit-name" class="team-input" type="text">
+            </div>
+            <button class="toc-btn" style="align-self:flex-start" onclick="updateOrgName()">Save Changes</button>
+            <div style="border-top:1px solid var(--border);padding-top:16px">
+              <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:8px">Danger Zone</div>
+              <button class="admin-del-btn" style="font-size:13px;padding:10px 18px" onclick="leaveOrg()">Leave Organisation</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /team-org-panel -->
+    </div><!-- /view-team -->
+
   </div>
 </div>
 <nav id="mobile-nav">
@@ -2186,6 +2462,7 @@ function enterGuestMode() {
 // STATE
 // ──────────────────────────────────────────────
 let currentUser = null;
+let currentOrg  = null; // { id, name, plan, role, inviteCode, ownerId, memberCount }
 let chatHistory = [];
 let allRegs = [];
 
@@ -2279,6 +2556,7 @@ function onAuth(user) {
   loadRegs();
   loadAlerts();
   maybeShowAdminNav();
+  loadUserOrg();
   loadDeadlines();
   loadReports();
   loadTemplates();
@@ -2343,6 +2621,7 @@ function setView(name) {
   document.getElementById('view-'+name).classList.add('active');
   document.querySelectorAll(`[data-view="${name}"]`).forEach(el => el.classList.add('active'));
   if (name === 'admin') adminViewEntered();
+  if (name === 'team')  teamViewEntered();
   if (name==='alerts') {
     document.getElementById('alert-badge').style.display='none';
     const mb = document.getElementById('mobile-alert-badge');
@@ -2641,6 +2920,7 @@ async function savePDFToSupabase() {
     });
     await sb.from('uploaded_docs').insert({
       user_id: currentUser.id,
+      ...(currentOrg ? { org_id: currentOrg.id } : {}),
       file_name: pdfAnalysisResult.file_name,
       agency: pdfAnalysisResult.agency,
       summary: pdfAnalysisResult.summary,
@@ -2803,7 +3083,9 @@ function saveReport(data, bizName, bizType, industry, stage, turnover) {
   localStorage.setItem(key, JSON.stringify(reports));
   // Also try Supabase
   if (currentUser.id !== 'guest') {
-    sb.from('checklists').insert({ user_id:currentUser.id, business_name:bizName, business_type:bizType, industry, stage, items:data }).catch(()=>{});
+    const insertPayload = { user_id:currentUser.id, business_name:bizName, business_type:bizType, industry, stage, items:data };
+    if (currentOrg) insertPayload.org_id = currentOrg.id;
+    sb.from('checklists').insert(insertPayload).catch(()=>{});
   }
   updateReportsBadge();
   showToast('Report saved! View it in Saved Reports.', 'var(--red)');
@@ -3741,6 +4023,367 @@ async function adminLoadStats() {
     set('stat-critical', regs.filter(x=>x.severity==='critical').length);
     set('stat-high', regs.filter(x=>x.severity==='high').length);
     set('stat-alerts','—'); set('stat-checklists','—'); set('stat-docs','—');
+  }
+}
+
+
+// ══════════════════════════════════════════════════════
+//  TEAM / MULTI-USER ACCOUNTS
+// ══════════════════════════════════════════════════════
+
+// ── Org context pill in sidebar ───────────────────────
+function renderOrgPill() {
+  let pill = document.getElementById('org-context-pill');
+  if (!pill) {
+    // Inject pill above nav
+    pill = document.createElement('div');
+    pill.id = 'org-context-pill';
+    pill.onclick = () => setView('team');
+    pill.innerHTML = `
+      <div class="ocp-label">Team workspace</div>
+      <div class="ocp-name" id="ocp-name"></div>
+      <div class="ocp-role" id="ocp-role"></div>
+    `;
+    const nav = document.getElementById('nav');
+    nav.parentElement.insertBefore(pill, nav);
+  }
+  if (currentOrg) {
+    pill.style.display = 'block';
+    document.getElementById('ocp-name').textContent = currentOrg.name;
+    document.getElementById('ocp-role').textContent = currentOrg.role.charAt(0).toUpperCase() + currentOrg.role.slice(1);
+    // Update team badge
+    const badge = document.getElementById('team-badge');
+    if (badge) { badge.style.display = 'inline-block'; badge.textContent = currentOrg.memberCount || ''; }
+  } else {
+    pill.style.display = 'none';
+  }
+}
+
+// ── Load user's org on sign-in ────────────────────────
+async function loadUserOrg() {
+  if (!currentUser || currentUser.id === 'guest') return;
+  try {
+    // Find org memberships
+    const { data: memberships, error } = await sb
+      .from('org_members')
+      .select('role, org_id, organizations(id, name, plan, invite_code, owner_id)')
+      .eq('user_id', currentUser.id)
+      .limit(1)
+      .single();
+
+    if (error || !memberships) { currentOrg = null; renderOrgPill(); return; }
+
+    const org = memberships.organizations;
+    // Count members
+    const { count } = await sb.from('org_members').select('id', { count: 'exact', head: true }).eq('org_id', org.id);
+
+    currentOrg = {
+      id:          org.id,
+      name:        org.name,
+      plan:        org.plan,
+      inviteCode:  org.invite_code,
+      ownerId:     org.owner_id,
+      role:        memberships.role,
+      memberCount: count || 1
+    };
+    renderOrgPill();
+  } catch(e) {
+    currentOrg = null;
+    renderOrgPill();
+  }
+}
+
+// ── Create Organisation ───────────────────────────────
+function showCreateOrg() {
+  const form = document.getElementById('create-org-form');
+  form.style.display = 'flex';
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('org-name-input')?.focus();
+}
+
+function hideCreateOrg() {
+  document.getElementById('create-org-form').style.display = 'none';
+}
+
+async function createOrg() {
+  const name = document.getElementById('org-name-input').value.trim();
+  const plan = document.getElementById('org-plan-input').value;
+  if (!name) { showToast('Organisation name is required', 'var(--gold)'); return; }
+  if (!currentUser || currentUser.id === 'guest') {
+    showToast('Sign in to create an organisation', 'var(--gold)'); return;
+  }
+
+  const btn = document.getElementById('create-org-btn');
+  btn.disabled = true; btn.textContent = 'Creating…';
+
+  try {
+    // 1. Insert org
+    const { data: org, error: orgErr } = await sb
+      .from('organizations')
+      .insert({ name, plan, owner_id: currentUser.id })
+      .select()
+      .single();
+    if (orgErr) throw new Error(orgErr.message);
+
+    // 2. Add creator as owner member
+    const { error: memErr } = await sb.from('org_members').insert({
+      org_id:    org.id,
+      user_id:   currentUser.id,
+      role:      'owner',
+      email:     currentUser.email,
+      full_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]
+    });
+    if (memErr) throw new Error(memErr.message);
+
+    currentOrg = { id: org.id, name: org.name, plan: org.plan, inviteCode: org.invite_code, ownerId: org.owner_id, role: 'owner', memberCount: 1 };
+    renderOrgPill();
+    teamShowOrgPanel();
+    hideCreateOrg();
+    showToast(`Organisation "${name}" created! Share your invite code with teammates.`, 'var(--red)');
+  } catch(e) {
+    showToast('Error creating org: ' + e.message, 'var(--red)');
+  }
+  btn.disabled = false; btn.textContent = 'Create & Get Invite Code →';
+}
+
+// ── Join Organisation ─────────────────────────────────
+async function joinOrg() {
+  const code = document.getElementById('join-code-input').value.trim().toUpperCase();
+  if (!code || code.length < 6) { showToast('Enter a valid invite code', 'var(--gold)'); return; }
+  if (!currentUser || currentUser.id === 'guest') {
+    showToast('Sign in to join an organisation', 'var(--gold)'); return;
+  }
+
+  try {
+    // Find org by invite code
+    const { data: org, error: findErr } = await sb
+      .from('organizations')
+      .select('*')
+      .eq('invite_code', code)
+      .single();
+    if (findErr || !org) throw new Error('Invalid invite code. Check with your team owner.');
+
+    // Add as member
+    const { error: memErr } = await sb.from('org_members').insert({
+      org_id:    org.id,
+      user_id:   currentUser.id,
+      role:      'member',
+      email:     currentUser.email,
+      full_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]
+    });
+    if (memErr && memErr.code === '23505') throw new Error('You are already a member of this organisation.');
+    if (memErr) throw new Error(memErr.message);
+
+    const { count } = await sb.from('org_members').select('id', { count: 'exact', head: true }).eq('org_id', org.id);
+    currentOrg = { id: org.id, name: org.name, plan: org.plan, inviteCode: org.invite_code, ownerId: org.owner_id, role: 'member', memberCount: count || 1 };
+    renderOrgPill();
+    teamShowOrgPanel();
+    showToast(`Joined "${org.name}"! You now share data with this team.`, 'var(--red)');
+  } catch(e) {
+    showToast('Error: ' + e.message, 'var(--gold)');
+  }
+}
+
+// ── Team panel helpers ────────────────────────────────
+function teamShowOrgPanel() {
+  document.getElementById('team-no-org').style.display  = 'none';
+  document.getElementById('team-org-panel').style.display = 'flex';
+
+  document.getElementById('org-display-name').textContent = currentOrg.name;
+  document.getElementById('org-display-meta').textContent =
+    `${currentOrg.plan.charAt(0).toUpperCase()+currentOrg.plan.slice(1)} plan · Your role: ${currentOrg.role}`;
+
+  const codeEl = document.getElementById('org-invite-code');
+  const bannerEl = document.getElementById('team-invite-banner-code');
+  if (codeEl) codeEl.textContent = currentOrg.inviteCode || '——';
+  if (bannerEl) bannerEl.textContent = currentOrg.inviteCode || '——';
+
+  document.getElementById('org-edit-name').value = currentOrg.name;
+  teamSwitchTab('members');
+  teamLoadMembers();
+}
+
+function teamShowNoOrg() {
+  document.getElementById('team-no-org').style.display  = 'flex';
+  document.getElementById('team-org-panel').style.display = 'none';
+}
+
+function teamViewEntered() {
+  if (currentOrg) teamShowOrgPanel();
+  else teamShowNoOrg();
+}
+
+function teamSwitchTab(tab) {
+  ['members','shared','settings'].forEach(t => {
+    document.getElementById(`ttab-${t}`)?.classList.toggle('active', t === tab);
+    const b = document.getElementById(`team-body-${t}`);
+    if (b) b.style.display = t === tab ? 'flex' : 'none';
+  });
+  if (tab === 'shared') teamLoadSharedReports();
+}
+
+function copyInviteCode() {
+  if (!currentOrg?.inviteCode) return;
+  navigator.clipboard.writeText(currentOrg.inviteCode).catch(() => {});
+  showToast('Invite code copied: ' + currentOrg.inviteCode, 'var(--red)');
+}
+
+// ── Load Members ──────────────────────────────────────
+async function teamLoadMembers() {
+  const list = document.getElementById('team-members-list');
+  if (!list || !currentOrg) return;
+  list.innerHTML = '<div class="loading-row"><div class="spinner"></div> Loading…</div>';
+
+  try {
+    const { data, error } = await sb
+      .from('org_members')
+      .select('*')
+      .eq('org_id', currentOrg.id)
+      .order('joined_at', { ascending: true });
+
+    if (error) throw new Error(error.message);
+    const members = data || [];
+
+    // Update count
+    currentOrg.memberCount = members.length;
+    const badge = document.getElementById('team-badge');
+    if (badge) { badge.style.display = 'inline-block'; badge.textContent = members.length; }
+
+    if (!members.length) {
+      list.innerHTML = '<div style="font-size:13px;color:var(--text-muted);padding:8px 0">No members found.</div>';
+      return;
+    }
+
+    const isOwner = currentOrg.role === 'owner';
+    list.innerHTML = members.map(m => {
+      const initials = (m.full_name || m.email || '?').slice(0,2).toUpperCase();
+      const roleClass = { owner:'role-owner', admin:'role-admin', member:'role-member' }[m.role] || 'role-member';
+      const isMe = m.user_id === currentUser?.id;
+      return `
+        <div class="member-row">
+          <div class="member-avatar">${initials}</div>
+          <div class="member-info">
+            <div class="member-name">${m.full_name || m.email?.split('@')[0] || 'Member'}${isMe ? ' <span style="font-size:11px;color:var(--text-muted)">(you)</span>' : ''}</div>
+            <div class="member-email">${m.email || ''}</div>
+          </div>
+          <span class="member-role ${roleClass}">${m.role}</span>
+          ${isOwner && !isMe && m.role !== 'owner' ? `
+            <button class="admin-del-btn" onclick="removeMember('${m.id}','${(m.full_name||m.email||'member').replace(/'/g,"\'")}')">Remove</button>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = `<div style="font-size:13px;color:var(--text-muted);padding:8px 0">Could not load members: ${e.message}</div>`;
+  }
+}
+
+async function removeMember(memberId, name) {
+  if (!confirm(`Remove ${name} from the team?`)) return;
+  try {
+    const { error } = await sb.from('org_members').delete().eq('id', memberId);
+    if (error) throw new Error(error.message);
+    showToast(`${name} removed from team`, 'var(--gold)');
+    teamLoadMembers();
+  } catch(e) {
+    showToast('Error: ' + e.message, 'var(--red)');
+  }
+}
+
+// ── Load Shared Reports ───────────────────────────────
+async function teamLoadSharedReports() {
+  const list = document.getElementById('team-shared-list');
+  if (!list || !currentOrg) return;
+  list.innerHTML = '<div class="loading-row"><div class="spinner"></div> Loading…</div>';
+
+  try {
+    const { data, error } = await sb
+      .from('checklists')
+      .select('*')
+      .eq('org_id', currentOrg.id)
+      .order('created_at', { ascending: false })
+      .limit(30);
+
+    if (error) throw new Error(error.message);
+    const reports = data || [];
+
+    if (!reports.length) {
+      list.innerHTML = `
+        <div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:14px">
+          <div style="font-size:36px;margin-bottom:12px">📋</div>
+          <strong style="color:var(--text);display:block;margin-bottom:6px">No shared reports yet</strong>
+          Generate a checklist and save it — it will appear here for your whole team.
+        </div>`;
+      return;
+    }
+
+    const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
+    list.innerHTML = reports.map(r => {
+      const sections = r.items?.sections || [];
+      const agencies = [...new Set(sections.map(s => s.agency).filter(Boolean))].slice(0,5);
+      const total = sections.reduce((a,s) => a + (s.items?.length||0), 0);
+      const date = new Date(r.created_at).toLocaleDateString('en-NG', { day:'numeric', month:'short', year:'numeric' });
+      return `
+        <div class="shared-report-row">
+          <div style="font-size:22px;flex-shrink:0">📋</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:700;color:var(--text)">${r.business_name || r.business_type || 'Checklist'}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap">
+              <span>${r.industry||''}</span><span>${total} items</span><span>${date}</span>
+            </div>
+            <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
+              ${agencies.map(a=>`<span class="agency-tag ${agClass[a]||'tag-cac'}" style="font-size:10px">${a}</span>`).join('')}
+            </div>
+          </div>
+          <button class="report-open-btn" onclick="reopenSharedReport(${JSON.stringify(r).replace(/"/g,'&quot;')})">Open →</button>
+        </div>
+      `;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = `<div style="font-size:13px;color:var(--text-muted)">Could not load shared reports: ${e.message}</div>`;
+  }
+}
+
+function reopenSharedReport(r) {
+  if (!r?.items) return;
+  setView('checklist');
+  if (r.business_name) document.getElementById('cl-biz-name').value = r.business_name;
+  renderChecklist(r.items, r.business_name, r.business_type, r.industry, r.stage, '');
+  showToast('Shared report opened in Checklist view', 'var(--red)');
+}
+
+// ── Settings ──────────────────────────────────────────
+async function updateOrgName() {
+  const name = document.getElementById('org-edit-name').value.trim();
+  if (!name) { showToast('Name cannot be empty', 'var(--gold)'); return; }
+  try {
+    const { error } = await sb.from('organizations').update({ name }).eq('id', currentOrg.id);
+    if (error) throw new Error(error.message);
+    currentOrg.name = name;
+    document.getElementById('org-display-name').textContent = name;
+    document.getElementById('ocp-name').textContent = name;
+    showToast('Organisation name updated', 'var(--red)');
+  } catch(e) {
+    showToast('Error: ' + e.message, 'var(--red)');
+  }
+}
+
+async function leaveOrg() {
+  const action = currentOrg.role === 'owner' ? 'dissolve and delete' : 'leave';
+  if (!confirm(`Are you sure you want to ${action} "${currentOrg.name}"?\n\nThis cannot be undone.`)) return;
+  try {
+    if (currentOrg.role === 'owner') {
+      // Delete the whole org (cascades to members)
+      await sb.from('organizations').delete().eq('id', currentOrg.id);
+    } else {
+      await sb.from('org_members').delete().eq('org_id', currentOrg.id).eq('user_id', currentUser.id);
+    }
+    currentOrg = null;
+    renderOrgPill();
+    teamShowNoOrg();
+    showToast('You have left the organisation', 'var(--gold)');
+  } catch(e) {
+    showToast('Error: ' + e.message, 'var(--red)');
   }
 }
 
