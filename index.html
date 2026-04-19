@@ -1050,6 +1050,74 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   .dcm-body { padding: 12px 12px 20px; gap: 12px; }
   .dcm-step-body { padding: 12px; }
 }
+
+/* ═══════════ ADMIN PANEL ═══════════ */
+.admin-tab {
+  padding: 11px 18px; font-size: 13px; font-weight: 600; color: var(--text-sub);
+  cursor: pointer; border-bottom: 2.5px solid transparent; white-space: nowrap;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.admin-tab:hover { color: var(--text); background: var(--bg-hover); }
+.admin-tab.active { color: var(--red); border-bottom-color: var(--red); background: #fff; }
+.admin-tab-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.admin-form-wrap {
+  padding: 22px 26px; display: flex; flex-direction: column; gap: 14px;
+  max-width: 840px; width: 100%;
+}
+@media (max-width: 640px) { .admin-form-wrap { padding: 16px; } }
+.admin-section-title { font-size: 16px; font-weight: 700; color: var(--text); }
+.admin-hint { font-size: 13px; color: var(--text-sub); }
+.admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .admin-grid { grid-template-columns: 1fr; } }
+.admin-field { display: flex; flex-direction: column; gap: 5px; }
+.admin-field.full { grid-column: 1 / -1; }
+.admin-field label { font-size: 11px; font-weight: 700; color: var(--text-sub); letter-spacing: 0.05em; text-transform: uppercase; }
+.admin-input {
+  padding: 10px 13px; background: var(--bg-surface);
+  border: 1.5px solid var(--border-em); border-radius: var(--r);
+  color: var(--text); font-family: var(--font); font-size: 14px; width: 100%;
+}
+.admin-input:focus { outline: none; border-color: var(--red); background: #fff; }
+.admin-textarea { resize: vertical; min-height: 90px; }
+.admin-form-actions { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 2px; }
+.admin-btn-primary {
+  padding: 11px 24px; background: var(--red); color: #fff; border: none;
+  border-radius: var(--r); font-family: var(--font); font-size: 14px;
+  font-weight: 700; cursor: pointer;
+}
+.admin-btn-primary:hover { opacity: 0.88; }
+.admin-btn-primary:disabled { opacity: 0.45; cursor: default; }
+.admin-btn-sec {
+  padding: 10px 18px; background: var(--bg-surface); color: var(--text-sub);
+  border: 1.5px solid var(--border-em); border-radius: var(--r);
+  font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.admin-btn-sec:hover { background: var(--bg-hover); color: var(--text); }
+.admin-log-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }
+.admin-log { display: flex; flex-direction: column; gap: 7px; max-height: 220px; overflow-y: auto; }
+.admin-log-entry {
+  display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px;
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+  border-left: 3px solid var(--red);
+}
+.admin-log-entry.ok { border-left-color: #16a34a; }
+.admin-log-entry.err { border-left-color: var(--red); background: var(--red-dim); }
+.admin-reg-row {
+  display: flex; align-items: flex-start; gap: 12px; padding: 11px 14px;
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+}
+.admin-reg-row:hover { border-color: var(--border-em); }
+.arr-info { flex: 1; min-width: 0; }
+.arr-title { font-size: 13.5px; font-weight: 600; color: var(--text); }
+.arr-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.admin-del-btn {
+  padding: 5px 10px; background: transparent; color: var(--text-muted);
+  border: 1px solid var(--border-em); border-radius: 6px; font-size: 12px; cursor: pointer; flex-shrink: 0;
+}
+.admin-del-btn:hover { color: var(--red); border-color: var(--red); background: var(--red-dim); }
+.admin-stat-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px; text-align: center; }
+.asc-num { font-size: 34px; font-weight: 700; color: var(--red); font-family: var(--font-d); line-height: 1; }
+.asc-label { font-size: 11px; color: var(--text-muted); margin-top: 5px; text-transform: uppercase; letter-spacing: .05em; }
 </style>
 </head>
 <body>
@@ -1168,6 +1236,11 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       <div class="nav-item" onclick="setView('docmap')" data-view="docmap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         Doc Mapper
+      </div>
+      <div class="nav-item" id="admin-nav-item" onclick="setView('admin')" data-view="admin" style="display:none;margin-top:6px;border-top:1px solid var(--border);padding-top:10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Admin Panel
+        <span style="font-size:9px;padding:1px 6px;background:var(--red);color:#fff;border-radius:4px;margin-left:auto;font-weight:700">ADMIN</span>
       </div>
     </div>
     <div class="sidebar-bottom">
@@ -1730,6 +1803,206 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       </div><!-- /dcm-body -->
     </div><!-- /view-docmap -->
 
+    <!-- ════════════ ADMIN PANEL VIEW ════════════ -->
+    <div class="view" id="view-admin">
+
+      <!-- Gate: shown to non-admins -->
+      <div id="admin-gate" style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px">
+        <div style="text-align:center;max-width:380px">
+          <div style="font-size:48px;margin-bottom:16px">🔐</div>
+          <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">Admin Access Required</div>
+          <div style="font-size:14px;color:var(--text-sub);margin-bottom:24px;line-height:1.6">
+            This panel is restricted to RenikGPT administrators.<br>Sign in with an authorised admin email to continue.
+          </div>
+          <button class="auth-btn" style="width:auto;padding:12px 28px" onclick="switchAuthTab('login');document.getElementById('auth-overlay').style.display='flex'">Sign in as Admin →</button>
+        </div>
+      </div>
+
+      <!-- Panel: shown to admins -->
+      <div id="admin-panel" style="display:none;flex:1;overflow:hidden;flex-direction:column">
+
+        <!-- Header bar -->
+        <div class="view-header" style="background:linear-gradient(135deg,#1a0505 0%,#2d0a0a 100%);border-bottom:2px solid var(--red);flex-shrink:0">
+          <div style="flex:1">
+            <div class="view-title" style="color:#fff;display:flex;align-items:center;gap:10px">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#CC1F1F" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              RenikGPT Admin — Regulatory Ingestion Pipeline
+            </div>
+            <div class="view-sub" style="color:rgba(255,255,255,0.55)">Add, manage, and publish regulations to the live database</div>
+          </div>
+          <div id="admin-user-badge" style="font-size:12px;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.08);padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.15)"></div>
+        </div>
+
+        <!-- Tab bar -->
+        <div style="display:flex;border-bottom:1px solid var(--border);background:var(--bg-surface);flex-shrink:0;overflow-x:auto">
+          <div class="admin-tab active" id="atab-add"    onclick="adminSwitchTab('add')">➕ Add Regulation</div>
+          <div class="admin-tab"        id="atab-alert"  onclick="adminSwitchTab('alert')">🚨 Publish Alert</div>
+          <div class="admin-tab"        id="atab-manage" onclick="adminSwitchTab('manage')">🗂 Manage DB</div>
+          <div class="admin-tab"        id="atab-stats"  onclick="adminSwitchTab('stats')">📊 Stats</div>
+        </div>
+
+        <!-- ── TAB: ADD REGULATION ── -->
+        <div class="admin-tab-body" id="admin-body-add">
+          <div class="admin-form-wrap">
+            <div class="admin-section-title">Add New Regulation</div>
+            <div class="admin-hint">Publishes immediately to the Regulatory DB for all users.</div>
+
+            <div class="admin-grid">
+              <div class="admin-field full">
+                <label>TITLE *</label>
+                <input id="af-title" class="admin-input" type="text" placeholder="e.g. CBN Open Banking Policy 2025">
+              </div>
+              <div class="admin-field">
+                <label>AGENCY *</label>
+                <select id="af-agency" class="admin-input">
+                  <option value="">Select…</option>
+                  <option>CAC</option><option>FIRS</option><option>CBN</option>
+                  <option>NITDA</option><option>SEC</option><option>NAFDAC</option>
+                  <option>PENCOM</option><option>NSITF</option><option>NCC</option><option>SON</option><option>Other</option>
+                </select>
+              </div>
+              <div class="admin-field">
+                <label>SEVERITY *</label>
+                <select id="af-severity" class="admin-input">
+                  <option value="">Select…</option>
+                  <option value="critical">🔴 Critical</option>
+                  <option value="high">🟠 High</option>
+                  <option value="medium">🔵 Medium</option>
+                  <option value="info">⚪ Info</option>
+                </select>
+              </div>
+              <div class="admin-field">
+                <label>CATEGORY</label>
+                <select id="af-category" class="admin-input">
+                  <option value="other">Other</option>
+                  <option value="registration">Registration</option>
+                  <option value="tax">Tax</option>
+                  <option value="banking">Banking</option>
+                  <option value="data_protection">Data Protection</option>
+                  <option value="investment">Investment</option>
+                  <option value="product">Product</option>
+                  <option value="compliance">Compliance</option>
+                  <option value="employment">Employment</option>
+                </select>
+              </div>
+              <div class="admin-field">
+                <label>LEGAL REFERENCE</label>
+                <input id="af-reference" class="admin-input" type="text" placeholder="e.g. CAMA 2020 §27">
+              </div>
+              <div class="admin-field">
+                <label>EFFECTIVE DATE</label>
+                <input id="af-date" class="admin-input" type="date">
+              </div>
+              <div class="admin-field full">
+                <label>PLAIN-LANGUAGE SUMMARY *</label>
+                <textarea id="af-summary" class="admin-input admin-textarea" placeholder="2–4 sentences explaining what this regulation requires, any penalties, and key deadlines…"></textarea>
+              </div>
+            </div>
+
+            <!-- Preview card -->
+            <div id="af-preview" style="display:none;flex-direction:column;gap:8px">
+              <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em">Preview — will appear in Regulatory DB as:</div>
+              <div id="af-preview-card"></div>
+            </div>
+
+            <div class="admin-form-actions">
+              <button class="admin-btn-sec" onclick="adminPreviewReg()">👁 Preview</button>
+              <button class="admin-btn-sec" onclick="adminClearRegForm()">✕ Clear</button>
+              <button class="admin-btn-primary" id="af-submit-btn" onclick="adminSubmitRegulation()">✓ Publish to Database</button>
+            </div>
+
+            <div class="admin-log-title">Session log</div>
+            <div id="admin-reg-log" class="admin-log">
+              <div style="font-size:13px;color:var(--text-muted)">Nothing published yet this session.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB: PUBLISH ALERT ── -->
+        <div class="admin-tab-body" id="admin-body-alert" style="display:none">
+          <div class="admin-form-wrap">
+            <div class="admin-section-title">Publish a Regulation Alert</div>
+            <div class="admin-hint">Appears in the Reg Alerts feed and triggers real-time notifications for all connected users.</div>
+
+            <div class="admin-grid">
+              <div class="admin-field full">
+                <label>ALERT TITLE *</label>
+                <input id="aa-title" class="admin-input" type="text" placeholder="e.g. CBN Issues New Circular on Crypto Transactions">
+              </div>
+              <div class="admin-field">
+                <label>AGENCY *</label>
+                <select id="aa-agency" class="admin-input">
+                  <option value="">Select…</option>
+                  <option>CAC</option><option>FIRS</option><option>CBN</option>
+                  <option>NITDA</option><option>SEC</option><option>NAFDAC</option>
+                  <option>PENCOM</option><option>NSITF</option><option>Other</option>
+                </select>
+              </div>
+              <div class="admin-field">
+                <label>SEVERITY *</label>
+                <select id="aa-severity" class="admin-input">
+                  <option value="">Select…</option>
+                  <option value="critical">🔴 Critical — immediate action</option>
+                  <option value="high">🟠 High — action needed soon</option>
+                  <option value="medium">🔵 Medium — awareness needed</option>
+                  <option value="info">⚪ Info — general update</option>
+                </select>
+              </div>
+              <div class="admin-field full">
+                <label>DESCRIPTION *</label>
+                <textarea id="aa-desc" class="admin-input admin-textarea" placeholder="Describe what changed, what businesses need to do, and any deadlines or penalties…"></textarea>
+              </div>
+            </div>
+
+            <div class="admin-form-actions">
+              <button class="admin-btn-sec" onclick="adminClearAlertForm()">✕ Clear</button>
+              <button class="admin-btn-primary" id="aa-submit-btn" onclick="adminSubmitAlert()">🚨 Publish Alert</button>
+            </div>
+
+            <div class="admin-log-title">Session log</div>
+            <div id="admin-alert-log" class="admin-log">
+              <div style="font-size:13px;color:var(--text-muted)">Nothing published yet this session.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB: MANAGE DB ── -->
+        <div class="admin-tab-body" id="admin-body-manage" style="display:none">
+          <div class="admin-form-wrap" style="max-width:100%">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+              <div>
+                <div class="admin-section-title">Manage Regulatory Database</div>
+                <div class="admin-hint">Search, view, and delete regulations. Seed data cannot be deleted.</div>
+              </div>
+              <button class="admin-btn-sec" onclick="adminLoadManage()">↺ Refresh</button>
+            </div>
+            <input id="admin-search-regs" class="admin-input" type="text" placeholder="Search by title, agency, or reference…" oninput="adminFilterManage(this.value)">
+            <div id="admin-manage-list" style="display:flex;flex-direction:column;gap:8px">
+              <div style="font-size:13px;color:var(--text-muted);padding:8px 0">Click Refresh to load all regulations.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB: STATS ── -->
+        <div class="admin-tab-body" id="admin-body-stats" style="display:none">
+          <div class="admin-form-wrap">
+            <div class="admin-section-title">Live Database Statistics</div>
+            <div class="admin-hint">Pulled directly from your Supabase project.</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:4px">
+              <div class="admin-stat-card"><div class="asc-num" id="stat-regs">—</div><div class="asc-label">Regulations</div></div>
+              <div class="admin-stat-card"><div class="asc-num" id="stat-critical" style="color:var(--red)">—</div><div class="asc-label">Critical</div></div>
+              <div class="admin-stat-card"><div class="asc-num" id="stat-high" style="color:var(--gold)">—</div><div class="asc-label">High</div></div>
+              <div class="admin-stat-card"><div class="asc-num" id="stat-alerts">—</div><div class="asc-label">Alerts</div></div>
+              <div class="admin-stat-card"><div class="asc-num" id="stat-checklists">—</div><div class="asc-label">Checklists</div></div>
+              <div class="admin-stat-card"><div class="asc-num" id="stat-docs">—</div><div class="asc-label">Uploaded Docs</div></div>
+            </div>
+            <button class="admin-btn-sec" style="margin-top:16px;align-self:flex-start" onclick="adminLoadStats()">↺ Refresh Stats</button>
+          </div>
+        </div>
+
+      </div><!-- /admin-panel -->
+    </div><!-- /view-admin -->
+
   </div>
 </div>
 <nav id="mobile-nav">
@@ -1854,8 +2127,15 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 // CONFIG — Paste your Supabase credentials here
 // Get these from: Supabase Dashboard → Settings → API
 // ──────────────────────────────────────────────
-const SUPABASE_URL  = 'YOUR_SUPABASE_URL';   // e.g. https://abcdefgh.supabase.co
-const SUPABASE_KEY  = 'YOUR_SUPABASE_ANON_KEY'; // the long "anon public" JWT key
+const SUPABASE_URL  = 'https://fifevmdyawpiqvezuqjs.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpZmV2bWR5YXdwaXF2ZXp1cWpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNzc2NzQsImV4cCI6MjA5MTc1MzY3NH0.PsfDWwGet_0Zrv4VnMVUg6LXf86L4m7MZVTIDwdYX0g';
+
+// ── Admin access: only these emails see the Admin Panel ──
+const ADMIN_EMAILS = ['josiah.ode4@gmail.com'];
+
+// ── Anthropic API key: get from console.anthropic.com → API Keys ──
+// Paste your key below once you have it (starts with sk-ant-...)
+const ANTHROPIC_API_KEY = 'YOUR_ANTHROPIC_KEY_HERE';
 
 const SUPABASE_CONFIGURED = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_KEY !== 'YOUR_SUPABASE_ANON_KEY';
 
@@ -1891,6 +2171,10 @@ function enterGuestMode() {
 let currentUser = null;
 let chatHistory = [];
 let allRegs = [];
+
+function isAdmin() {
+  return currentUser && ADMIN_EMAILS.includes(currentUser.email);
+}
 let activeAgency = 'all';
 let searchQuery = '';
 let pdfAnalysisResult = null;
@@ -1977,6 +2261,7 @@ function onAuth(user) {
   document.getElementById('user-avatar').textContent = (name[0]||'U').toUpperCase();
   loadRegs();
   loadAlerts();
+  maybeShowAdminNav();
   loadDeadlines();
   loadReports();
   loadTemplates();
@@ -2040,6 +2325,7 @@ function setView(name) {
   document.querySelectorAll('.mnav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
   document.querySelectorAll(`[data-view="${name}"]`).forEach(el => el.classList.add('active'));
+  if (name === 'admin') adminViewEntered();
   if (name==='alerts') {
     document.getElementById('alert-badge').style.display='none';
     const mb = document.getElementById('mobile-alert-badge');
@@ -2114,24 +2400,36 @@ function fmtText(t) {
     .replace(/\n/g,'<br>');
 }
 
-// ── AI PROXY: routes through Supabase Edge Function (API key stays server-side) ──
+// ── AI: tries /api/chat proxy first (Cloudflare Worker), then direct with key ──
 async function callAI(payload) {
-  const { data: { session } } = await sb.auth.getSession().catch(() => ({ data: { session: null } }));
-  const token = session?.access_token;
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/ai`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token || SUPABASE_KEY}`,
-      'apikey': SUPABASE_KEY
-    },
-    body: JSON.stringify(payload)
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`AI proxy error ${res.status}: ${err}`);
+  // Option A: Cloudflare Pages Function at /api/chat (preferred — key stays server-side)
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) return await res.json();
+  } catch(e) { /* fall through to direct call */ }
+
+  // Option B: Direct call with key in-browser (works locally / before Worker is deployed)
+  if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY !== 'YOUR_ANTHROPIC_KEY_HERE') {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) return await res.json();
+    const err = await res.json();
+    throw new Error(err.error?.message || 'Anthropic API error');
   }
-  return await res.json();
+
+  throw new Error('No API key configured. Add your Anthropic key to the ANTHROPIC_API_KEY constant, or deploy the Cloudflare Worker.');
 }
 
 async function sendChat() {
@@ -3170,6 +3468,263 @@ function exportChecklistPDF() {
   document.getElementById('view-checklist').classList.add('print-active');
   window.print();
   setTimeout(() => document.getElementById('view-checklist').classList.remove('print-active'), 1000);
+}
+
+
+// ══════════════════════════════════════════════
+// ADMIN PANEL FUNCTIONS
+// ══════════════════════════════════════════════
+let _adminAll = [];
+
+function isAdmin() {
+  return !!(currentUser && ADMIN_EMAILS.includes(currentUser.email));
+}
+
+function maybeShowAdminNav() {
+  const el = document.getElementById('admin-nav-item');
+  if (el) el.style.display = isAdmin() ? 'flex' : 'none';
+}
+
+function adminViewEntered() {
+  const gate  = document.getElementById('admin-gate');
+  const panel = document.getElementById('admin-panel');
+  if (isAdmin()) {
+    gate.style.display  = 'none';
+    panel.style.display = 'flex';
+    document.getElementById('admin-user-badge').textContent = '🔐 ' + (currentUser.email);
+    adminSwitchTab('add');
+  } else {
+    gate.style.display  = 'flex';
+    panel.style.display = 'none';
+  }
+}
+
+function adminSwitchTab(tab) {
+  ['add','alert','manage','stats'].forEach(t => {
+    document.getElementById(`atab-${t}`)?.classList.toggle('active', t === tab);
+    const b = document.getElementById(`admin-body-${t}`);
+    if (b) b.style.display = t === tab ? 'flex' : 'none';
+  });
+  if (tab === 'manage') adminLoadManage();
+  if (tab === 'stats')  adminLoadStats();
+}
+
+// ── ADD REGULATION ─────────────────────────────
+function adminPreviewReg() {
+  const title    = document.getElementById('af-title').value.trim();
+  const agency   = document.getElementById('af-agency').value;
+  const severity = document.getElementById('af-severity').value;
+  const reference= document.getElementById('af-reference').value.trim();
+  const summary  = document.getElementById('af-summary').value.trim();
+  if (!title || !agency) { showToast('Enter a title and agency to preview', 'var(--gold)'); return; }
+  const agClass = {CBN:'tag-cbn',FIRS:'tag-firs',CAC:'tag-cac',NITDA:'tag-nitda',SEC:'tag-sec',NAFDAC:'tag-nafdac'};
+  const sevCol  = {critical:'var(--red)',high:'var(--gold)',medium:'var(--blue)',info:'var(--text-muted)'};
+  document.getElementById('af-preview-card').innerHTML = `
+    <div class="reg-card" style="pointer-events:none">
+      <div class="reg-card-top">
+        <div>
+          <span class="agency-tag ${agClass[agency]||'tag-cac'}" style="margin-bottom:6px;display:inline-block">${agency}</span>
+          <div class="reg-card-title">${title}</div>
+        </div>
+        <div class="severity-dot" style="background:${sevCol[severity]||'var(--text-muted)'}"></div>
+      </div>
+      ${reference?`<div class="reg-ref">${reference}</div>`:''}
+      <div class="reg-summary">${summary||'<em style="color:var(--text-muted)">No summary yet</em>'}</div>
+    </div>
+  `;
+  document.getElementById('af-preview').style.display = 'flex';
+}
+
+async function adminSubmitRegulation() {
+  const title    = document.getElementById('af-title').value.trim();
+  const agency   = document.getElementById('af-agency').value;
+  const severity = document.getElementById('af-severity').value;
+  const category = document.getElementById('af-category').value;
+  const reference= document.getElementById('af-reference').value.trim();
+  const summary  = document.getElementById('af-summary').value.trim();
+  const dateVal  = document.getElementById('af-date').value;
+
+  if (!title)    { showToast('Title is required', 'var(--gold)'); return; }
+  if (!agency)   { showToast('Agency is required', 'var(--gold)'); return; }
+  if (!severity) { showToast('Severity is required', 'var(--gold)'); return; }
+  if (!summary)  { showToast('Summary is required', 'var(--gold)'); return; }
+
+  const btn = document.getElementById('af-submit-btn');
+  btn.disabled = true; btn.textContent = 'Publishing…';
+
+  try {
+    const { error } = await sb.from('regulations').insert({
+      agency, title,
+      reference: reference || null,
+      summary,
+      category: category || 'other',
+      effective_date: dateVal || null,
+      severity
+    });
+    if (error) throw new Error(error.message);
+    adminLogEntry('admin-reg-log', { title, agency, severity }, 'ok');
+    showToast(`✓ "${title}" published to Regulatory DB`, 'var(--red)');
+    loadRegs(); // refresh live DB immediately
+    adminClearRegForm();
+  } catch(e) {
+    adminLogEntry('admin-reg-log', { title, agency, severity, error: e.message }, 'err');
+    showToast('Error: ' + e.message, 'var(--red)');
+  }
+  btn.disabled = false; btn.textContent = '✓ Publish to Database';
+}
+
+function adminClearRegForm() {
+  ['af-title','af-reference','af-summary','af-date'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  ['af-agency','af-severity'].forEach(id => { const el=document.getElementById(id); if(el) el.selectedIndex=0; });
+  document.getElementById('af-preview').style.display = 'none';
+}
+
+// ── PUBLISH ALERT ──────────────────────────────
+async function adminSubmitAlert() {
+  const title = document.getElementById('aa-title').value.trim();
+  const agency= document.getElementById('aa-agency').value;
+  const sev   = document.getElementById('aa-severity').value;
+  const desc  = document.getElementById('aa-desc').value.trim();
+
+  if (!title) { showToast('Title is required', 'var(--gold)'); return; }
+  if (!agency){ showToast('Agency is required', 'var(--gold)'); return; }
+  if (!sev)   { showToast('Severity is required', 'var(--gold)'); return; }
+  if (!desc)  { showToast('Description is required', 'var(--gold)'); return; }
+
+  const btn = document.getElementById('aa-submit-btn');
+  btn.disabled = true; btn.textContent = 'Publishing…';
+
+  try {
+    const { error } = await sb.from('reg_alerts').insert({ agency, title, description: desc, severity: sev });
+    if (error) throw new Error(error.message);
+    adminLogEntry('admin-alert-log', { title, agency, severity: sev }, 'ok');
+    showToast(`🚨 Alert published: "${title}"`, 'var(--red)');
+    loadAlerts();
+    adminClearAlertForm();
+  } catch(e) {
+    adminLogEntry('admin-alert-log', { title, agency, severity: sev, error: e.message }, 'err');
+    showToast('Error: ' + e.message, 'var(--red)');
+  }
+  btn.disabled = false; btn.textContent = '🚨 Publish Alert';
+}
+
+function adminClearAlertForm() {
+  ['aa-title','aa-desc'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['aa-agency','aa-severity'].forEach(id=>{ const el=document.getElementById(id); if(el) el.selectedIndex=0; });
+}
+
+function adminLogEntry(logId, entry, type) {
+  const logEl = document.getElementById(logId);
+  if (!logEl) return;
+  const placeholder = logEl.querySelector('[style*="text-muted"]');
+  if (placeholder) placeholder.remove();
+  const agClass = {CBN:'tag-cbn',FIRS:'tag-firs',CAC:'tag-cac',NITDA:'tag-nitda',SEC:'tag-sec',NAFDAC:'tag-nafdac'};
+  const el = document.createElement('div');
+  el.className = `admin-log-entry ${type}`;
+  el.innerHTML = `
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:600;color:var(--text)">${entry.title}</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:2px;display:flex;gap:8px;align-items:center">
+        <span class="agency-tag ${agClass[entry.agency]||'tag-cac'}" style="font-size:10px">${entry.agency}</span>
+        ${entry.severity?`<span>${entry.severity}</span>`:''}
+        <span>${new Date().toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'})}</span>
+        ${type==='ok'?'<span style="color:#16a34a;font-weight:600">✓ Published</span>':''}
+        ${entry.error?`<span style="color:var(--red)">⚠ ${entry.error}</span>`:''}
+      </div>
+    </div>
+  `;
+  logEl.prepend(el);
+}
+
+// ── MANAGE DB ──────────────────────────────────
+async function adminLoadManage() {
+  const list = document.getElementById('admin-manage-list');
+  list.innerHTML = '<div class="loading-row"><div class="spinner"></div> Loading…</div>';
+  try {
+    const { data, error } = await sb.from('regulations').select('*').order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
+    _adminAll = data || [];
+  } catch(e) {
+    _adminAll = allRegs || [];
+    if (!e.message.includes('not configured')) showToast('Using local data: ' + e.message, 'var(--gold)');
+  }
+  adminRenderManage(_adminAll);
+}
+
+function adminFilterManage(q) {
+  if (!q.trim()) { adminRenderManage(_adminAll); return; }
+  const ql = q.toLowerCase();
+  adminRenderManage(_adminAll.filter(r =>
+    r.title?.toLowerCase().includes(ql) ||
+    r.agency?.toLowerCase().includes(ql) ||
+    r.reference?.toLowerCase().includes(ql)
+  ));
+}
+
+function adminRenderManage(regs) {
+  const list = document.getElementById('admin-manage-list');
+  if (!regs.length) { list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">No regulations found.</div>'; return; }
+  const agClass = {CBN:'tag-cbn',FIRS:'tag-firs',CAC:'tag-cac',NITDA:'tag-nitda',SEC:'tag-sec',NAFDAC:'tag-nafdac'};
+  const sevCol  = {critical:'var(--red)',high:'var(--gold)',medium:'var(--blue)',info:'var(--text-muted)'};
+  list.innerHTML = regs.map(r => `
+    <div class="admin-reg-row">
+      <div class="arr-info">
+        <div class="arr-title">${r.title}</div>
+        <div class="arr-meta">
+          <span class="agency-tag ${agClass[r.agency]||'tag-cac'}" style="font-size:10px">${r.agency}</span>
+          <span style="display:inline-flex;align-items:center;gap:3px">
+            <span style="width:6px;height:6px;border-radius:50%;background:${sevCol[r.severity]||'#999'}"></span>
+            ${r.severity||'info'}
+          </span>
+          ${r.reference?`<span>${r.reference}</span>`:''}
+        </div>
+      </div>
+      ${(r.id && String(r.id).startsWith('s'))
+        ? '<span style="font-size:11px;color:var(--text-muted);padding:5px 8px;align-self:center">seed</span>'
+        : `<button class="admin-del-btn" onclick="adminDeleteReg('${r.id}','${r.title.replace(/'/g,"\'")}')">Delete</button>`
+      }
+    </div>
+  `).join('');
+}
+
+async function adminDeleteReg(id, title) {
+  if (!confirm(`Delete "${title}"?\n\nThis cannot be undone.`)) return;
+  try {
+    const { error } = await sb.from('regulations').delete().eq('id', id);
+    if (error) throw new Error(error.message);
+    showToast('Deleted: ' + title, 'var(--gold)');
+    loadRegs();
+    adminLoadManage();
+  } catch(e) {
+    showToast('Error: ' + e.message, 'var(--red)');
+  }
+}
+
+// ── STATS ──────────────────────────────────────
+async function adminLoadStats() {
+  const set = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  ['stat-regs','stat-critical','stat-high','stat-alerts','stat-checklists','stat-docs'].forEach(id => set(id,'…'));
+  try {
+    const [r, a, c, d] = await Promise.all([
+      sb.from('regulations').select('severity'),
+      sb.from('reg_alerts').select('id'),
+      sb.from('checklists').select('id'),
+      sb.from('uploaded_docs').select('id')
+    ]);
+    const regs = r.data || allRegs;
+    set('stat-regs',       regs.length);
+    set('stat-critical',   regs.filter(x=>x.severity==='critical').length);
+    set('stat-high',       regs.filter(x=>x.severity==='high').length);
+    set('stat-alerts',     (a.data||[]).length);
+    set('stat-checklists', (c.data||[]).length);
+    set('stat-docs',       (d.data||[]).length);
+  } catch(e) {
+    const regs = allRegs;
+    set('stat-regs', regs.length);
+    set('stat-critical', regs.filter(x=>x.severity==='critical').length);
+    set('stat-high', regs.filter(x=>x.severity==='high').length);
+    set('stat-alerts','—'); set('stat-checklists','—'); set('stat-docs','—');
+  }
 }
 
 // ──────────────────────────────────────────────
