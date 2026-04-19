@@ -2817,18 +2817,35 @@ function addMsg(role, text) {
   msgs.scrollTop = msgs.scrollHeight;
 }
 
-function fmtText(t) {
-  return t
-    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\[CBN\]/g,'<span class="agency-tag tag-cbn">CBN</span>')
-    .replace(/\[FIRS\]/g,'<span class="agency-tag tag-firs">FIRS</span>')
-    .replace(/\[CAC\]/g,'<span class="agency-tag tag-cac">CAC</span>')
-    .replace(/\[NITDA\]/g,'<span class="agency-tag tag-nitda">NITDA</span>')
-    .replace(/\[SEC\]/g,'<span class="agency-tag tag-sec">SEC</span>')
-    .replace(/\[NAFDAC\]/g,'<span class="agency-tag tag-nafdac">NAFDAC</span>')
-    .replace(/\n\n/g,'<br><br>')
-    .replace(/\n- /g,'<br>• ')
-    .replace(/\n/g,'<br>');
+function fmtText(raw) {
+  const lines = raw.split('\n');
+  let html = '';
+  function inline(s) {
+    return s
+      .replace(/[\u{1F300}-\u{1FAFF}]|[\u{2600}-\u{27BF}]|⚖️|⚠️|📌|✅|❌/gu, '')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\[CBN\]/g,   '<span class="agency-tag tag-cbn">CBN</span>')
+      .replace(/\[FIRS\]/g,  '<span class="agency-tag tag-firs">FIRS</span>')
+      .replace(/\[CAC\]/g,   '<span class="agency-tag tag-cac">CAC</span>')
+      .replace(/\[NITDA\]/g, '<span class="agency-tag tag-nitda">NITDA</span>')
+      .replace(/\[SEC\]/g,   '<span class="agency-tag tag-sec">SEC</span>')
+      .replace(/\[NAFDAC\]/g,'<span class="agency-tag tag-nafdac">NAFDAC</span>');
+  }
+  for (let line of lines) {
+    line = line.replace(/[\u{1F300}-\u{1FAFF}]|[\u{2600}-\u{27BF}]|⚖️|⚠️|📌|✅|❌/gu, '').trimEnd();
+    if (/^---+$/.test(line.trim()) || line.trim() === '') continue;
+    if (/^### (.+)/.test(line))
+      html += `<div style="font-weight:700;color:var(--text);margin:8px 0 2px">${inline(line.replace(/^### /,''))}</div>`;
+    else if (/^## (.+)/.test(line))
+      html += `<div style="font-size:10.5px;font-weight:700;color:var(--text-sub);text-transform:uppercase;letter-spacing:0.07em;margin:10px 0 3px">${inline(line.replace(/^## /,''))}</div>`;
+    else if (/^# (.+)/.test(line))
+      html += `<div style="font-size:15px;font-weight:700;color:var(--text);margin:4px 0 6px">${inline(line.replace(/^# /,''))}</div>`;
+    else if (/^[-*] (.+)/.test(line))
+      html += `<div style="padding-left:4px;margin:2px 0">• ${inline(line.replace(/^[-*] /,''))}</div>`;
+    else
+      html += `<div style="margin:3px 0">${inline(line)}</div>`;
+  }
+  return html;
 }
 
 // ── AI: tries /api/chat (Cloudflare Pages), then falls back to Supabase Edge Function ──
