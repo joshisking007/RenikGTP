@@ -55,15 +55,36 @@ create table if not exists reg_alerts (
   published_at timestamptz default now()
 );
 
+create table if not exists chat_sessions (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade,
+  title text default 'New Conversation',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create table if not exists chat_messages (
+  id uuid default gen_random_uuid() primary key,
+  session_id uuid references chat_sessions(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete cascade,
+  role text check (role in ('user','assistant')),
+  content text not null,
+  created_at timestamptz default now()
+);
+
 alter table regulations enable row level security;
 alter table checklists enable row level security;
 alter table uploaded_docs enable row level security;
 alter table reg_alerts enable row level security;
+alter table chat_sessions enable row level security;
+alter table chat_messages enable row level security;
 
 create policy "Public read regulations" on regulations for select using (true);
 create policy "Public read alerts" on reg_alerts for select using (true);
 create policy "Users own checklists" on checklists for all using (auth.uid() = user_id);
 create policy "Users own docs" on uploaded_docs for all using (auth.uid() = user_id);
+create policy "Users own chat sessions" on chat_sessions for all using (auth.uid() = user_id);
+create policy "Users own chat messages" on chat_messages for all using (auth.uid() = user_id);
 
 -- Seed data
 insert into regulations (agency,title,reference,summary,category,effective_date,severity) values
@@ -327,6 +348,40 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 /* ── VIEWS ── */
 .view { display: none; flex: 1; overflow: hidden; flex-direction: column; }
 .view.active { display: flex; }
+
+/* ── CHAT SESSION SIDEBAR ── */
+#chat-sessions-panel {
+  width: 200px; flex-shrink: 0; border-right: 1px solid var(--border);
+  background: var(--bg-surface); display: flex; flex-direction: column;
+  overflow: hidden;
+}
+@media (max-width: 900px) { #chat-sessions-panel { display: none; } }
+.csp-header {
+  padding: 12px 12px 8px; border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.csp-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.new-chat-btn {
+  width: 100%; padding: 8px 10px; background: var(--red); color: #fff;
+  border: none; border-radius: var(--r); font-family: var(--font);
+  font-size: 13px; font-weight: 700; cursor: pointer; text-align: left;
+}
+.new-chat-btn:hover { opacity: 0.88; }
+.csp-list { flex: 1; overflow-y: auto; padding: 6px 6px; display: flex; flex-direction: column; gap: 2px; }
+.csp-list::-webkit-scrollbar { width: 3px; }
+.csp-list::-webkit-scrollbar-thumb { background: var(--border-em); border-radius: 2px; }
+.session-item {
+  padding: 8px 10px; border-radius: 8px; cursor: pointer;
+  font-size: 12.5px; color: var(--text-sub); font-weight: 500;
+  display: flex; align-items: center; gap: 4px; position: relative;
+}
+.session-item:hover { background: var(--bg-hover); color: var(--text); }
+.session-item.active { background: var(--red-dim); color: var(--red); font-weight: 600; }
+.session-item-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.session-delete { display: none; font-size: 14px; color: var(--text-muted); flex-shrink: 0; }
+.session-item:hover .session-delete { display: block; }
+.session-delete:hover { color: var(--red); }
+.session-date { font-size: 10px; color: var(--text-muted); padding: 6px 10px 2px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
 
 /* ── CHAT ── */
 #view-chat { flex-direction: column; }
@@ -1495,7 +1550,21 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   <div id="main">
 
     <!-- CHAT VIEW -->
-    <div class="view active" id="view-chat">
+    <div class="view active" id="view-chat" style="flex-direction:row">
+
+      <!-- Chat sessions sidebar -->
+      <div id="chat-sessions-panel">
+        <div class="csp-header">
+          <div class="csp-title">Conversations</div>
+          <button class="new-chat-btn" onclick="newChat()">+ New Chat</button>
+        </div>
+        <div class="csp-list" id="sessions-list">
+          <div style="font-size:12px;color:var(--text-muted);padding:8px 10px">No saved chats yet.</div>
+        </div>
+      </div>
+
+      <!-- Chat main area -->
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
       <div id="chat-header">
         <div class="chat-header-menu" onclick="openSidebar()">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -1550,7 +1619,8 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
         </div>
         <div class="composer-disclaimer">RenikGPT is not a lawyer · Always verify with a qualified Nigerian solicitor</div>
       </div>
-    </div>
+    </div><!-- /chat-main -->
+    </div><!-- /view-chat -->
 
     <!-- REGULATIONS VIEW -->
     <div class="view" id="view-regulations">
@@ -2668,6 +2738,7 @@ function onAuth(user) {
     loadUploadHistory();
     loadUserOrg();
     loadProfileFromSupabase(user); // fetch from Supabase, fall back to localStorage
+    loadChatHistory(); // restore saved conversations
   }
 }
 
@@ -2781,6 +2852,8 @@ function closeSidebar() {
 // ──────────────────────────────────────────────
 // CHAT
 // ──────────────────────────────────────────────
+let currentSessionId = null;
+let allSessions = [];
 const SYSTEM = `You are RenikGPT — Nigeria's premier AI compliance assistant. You help SMEs, startups, and entrepreneurs understand Nigerian business regulations in plain language.
 
 Rules:
@@ -2878,6 +2951,122 @@ async function callAI(payload) {
   throw new Error('No AI proxy available. Deploy to Cloudflare Pages or ensure your Supabase Edge Function is live.');
 }
 
+async function getOrCreateSession(firstMessage) {
+  if (currentSessionId) return currentSessionId;
+  if (!currentUser || currentUser.id === 'guest') return null;
+  // Derive a title from the first message (first 40 chars)
+  const title = firstMessage.length > 40 ? firstMessage.slice(0, 40) + '…' : firstMessage;
+  const { data, error } = await sb
+    .from('chat_sessions')
+    .insert({ user_id: currentUser.id, title })
+    .select('id, title, created_at')
+    .single();
+  if (error) { console.error('Session create error', error); return null; }
+  currentSessionId = data.id;
+  allSessions.unshift(data);
+  renderSessionsList();
+  return currentSessionId;
+}
+
+async function loadChatHistory() {
+  if (!currentUser || currentUser.id === 'guest') return;
+  try {
+    const { data: sessions, error } = await sb
+      .from('chat_sessions')
+      .select('id, title, created_at')
+      .eq('user_id', currentUser.id)
+      .order('updated_at', { ascending: false })
+      .limit(40);
+    if (error || !sessions?.length) return;
+    allSessions = sessions;
+    renderSessionsList();
+    // Load most recent session's messages
+    await loadSession(sessions[0].id, false);
+  } catch(e) { console.error('loadChatHistory error', e); }
+}
+
+async function loadSession(sessionId, clearFirst = true) {
+  if (!sessionId) return;
+  currentSessionId = sessionId;
+  // Mark active in sidebar
+  document.querySelectorAll('.session-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.sid === sessionId);
+  });
+  try {
+    const { data: messages, error } = await sb
+      .from('chat_messages')
+      .select('role, content')
+      .eq('session_id', sessionId)
+      .order('created_at', { ascending: true });
+    if (error || !messages?.length) return;
+    if (clearFirst) {
+      const msgs = document.getElementById('messages');
+      msgs.innerHTML = '';
+    } else {
+      const msgs = document.getElementById('messages');
+      msgs.innerHTML = '';
+    }
+    // Reset chatHistory
+    chatHistory = [];
+    messages.forEach(m => {
+      chatHistory.push({ role: m.role, content: m.content });
+      addMsg(m.role === 'assistant' ? 'bot' : 'user', m.content);
+    });
+  } catch(e) { console.error('loadSession error', e); }
+}
+
+function renderSessionsList() {
+  const list = document.getElementById('sessions-list');
+  if (!allSessions.length) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 10px">No saved chats yet.</div>';
+    return;
+  }
+  // Group by date
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  let lastGroup = '';
+  let html = '';
+  allSessions.forEach(s => {
+    const d = new Date(s.created_at);
+    const dStr = d.toDateString();
+    let group = dStr === today ? 'Today' : dStr === yesterday ? 'Yesterday' : d.toLocaleDateString('en-NG', { month: 'short', day: 'numeric' });
+    if (group !== lastGroup) {
+      html += `<div class="session-date">${group}</div>`;
+      lastGroup = group;
+    }
+    const isActive = s.id === currentSessionId;
+    html += `<div class="session-item ${isActive ? 'active' : ''}" data-sid="${s.id}" onclick="loadSession('${s.id}')">
+      <span class="session-item-title">${escHtml(s.title || 'Conversation')}</span>
+      <span class="session-delete" onclick="event.stopPropagation();deleteSession('${s.id}')" title="Delete">×</span>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function deleteSession(sessionId) {
+  if (!confirm('Delete this conversation?')) return;
+  await sb.from('chat_sessions').delete().eq('id', sessionId);
+  allSessions = allSessions.filter(s => s.id !== sessionId);
+  if (currentSessionId === sessionId) {
+    currentSessionId = null;
+    chatHistory = [];
+    document.getElementById('messages').innerHTML = `<div class="msg bot"><div class="msg-avatar">RG</div><div><div class="bubble">Hello! I'm <strong>RenikGPT</strong> — your AI guide to Nigerian business compliance.<br><br>Ask me anything about <strong>CBN, FIRS, CAC, SEC, NITDA, or NAFDAC</strong> regulations.</div><div class="msg-meta">RenikGPT · Not legal advice</div></div></div>`;
+  }
+  renderSessionsList();
+}
+
+function newChat() {
+  currentSessionId = null;
+  chatHistory = [];
+  document.getElementById('messages').innerHTML = `<div class="msg bot"><div class="msg-avatar">RG</div><div><div class="bubble">Hello! I'm <strong>RenikGPT</strong> — your AI guide to Nigerian business compliance.<br><br>Ask me anything about <strong>CBN, FIRS, CAC, SEC, NITDA, or NAFDAC</strong> regulations. I'll explain it in plain language with specific citations, deadlines, and penalties.<br><br>You can also browse the <strong>Regulatory DB</strong>, upload new PDFs, generate a <strong>Compliance Checklist</strong> for your business, or check the latest <strong>Reg Alerts</strong>.</div><div class="msg-meta">RenikGPT · Not legal advice</div></div></div>`;
+  document.querySelectorAll('.session-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('chat-input').focus();
+}
+
 async function sendChat() {
   const input = document.getElementById('chat-input');
   const q = input.value.trim();
@@ -2904,6 +3093,23 @@ async function sendChat() {
     chatHistory.push({ role:'assistant', content:reply });
     typing.style.display = 'none';
     addMsg('bot', reply);
+
+    // ── SAVE TO SUPABASE ──
+    if (currentUser && currentUser.id !== 'guest') {
+      const sid = await getOrCreateSession(sendText);
+      if (sid) {
+        await sb.from('chat_messages').insert([
+          { session_id: sid, user_id: currentUser.id, role: 'user',      content: sendText },
+          { session_id: sid, user_id: currentUser.id, role: 'assistant', content: reply }
+        ]);
+        // Update session timestamp so it floats to top
+        await sb.from('chat_sessions').update({ updated_at: new Date().toISOString() }).eq('id', sid);
+        // Move to top of sidebar list
+        const idx = allSessions.findIndex(s => s.id === sid);
+        if (idx > 0) { const [s] = allSessions.splice(idx, 1); allSessions.unshift(s); }
+        renderSessionsList();
+      }
+    }
   } catch(e) {
     typing.style.display = 'none';
     addMsg('bot', '⚠️ Could not reach the AI. Ensure your Supabase Edge Function is deployed and ANTHROPIC_API_KEY secret is set.');
@@ -3071,6 +3277,20 @@ async function handlePDFUpload(file) {
     const parsed = JSON.parse(raw);
     pdfAnalysisResult = { ...parsed, file_name: file.name, agency };
     renderPDFResult(pdfAnalysisResult);
+
+    // ── AUTO-SAVE to uploaded_docs immediately ──
+    if (currentUser && currentUser.id !== 'guest') {
+      await sb.from('uploaded_docs').insert({
+        user_id: currentUser.id,
+        ...(currentOrg ? { org_id: currentOrg.id } : {}),
+        file_name: file.name,
+        agency,
+        summary: parsed.summary,
+        key_points: parsed.key_points
+      });
+      loadUploadHistory();
+      showToast('Document saved to your library', '#15803D');
+    }
   } catch(e) {
     resultDiv.innerHTML = `<div style="color:var(--red);font-size:13px;padding:8px">Error analysing PDF: ${e.message}. Make sure the file is a text-based PDF.</div>`;
   }
