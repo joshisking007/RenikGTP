@@ -960,6 +960,96 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .tb-icon { font-size: 22px; flex-shrink: 0; }
 .tb-text { font-size: 13px; color: var(--text-sub); line-height: 1.6; }
 .tb-text strong { color: var(--text); }
+
+/* ── DOC-TO-CHECKLIST MAPPING (Feature 8) ── */
+#view-docmap { flex-direction: column; }
+.dcm-body {
+  flex: 1; overflow-y: auto; padding: 16px 16px 24px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.dcm-step-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r-lg); overflow: hidden;
+}
+.dcm-step-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+.dcm-step-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--border-em); color: var(--text-sub);
+  font-size: 12px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+}
+.dcm-step-num.done { background: #15803D; color: #fff; }
+.dcm-step-num.active { background: var(--red); color: #fff; }
+.dcm-step-title { font-size: 14px; font-weight: 700; color: var(--text); flex: 1; }
+.dcm-step-status { font-size: 12px; color: var(--text-muted); }
+.dcm-step-status.ok { color: #15803D; font-weight: 600; }
+.dcm-step-body { padding: 14px 16px; }
+.dcm-report-select {
+  width: 100%; padding: 11px 13px;
+  background: var(--bg-surface); border: 1.5px solid var(--border-em);
+  border-radius: var(--r); color: var(--text);
+  font-family: var(--font); font-size: 14px;
+}
+.dcm-report-select:focus { outline: none; border-color: var(--red); }
+.dcm-selected-report {
+  margin-top: 10px; padding: 10px 12px;
+  background: var(--red-dim); border: 1px solid rgba(204,31,31,0.2);
+  border-radius: var(--r); display: none;
+}
+.dcm-selected-report.visible { display: block; }
+.dcm-sr-name { font-size: 13px; font-weight: 700; color: var(--red); }
+.dcm-sr-meta { font-size: 11px; color: var(--text-sub); margin-top: 3px; }
+.dcm-drop-zone {
+  border: 2px dashed var(--border-em); border-radius: var(--r);
+  padding: 20px 14px; text-align: center; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.dcm-drop-zone:hover, .dcm-drop-zone.drag-over { border-color: var(--red); background: var(--red-dim); }
+.dcm-drop-zone.has-file { border-color: #15803D; background: rgba(21,128,61,0.06); border-style: solid; }
+.dcm-dz-icon { font-size: 24px; margin-bottom: 6px; }
+.dcm-dz-text { font-size: 13px; color: var(--text-sub); }
+.dcm-dz-text strong { color: var(--text); }
+.dcm-dz-btn { display: inline-block; margin-top: 8px; padding: 6px 14px; border-radius: 20px; background: var(--bg-surface); border: 1px solid var(--border-em); font-size: 12px; font-weight: 600; color: var(--text-sub); }
+.dcm-run-btn {
+  width: 100%; padding: 14px; border-radius: var(--r);
+  background: var(--red); color: #fff; border: none;
+  font-family: var(--font); font-size: 15px; font-weight: 700;
+  cursor: pointer;
+}
+.dcm-run-btn:disabled { opacity: 0.4; cursor: default; }
+.dcm-run-btn:not(:disabled):hover { opacity: 0.88; }
+.dcm-results { display: none; flex-direction: column; gap: 12px; }
+.dcm-results.visible { display: flex; }
+.dcm-result-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; user-select: none; }
+.dcm-result-header:hover { background: var(--bg-hover); }
+.dcm-result-icon { font-size: 18px; flex-shrink: 0; }
+.dcm-result-label { font-size: 14px; font-weight: 700; color: var(--text); flex: 1; }
+.dcm-result-count { padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; font-family: var(--font-mono); }
+.dcm-count-covered { background: rgba(21,128,61,0.1); color: #15803D; }
+.dcm-count-gaps { background: var(--red-dim); color: var(--red); }
+.dcm-count-new { background: var(--blue-dim); color: var(--blue); }
+.dcm-chevron { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; }
+.dcm-chevron.open { transform: rotate(90deg); }
+.dcm-result-items { display: none; padding: 0 14px 12px; flex-direction: column; gap: 6px; }
+.dcm-result-items.open { display: flex; }
+.dcm-item-row { padding: 10px 12px; border-radius: var(--r); background: var(--bg-surface); font-size: 13px; color: var(--text); line-height: 1.5; display: flex; flex-direction: column; gap: 3px; }
+.dcm-item-text { font-weight: 500; }
+.dcm-item-detail { font-size: 12px; color: var(--text-sub); }
+.dcm-item-ref { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-muted); }
+.dcm-item-sev { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-top: 2px; align-self: flex-start; }
+.dcm-sev-critical { background: var(--red-dim); color: var(--red); }
+.dcm-sev-high { background: var(--gold-dim); color: var(--gold); }
+.dcm-sev-medium { background: var(--blue-dim); color: var(--blue); }
+.dcm-summary-box { padding: 12px 14px; background: var(--bg-surface); border-left: 3px solid var(--red); border-radius: 0 var(--r) var(--r) 0; font-size: 13px; color: var(--text-sub); line-height: 1.65; }
+.dcm-summary-box strong { color: var(--text); }
+@media (max-width: 640px) {
+  .dcm-body { padding: 12px 12px 20px; gap: 12px; }
+  .dcm-step-body { padding: 12px; }
+}
 </style>
 </head>
 <body>
@@ -1074,6 +1164,10 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       <div class="nav-item" onclick="setView('templates')" data-view="templates">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Templates Store
+      </div>
+      <div class="nav-item" onclick="setView('docmap')" data-view="docmap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Doc Mapper
       </div>
     </div>
     <div class="sidebar-bottom">
@@ -1532,6 +1626,110 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       <div class="templates-grid" id="templates-grid"></div>
     </div>
 
+    <!-- DOC-TO-CHECKLIST MAPPING VIEW (Feature 8) -->
+    <div class="view" id="view-docmap">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Doc Mapper</div>
+          <div class="view-sub">Compare a document against a saved checklist — find gaps instantly</div>
+        </div>
+      </div>
+      <div class="dcm-body">
+
+        <!-- Step 1: Pick Report -->
+        <div class="dcm-step-card">
+          <div class="dcm-step-head">
+            <div class="dcm-step-num active" id="dcm-num-1">1</div>
+            <div class="dcm-step-title">Choose a saved checklist</div>
+            <div class="dcm-step-status" id="dcm-status-1">Not selected</div>
+          </div>
+          <div class="dcm-step-body">
+            <select class="dcm-report-select" id="dcm-report-select" onchange="dcmSelectReport(this.value)">
+              <option value="">— Select a saved report —</option>
+            </select>
+            <div class="dcm-selected-report" id="dcm-selected-report">
+              <div class="dcm-sr-name" id="dcm-sr-name">—</div>
+              <div class="dcm-sr-meta" id="dcm-sr-meta">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Upload PDF -->
+        <div class="dcm-step-card">
+          <div class="dcm-step-head">
+            <div class="dcm-step-num" id="dcm-num-2">2</div>
+            <div class="dcm-step-title">Upload a regulation / policy PDF</div>
+            <div class="dcm-step-status" id="dcm-status-2">No file yet</div>
+          </div>
+          <div class="dcm-step-body">
+            <div class="dcm-drop-zone" id="dcm-drop-zone" onclick="document.getElementById('dcm-file-input').click()">
+              <div class="dcm-dz-icon">📄</div>
+              <div class="dcm-dz-text" id="dcm-dz-text"><strong>Tap to choose a PDF</strong><br>or drag and drop</div>
+              <div class="dcm-dz-btn">Browse files</div>
+              <input type="file" id="dcm-file-input" accept=".pdf" style="display:none" onchange="dcmHandleFile(this.files[0])">
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Run -->
+        <button class="dcm-run-btn" id="dcm-run-btn" disabled onclick="dcmRunAnalysis()">
+          🔍 Analyse Gaps →
+        </button>
+
+        <!-- Results -->
+        <div class="dcm-results" id="dcm-results">
+
+          <!-- Summary -->
+          <div class="dcm-step-card">
+            <div class="dcm-step-head" style="border-bottom:none;cursor:default">
+              <div style="font-size:18px">📊</div>
+              <div class="dcm-step-title">Analysis Summary</div>
+            </div>
+            <div style="padding:0 14px 14px">
+              <div class="dcm-summary-box" id="dcm-summary"></div>
+            </div>
+          </div>
+
+          <!-- Covered -->
+          <div class="dcm-step-card" id="dcm-card-covered">
+            <div class="dcm-result-header" onclick="dcmToggleSection('covered')">
+              <div class="dcm-result-icon">✅</div>
+              <div class="dcm-result-label">Covered by document</div>
+              <span class="dcm-result-count dcm-count-covered" id="dcm-ct-covered">0</span>
+              <span class="dcm-chevron" id="dcm-chev-covered">▶</span>
+            </div>
+            <div class="dcm-result-items" id="dcm-items-covered"></div>
+          </div>
+
+          <!-- Gaps -->
+          <div class="dcm-step-card" id="dcm-card-gaps">
+            <div class="dcm-result-header" onclick="dcmToggleSection('gaps')">
+              <div class="dcm-result-icon">⚠️</div>
+              <div class="dcm-result-label">Gaps — not addressed in document</div>
+              <span class="dcm-result-count dcm-count-gaps" id="dcm-ct-gaps">0</span>
+              <span class="dcm-chevron" id="dcm-chev-gaps">▶</span>
+            </div>
+            <div class="dcm-result-items" id="dcm-items-gaps"></div>
+          </div>
+
+          <!-- New requirements -->
+          <div class="dcm-step-card" id="dcm-card-new">
+            <div class="dcm-result-header" onclick="dcmToggleSection('new')">
+              <div class="dcm-result-icon">🆕</div>
+              <div class="dcm-result-label">New requirements found in document</div>
+              <span class="dcm-result-count dcm-count-new" id="dcm-ct-new">0</span>
+              <span class="dcm-chevron" id="dcm-chev-new">▶</span>
+            </div>
+            <div class="dcm-result-items" id="dcm-items-new"></div>
+          </div>
+
+          <!-- Re-run -->
+          <button class="cl-save-btn" style="align-self:flex-end" onclick="dcmReset()">↺ Start over</button>
+
+        </div><!-- /dcm-results -->
+      </div><!-- /dcm-body -->
+    </div><!-- /view-docmap -->
+
   </div>
 </div>
 <nav id="mobile-nav">
@@ -1571,6 +1769,10 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   <div class="mnav-item" onclick="setView('templates')" data-view="templates">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
     Templates
+  </div>
+  <div class="mnav-item" onclick="setView('docmap')" data-view="docmap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Doc Map
   </div>
 </nav>
 
@@ -1845,6 +2047,7 @@ function setView(name) {
   }
   if (name==='reports') renderReports();
   if (name==='templates') loadTemplates();
+  if (name==='docmap') dcmInit();
   closeSidebar();
 }
 
@@ -2443,6 +2646,7 @@ function renderReports() {
           <div class="rsc-date">Saved ${date}</div>
         </div>
         <button class="rsc-open" onclick="openReport('${r.id}')">Open →</button>
+        <button class="rsc-open" style="background:var(--blue-dim);color:var(--blue);border-color:rgba(29,78,216,0.25)" onclick="dcmOpenWithReport('${r.id}')">Compare →</button>
         <button class="rsc-delete" onclick="deleteReport('${r.id}')" title="Delete report">✕</button>
       </div>
     `;
@@ -2475,6 +2679,263 @@ function deleteReport(id) {
   updateReportsBadge();
   renderReports();
   showToast('Report deleted', 'var(--text-muted)');
+}
+
+// ──────────────────────────────────────────────
+// FEATURE 8 — DOCUMENT-TO-CHECKLIST MAPPING
+// ──────────────────────────────────────────────
+let _dcmReport = null;   // selected saved report object
+let _dcmFile   = null;   // File object
+let _dcmB64    = null;   // base64 string (no data-url prefix)
+
+function dcmInit() {
+  // Populate report dropdown from localStorage
+  const sel = document.getElementById('dcm-report-select');
+  const reports = currentUser
+    ? JSON.parse(localStorage.getItem(`renik_reports_${currentUser.id}`) || '[]')
+    : [];
+  sel.innerHTML = '<option value="">— Select a saved report —</option>' +
+    reports.map(r => `<option value="${r.id}">${r.bizName} · ${r.industry || r.bizType || ''}</option>`).join('');
+  // If a pre-selected report was queued (via dcmOpenWithReport), apply it
+  if (_dcmReport) {
+    sel.value = _dcmReport.id;
+    _dcmApplyReport(_dcmReport);
+  }
+}
+
+function dcmSelectReport(id) {
+  if (!id) {
+    _dcmReport = null;
+    document.getElementById('dcm-selected-report').classList.remove('visible');
+    document.getElementById('dcm-status-1').textContent = 'Not selected';
+    document.getElementById('dcm-status-1').classList.remove('ok');
+    document.getElementById('dcm-num-1').className = 'dcm-step-num active';
+    _dcmCheckReady();
+    return;
+  }
+  const reports = JSON.parse(localStorage.getItem(`renik_reports_${currentUser.id}`) || '[]');
+  const r = reports.find(x => x.id === id);
+  if (!r) return;
+  _dcmApplyReport(r);
+}
+
+function _dcmApplyReport(r) {
+  _dcmReport = r;
+  document.getElementById('dcm-sr-name').textContent = r.bizName;
+  document.getElementById('dcm-sr-meta').textContent =
+    [r.industry, r.bizType, r.stage, (r.agencies||[]).join(' · ')].filter(Boolean).join(' · ');
+  document.getElementById('dcm-selected-report').classList.add('visible');
+  document.getElementById('dcm-status-1').textContent = '✓ Selected';
+  document.getElementById('dcm-status-1').classList.add('ok');
+  document.getElementById('dcm-num-1').className = 'dcm-step-num done';
+  _dcmCheckReady();
+}
+
+function dcmHandleFile(file) {
+  if (!file || file.type !== 'application/pdf') {
+    showToast('Please upload a PDF file', 'var(--gold)'); return;
+  }
+  _dcmFile = file;
+  const zone = document.getElementById('dcm-drop-zone');
+  zone.classList.add('has-file');
+  document.getElementById('dcm-dz-text').innerHTML =
+    `<strong>${file.name}</strong><br><span style="font-size:11px;color:#15803D">✓ Ready — ${(file.size/1024).toFixed(0)} KB</span>`;
+  document.getElementById('dcm-status-2').textContent = '✓ ' + file.name.slice(0, 22) + (file.name.length > 22 ? '…' : '');
+  document.getElementById('dcm-status-2').classList.add('ok');
+  document.getElementById('dcm-num-2').className = 'dcm-step-num done';
+  _dcmCheckReady();
+}
+
+// Drag-and-drop on dcm drop zone
+(function() {
+  // Bind after DOM ready — use setTimeout to ensure element exists
+  setTimeout(() => {
+    const dz = document.getElementById('dcm-drop-zone');
+    if (!dz) return;
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+    dz.addEventListener('drop', e => {
+      e.preventDefault(); dz.classList.remove('drag-over');
+      const f = e.dataTransfer.files[0];
+      if (f) dcmHandleFile(f);
+    });
+  }, 0);
+})();
+
+function _dcmCheckReady() {
+  const btn = document.getElementById('dcm-run-btn');
+  btn.disabled = !(_dcmReport && _dcmFile);
+  if (_dcmReport && _dcmFile) {
+    btn.textContent = `🔍 Analyse "${_dcmReport.bizName}" gaps →`;
+  } else {
+    btn.textContent = '🔍 Analyse Gaps →';
+  }
+}
+
+async function dcmRunAnalysis() {
+  const btn = document.getElementById('dcm-run-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Reading document & running analysis…';
+
+  // Hide previous results
+  const resultsEl = document.getElementById('dcm-results');
+  resultsEl.classList.remove('visible');
+
+  try {
+    // 1. Convert PDF to base64
+    _dcmB64 = await fileToBase64(_dcmFile);
+
+    // 2. Flatten checklist to readable text
+    const sections = _dcmReport.data.sections || [];
+    const checklistText = sections.map(sec =>
+      `[${sec.agency}] ${sec.title}:\n` +
+      (sec.items || []).map((it, i) => `  ${i+1}. ${it.text}${it.ref ? ' (' + it.ref + ')' : ''} [${(it.priority||'medium').toUpperCase()}]`).join('\n')
+    ).join('\n\n');
+
+    const bizContext = `Business: ${_dcmReport.bizName} | Type: ${_dcmReport.bizType || 'N/A'} | Industry: ${_dcmReport.industry || 'N/A'} | Stage: ${_dcmReport.stage || 'N/A'} | Turnover: ${_dcmReport.turnover || 'N/A'}`;
+
+    // 3. Build multi-content message with PDF document block
+    const userMessage = {
+      role: 'user',
+      content: [
+        {
+          type: 'document',
+          source: { type: 'base64', media_type: 'application/pdf', data: _dcmB64 }
+        },
+        {
+          type: 'text',
+          text: `You are a Nigerian compliance expert. Analyse the uploaded PDF document and compare it against the compliance checklist below for this business.
+
+${bizContext}
+
+COMPLIANCE CHECKLIST:
+${checklistText}
+
+Your task:
+1. For each checklist item, determine if the document COVERS it (addresses it directly or provides relevant policy/procedure).
+2. Identify checklist items the document does NOT address — these are GAPS.
+3. Identify any NEW compliance requirements found in the document that are NOT in the checklist.
+
+Respond ONLY with valid JSON. No markdown. No backticks. No explanation outside the JSON.
+
+{
+  "doc_title": "short title of the document",
+  "summary": "2-3 sentence plain-English summary of what the document covers and its compliance relevance for this business",
+  "covered": [
+    { "item": "checklist item text", "ref": "section/clause in the document that covers it" }
+  ],
+  "gaps": [
+    { "item": "checklist item text", "detail": "why the document does not address this", "severity": "critical|high|medium" }
+  ],
+  "new_reqs": [
+    { "item": "new requirement found in the document", "agency": "relevant agency e.g. CBN", "ref": "clause/section reference" }
+  ]
+}`
+        }
+      ]
+    };
+
+    // 4. Call AI
+    const aiRes = await callAI({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      system: 'You are a Nigerian compliance expert. Always respond with strict JSON only. No markdown, no backticks, no preamble.',
+      messages: [userMessage]
+    });
+
+    let raw = (aiRes.content?.[0]?.text || '{}').replace(/```json|```/g, '').trim();
+    const result = JSON.parse(raw);
+    dcmRenderResults(result);
+
+  } catch(e) {
+    showToast('Analysis failed: ' + (e.message || 'Unknown error'), 'var(--red)');
+    btn.disabled = false;
+    btn.textContent = '🔍 Analyse Gaps →';
+  }
+}
+
+function dcmRenderResults(r) {
+  const btn = document.getElementById('dcm-run-btn');
+  btn.disabled = false;
+  btn.textContent = '🔍 Re-run Analysis →';
+
+  // Summary
+  document.getElementById('dcm-summary').innerHTML =
+    `<strong>${r.doc_title || _dcmFile.name}</strong> — ${r.summary || 'Analysis complete.'}`;
+
+  // Covered
+  const cov = r.covered || [];
+  document.getElementById('dcm-ct-covered').textContent = cov.length;
+  document.getElementById('dcm-items-covered').innerHTML = cov.length
+    ? cov.map(x => `<div class="dcm-item-row"><div class="dcm-item-text">${x.item}</div>${x.ref ? `<div class="dcm-item-ref">${x.ref}</div>` : ''}</div>`).join('')
+    : '<div style="font-size:13px;color:var(--text-muted);padding:4px 0">None — the document may not overlap with this checklist.</div>';
+
+  // Gaps
+  const gaps = r.gaps || [];
+  document.getElementById('dcm-ct-gaps').textContent = gaps.length;
+  document.getElementById('dcm-items-gaps').innerHTML = gaps.length
+    ? gaps.map(x => `<div class="dcm-item-row"><div class="dcm-item-text">${x.item}</div><div class="dcm-item-detail">${x.detail || ''}</div><span class="dcm-item-sev dcm-sev-${x.severity||'medium'}">${(x.severity||'medium').toUpperCase()}</span></div>`).join('')
+    : '<div style="font-size:13px;color:#15803D;padding:4px 0">✓ No gaps found — document appears to cover all checklist items.</div>';
+
+  // New requirements
+  const newReqs = r.new_reqs || [];
+  document.getElementById('dcm-ct-new').textContent = newReqs.length;
+  document.getElementById('dcm-items-new').innerHTML = newReqs.length
+    ? newReqs.map(x => {
+        const tagClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' }[x.agency] || 'tag-cac';
+        return `<div class="dcm-item-row"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">${x.agency ? `<span class="agency-tag ${tagClass}">${x.agency}</span>` : ''}</div><div class="dcm-item-text">${x.item}</div>${x.ref ? `<div class="dcm-item-ref">${x.ref}</div>` : ''}</div>`;
+      }).join('')
+    : '<div style="font-size:13px;color:var(--text-muted);padding:4px 0">No new requirements found beyond the existing checklist.</div>';
+
+  // Show results, auto-expand gaps section
+  const resultsEl = document.getElementById('dcm-results');
+  resultsEl.classList.add('visible');
+  if (gaps.length > 0) dcmToggleSection('gaps');
+  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function dcmToggleSection(key) {
+  const items = document.getElementById(`dcm-items-${key}`);
+  const chev  = document.getElementById(`dcm-chev-${key}`);
+  const isOpen = items.classList.contains('open');
+  items.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+}
+
+function dcmReset() {
+  _dcmReport = null;
+  _dcmFile   = null;
+  _dcmB64    = null;
+  document.getElementById('dcm-report-select').value = '';
+  document.getElementById('dcm-selected-report').classList.remove('visible');
+  document.getElementById('dcm-status-1').textContent = 'Not selected';
+  document.getElementById('dcm-status-1').classList.remove('ok');
+  document.getElementById('dcm-num-1').className = 'dcm-step-num active';
+  document.getElementById('dcm-num-2').className = 'dcm-step-num';
+  document.getElementById('dcm-status-2').textContent = 'No file yet';
+  document.getElementById('dcm-status-2').classList.remove('ok');
+  const zone = document.getElementById('dcm-drop-zone');
+  zone.classList.remove('has-file', 'drag-over');
+  document.getElementById('dcm-dz-text').innerHTML = '<strong>Tap to choose a PDF</strong><br>or drag and drop';
+  document.getElementById('dcm-file-input').value = '';
+  document.getElementById('dcm-results').classList.remove('visible');
+  // Close all sections
+  ['covered','gaps','new'].forEach(k => {
+    document.getElementById(`dcm-items-${k}`).classList.remove('open');
+    document.getElementById(`dcm-chev-${k}`).classList.remove('open');
+  });
+  _dcmCheckReady();
+}
+
+// Called from Saved Reports "Compare →" button
+function dcmOpenWithReport(id) {
+  const reports = JSON.parse(localStorage.getItem(`renik_reports_${currentUser.id}`) || '[]');
+  const r = reports.find(x => x.id === id);
+  if (!r) return;
+  _dcmReport = r;   // pre-load so dcmInit picks it up
+  dcmReset();       // clear any stale file state
+  _dcmReport = r;   // dcmReset clears it, set again
+  setView('docmap');
 }
 
 // ──────────────────────────────────────────────
