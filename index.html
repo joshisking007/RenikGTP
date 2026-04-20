@@ -86,6 +86,13 @@ create policy "Users own docs" on uploaded_docs for all using (auth.uid() = user
 create policy "Users own chat sessions" on chat_sessions for all using (auth.uid() = user_id);
 create policy "Users own chat messages" on chat_messages for all using (auth.uid() = user_id);
 
+-- ── ENABLE REALTIME for chat tables ──────────────────────────
+-- Run in Supabase SQL Editor:
+alter publication supabase_realtime add table chat_sessions;
+alter publication supabase_realtime add table chat_messages;
+-- Also go to Supabase Dashboard → Database → Replication
+-- and ensure "chat_sessions" and "chat_messages" are toggled ON.
+
 -- Seed data
 insert into regulations (agency,title,reference,summary,category,effective_date,severity) values
 ('CAC','Company Registration','CAMA 2020 §18–40','All businesses must register with CAC before commencing operations. Sole traders must register within 28 days of starting trade.','registration','2020-08-07','critical'),
@@ -235,9 +242,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     transition: transform 0.25s ease;
     box-shadow: 4px 0 20px rgba(0,0,0,0.12);
   }
-  #main {
-    width: 100%; padding-bottom: 0;
-  }
+  #main { width: 100%; padding-bottom: 0; }
   .chat-header-menu { display: flex !important; }
   .view-header { flex-wrap: wrap; gap: 10px; }
   .search-input { width: 100% !important; }
@@ -251,7 +256,65 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   .bubble { font-size: 14px; padding: 11px 14px; }
   .composer-hint { display: none !important; }
   #view-chat { height: 100%; }
+  /* mobile: sessions panel slides up as a bottom sheet */
+  #chat-sessions-panel {
+    display: flex !important;
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 70;
+    width: 100%; max-height: 60vh;
+    border-right: none; border-top: 1.5px solid var(--border-em);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+    transform: translateY(100%);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  }
+  #chat-sessions-panel.mobile-open { transform: translateY(0); }
+  #sessions-backdrop {
+    display: none; position: fixed; inset: 0; z-index: 65; background: rgba(0,0,0,0.4);
+  }
+  #sessions-backdrop.open { display: block; }
+  /* header chat action buttons */
+  #chat-header-actions { display: flex !important; }
 }
+@media (min-width: 641px) {
+  #sessions-backdrop { display: none !important; }
+  #mobile-sessions-btn { display: none !important; }
+}
+
+/* ── CHAT HEADER ACTION BUTTONS ── */
+#chat-header-actions {
+  display: flex; align-items: center; gap: 6px; margin-left: auto;
+}
+.chat-action-btn {
+  padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-em);
+  background: transparent; color: var(--text-sub); cursor: pointer;
+  font-size: 12px; font-weight: 600; font-family: var(--font);
+  display: flex; align-items: center; gap: 4px; white-space: nowrap;
+}
+.chat-action-btn:hover { background: var(--bg-hover); color: var(--text); }
+#mobile-sessions-btn {
+  display: none; /* shown via media query above */
+}
+
+/* ── CHAT SEARCH BAR ── */
+#chat-search-bar {
+  display: none; padding: 8px 16px; border-bottom: 1px solid var(--border);
+  background: var(--bg-surface); flex-shrink: 0;
+}
+#chat-search-bar.visible { display: flex; gap: 8px; align-items: center; }
+#chat-search-input {
+  flex: 1; padding: 8px 12px; border: 1px solid var(--border-em);
+  border-radius: var(--r); font-family: var(--font); font-size: 14px;
+  color: var(--text); background: #fff;
+}
+#chat-search-input:focus { outline: none; border-color: var(--red); }
+.search-close-btn {
+  padding: 6px 12px; border-radius: var(--r); border: 1px solid var(--border-em);
+  background: transparent; color: var(--text-muted); cursor: pointer;
+  font-size: 13px; font-family: var(--font);
+}
+.search-close-btn:hover { color: var(--red); }
+.msg.search-highlight .bubble { outline: 2px solid var(--red); outline-offset: 2px; }
+#search-match-count { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
 
 /* ── AUTH ── */
 #auth-overlay {
@@ -383,12 +446,50 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .session-delete:hover { color: var(--red); }
 .session-date { font-size: 10px; color: var(--text-muted); padding: 6px 10px 2px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
 
+/* Session search */
+.csp-search {
+  position: relative;
+}
+.csp-search-input {
+  width: 100%; padding: 7px 10px 7px 28px;
+  border: 1px solid var(--border-em); border-radius: 7px;
+  font-family: var(--font); font-size: 12px; color: var(--text);
+  background: #fff;
+}
+.csp-search-input:focus { outline: none; border-color: var(--red); }
+.csp-search-icon {
+  position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); pointer-events: none; font-size: 12px;
+}
+.csp-search-clear {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 2px;
+  display: none;
+}
+.csp-search-clear.visible { display: block; }
+.csp-search-clear:hover { color: var(--red); }
+
+/* Session unread badge */
+.session-unread {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--red);
+  flex-shrink: 0; display: none;
+}
+.session-unread.visible { display: block; }
+
+/* Session rename inline */
+.session-rename-input {
+  flex: 1; font-size: 12px; font-family: var(--font); font-weight: 600;
+  color: var(--red); background: transparent; border: none;
+  border-bottom: 1px solid var(--red); outline: none; padding: 0 2px;
+  min-width: 0;
+}
+
 /* ── CHAT ── */
 #view-chat { flex-direction: column; }
 #chat-header {
   padding: 14px 20px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 10px; flex-shrink: 0;
-  background: var(--bg-surface);
+  background: var(--bg-surface); position: relative;
 }
 .chat-logo-circle {
   width: 38px; height: 38px; border-radius: 10px;
@@ -1552,11 +1653,19 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <!-- CHAT VIEW -->
     <div class="view active" id="view-chat" style="flex-direction:row">
 
+      <!-- Chat sessions backdrop (mobile) -->
+      <div id="sessions-backdrop" onclick="closeMobileSessions()"></div>
+
       <!-- Chat sessions sidebar -->
       <div id="chat-sessions-panel">
         <div class="csp-header">
           <div class="csp-title">Conversations</div>
           <button class="new-chat-btn" onclick="newChat()">+ New Chat</button>
+          <div class="csp-search">
+            <span class="csp-search-icon">⌕</span>
+            <input class="csp-search-input" id="sessions-search" type="text" placeholder="Filter chats…" oninput="filterSessions(this.value)">
+            <span class="csp-search-clear" id="sessions-search-clear" onclick="clearSessionSearch()">×</span>
+          </div>
         </div>
         <div class="csp-list" id="sessions-list">
           <div style="font-size:12px;color:var(--text-muted);padding:8px 10px">No saved chats yet.</div>
@@ -1574,7 +1683,35 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
           <h2>RenikGPT</h2>
           <p>CBN · FIRS · CAC · SEC · NITDA · NAFDAC</p>
         </div>
-        <div class="chat-status"><div class="status-dot"></div> Online</div>
+        <div id="chat-header-actions">
+          <!-- Mobile: open sessions bottom sheet -->
+          <button id="mobile-sessions-btn" class="chat-action-btn" onclick="openMobileSessions()" title="Conversations">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Chats
+          </button>
+          <!-- Search toggle -->
+          <button class="chat-action-btn" onclick="toggleChatSearch()" title="Search this conversation" id="search-toggle-btn">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Search
+          </button>
+          <!-- Export -->
+          <button class="chat-action-btn" onclick="showExportMenu()" title="Export conversation" id="export-btn">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <div id="export-menu" style="display:none;position:absolute;right:16px;top:56px;background:#fff;border:1px solid var(--border-em);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,0.10);z-index:50;min-width:160px;overflow:hidden">
+            <div onclick="exportChat('text')" style="padding:11px 16px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background=''">📄 Export as .txt</div>
+            <div onclick="exportChat('markdown')" style="padding:11px 16px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border)" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background=''">📝 Export as .md</div>
+            <div onclick="exportChat('print')" style="padding:11px 16px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border)" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background=''">🖨️ Print / Save PDF</div>
+          </div>
+          <div class="chat-status" style="margin-left:0"><div class="status-dot" id="realtime-dot"></div> <span id="realtime-label">Online</span></div>
+        </div>
+      </div>
+      <!-- Chat search bar -->
+      <div id="chat-search-bar">
+        <input id="chat-search-input" type="text" placeholder="Search this conversation…" oninput="runChatSearch(this.value)" onkeydown="if(event.key==='Escape')toggleChatSearch()">
+        <span id="search-match-count"></span>
+        <button class="search-close-btn" onclick="toggleChatSearch()">✕ Close</button>
       </div>
       <div id="pills">
         <div class="pill" onclick="quickAsk(this)">Do I need to register my startup?</div>
@@ -2716,6 +2853,11 @@ function showAuthError(msg) {
 }
 
 async function doLogout() {
+  // Tear down realtime subscription before signing out
+  if (_realtimeChannel) { sb.removeChannel(_realtimeChannel); _realtimeChannel = null; }
+  allSessions = [];
+  currentSessionId = null;
+  chatHistory = [];
   await sb.auth.signOut();
   currentUser = null;
   document.getElementById('auth-overlay').style.display = 'flex';
@@ -2739,6 +2881,7 @@ function onAuth(user) {
     loadUserOrg();
     loadProfileFromSupabase(user); // fetch from Supabase, fall back to localStorage
     loadChatHistory(); // restore saved conversations
+    setupRealtimeSync(); // live sync across tabs/devices
   }
 }
 
@@ -2890,6 +3033,64 @@ function addMsg(role, text) {
   msgs.scrollTop = msgs.scrollHeight;
 }
 
+function addFailedMessage(originalText) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.innerHTML = `
+    <div class="msg-avatar">RG</div>
+    <div>
+      <div class="bubble" style="border:1.5px solid var(--red);background:var(--red-dim)">
+        <div style="color:var(--red);font-size:13px;font-weight:600;margin-bottom:8px">⚠️ Could not reach the AI</div>
+        <div style="font-size:13px;color:var(--text-sub)">Check your connection and ensure your Edge Function is deployed.</div>
+        <button onclick="retryLastMessage(${JSON.stringify(originalText).replace(/"/g,'&quot;')},this)"
+          style="margin-top:10px;padding:7px 16px;background:var(--red);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">
+          ↺ Retry
+        </button>
+      </div>
+      <div class="msg-meta">Failed · Not saved</div>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function retryLastMessage(originalText, btn) {
+  // Remove the failed message bubble
+  const failedMsg = btn.closest('.msg');
+  if (failedMsg) failedMsg.remove();
+
+  // Re-inject the user message into history and re-send
+  document.getElementById('send-btn').disabled = true;
+  const typing = document.getElementById('typing-indicator');
+  typing.style.display = 'flex';
+  chatHistory.push({ role: 'user', content: originalText });
+  try {
+    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:1024, system:SYSTEM, messages:chatHistory });
+    const reply = data.content?.[0]?.text || 'Sorry, I could not get a response.';
+    chatHistory.push({ role:'assistant', content:reply });
+    typing.style.display = 'none';
+    addMsg('bot', reply);
+    if (currentUser && currentUser.id !== 'guest') {
+      const sid = await getOrCreateSession(originalText);
+      if (sid) {
+        await sb.from('chat_messages').insert([
+          { session_id: sid, user_id: currentUser.id, role: 'user', content: originalText },
+          { session_id: sid, user_id: currentUser.id, role: 'assistant', content: reply }
+        ]);
+        await sb.from('chat_sessions').update({ updated_at: new Date().toISOString() }).eq('id', sid);
+        const idx = allSessions.findIndex(s => s.id === sid);
+        if (idx > 0) { const [s] = allSessions.splice(idx, 1); allSessions.unshift(s); }
+        renderSessionsList();
+      }
+    }
+  } catch(e) {
+    typing.style.display = 'none';
+    chatHistory.pop();
+    addFailedMessage(originalText);
+  }
+  document.getElementById('send-btn').disabled = false;
+}
+
 function fmtText(raw) {
   const lines = raw.split('\n');
   let html = '';
@@ -2973,7 +3174,7 @@ async function loadChatHistory() {
   try {
     const { data: sessions, error } = await sb
       .from('chat_sessions')
-      .select('id, title, created_at')
+      .select('id, title, created_at, updated_at')
       .eq('user_id', currentUser.id)
       .order('updated_at', { ascending: false })
       .limit(40);
@@ -2988,6 +3189,7 @@ async function loadChatHistory() {
 async function loadSession(sessionId, clearFirst = true) {
   if (!sessionId) return;
   currentSessionId = sessionId;
+  _unreadSessions.delete(sessionId); // clear unread badge
   // Mark active in sidebar
   document.querySelectorAll('.session-item').forEach(el => {
     el.classList.toggle('active', el.dataset.sid === sessionId);
@@ -2999,13 +3201,7 @@ async function loadSession(sessionId, clearFirst = true) {
       .eq('session_id', sessionId)
       .order('created_at', { ascending: true });
     if (error || !messages?.length) return;
-    if (clearFirst) {
-      const msgs = document.getElementById('messages');
-      msgs.innerHTML = '';
-    } else {
-      const msgs = document.getElementById('messages');
-      msgs.innerHTML = '';
-    }
+    document.getElementById('messages').innerHTML = '';
     // Reset chatHistory
     chatHistory = [];
     messages.forEach(m => {
@@ -3013,21 +3209,44 @@ async function loadSession(sessionId, clearFirst = true) {
       addMsg(m.role === 'assistant' ? 'bot' : 'user', m.content);
     });
   } catch(e) { console.error('loadSession error', e); }
+  closeMobileSessions();
+}
+
+let _sessionFilter = '';
+let _unreadSessions = new Set(); // session IDs with unread messages from other devices
+
+function filterSessions(query) {
+  _sessionFilter = query.toLowerCase().trim();
+  document.getElementById('sessions-search-clear').classList.toggle('visible', !!_sessionFilter);
+  renderSessionsList();
+}
+
+function clearSessionSearch() {
+  document.getElementById('sessions-search').value = '';
+  filterSessions('');
 }
 
 function renderSessionsList() {
   const list = document.getElementById('sessions-list');
-  if (!allSessions.length) {
-    list.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 10px">No saved chats yet.</div>';
+  let sessions = allSessions;
+
+  // Apply filter
+  if (_sessionFilter) {
+    sessions = sessions.filter(s => (s.title || '').toLowerCase().includes(_sessionFilter));
+  }
+
+  if (!sessions.length) {
+    list.innerHTML = `<div style="font-size:12px;color:var(--text-muted);padding:8px 10px">${_sessionFilter ? 'No matching chats.' : 'No saved chats yet.'}</div>`;
     return;
   }
-  // Group by date
+
   const today = new Date().toDateString();
   const yesterday = new Date(Date.now() - 86400000).toDateString();
   let lastGroup = '';
   let html = '';
-  allSessions.forEach(s => {
-    const d = new Date(s.created_at);
+
+  sessions.forEach(s => {
+    const d = new Date(s.updated_at || s.created_at);
     const dStr = d.toDateString();
     let group = dStr === today ? 'Today' : dStr === yesterday ? 'Yesterday' : d.toLocaleDateString('en-NG', { month: 'short', day: 'numeric' });
     if (group !== lastGroup) {
@@ -3035,13 +3254,48 @@ function renderSessionsList() {
       lastGroup = group;
     }
     const isActive = s.id === currentSessionId;
-    html += `<div class="session-item ${isActive ? 'active' : ''}" data-sid="${s.id}" onclick="loadSession('${s.id}')">
-      <span class="session-item-title">${escHtml(s.title || 'Conversation')}</span>
-      <span class="session-delete" onclick="event.stopPropagation();deleteSession('${s.id}')" title="Delete">×</span>
-    </div>`;
+    const hasUnread = _unreadSessions.has(s.id) && !isActive;
+    html += `
+      <div class="session-item ${isActive ? 'active' : ''}" data-sid="${s.id}"
+           onclick="loadSession('${s.id}')"
+           ondblclick="startRenameSession(event,'${s.id}')">
+        <span class="session-unread ${hasUnread ? 'visible' : ''}" title="New message"></span>
+        <span class="session-item-title" id="stitle-${s.id}">${escHtml(s.title || 'Conversation')}</span>
+        <span class="session-delete" onclick="event.stopPropagation();deleteSession('${s.id}')" title="Delete">×</span>
+      </div>`;
   });
   list.innerHTML = html;
 }
+
+function startRenameSession(e, sessionId) {
+  e.stopPropagation();
+  const titleEl = document.getElementById(`stitle-${sessionId}`);
+  if (!titleEl) return;
+  const current = allSessions.find(s => s.id === sessionId)?.title || '';
+  const input = document.createElement('input');
+  input.className = 'session-rename-input';
+  input.value = current;
+  input.onclick = ev => ev.stopPropagation();
+  titleEl.replaceWith(input);
+  input.focus();
+  input.select();
+
+  const commit = async () => {
+    const newTitle = input.value.trim() || current;
+    // Update local state
+    const sess = allSessions.find(s => s.id === sessionId);
+    if (sess) sess.title = newTitle;
+    renderSessionsList();
+    // Persist to Supabase
+    await sb.from('chat_sessions').update({ title: newTitle }).eq('id', sessionId);
+  };
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { input.value = current; input.blur(); }
+  });
+}
+
 
 function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -3064,9 +3318,209 @@ function newChat() {
   chatHistory = [];
   document.getElementById('messages').innerHTML = `<div class="msg bot"><div class="msg-avatar">RG</div><div><div class="bubble">Hello! I'm <strong>RenikGPT</strong> — your AI guide to Nigerian business compliance.<br><br>Ask me anything about <strong>CBN, FIRS, CAC, SEC, NITDA, or NAFDAC</strong> regulations. I'll explain it in plain language with specific citations, deadlines, and penalties.<br><br>You can also browse the <strong>Regulatory DB</strong>, upload new PDFs, generate a <strong>Compliance Checklist</strong> for your business, or check the latest <strong>Reg Alerts</strong>.</div><div class="msg-meta">RenikGPT · Not legal advice</div></div></div>`;
   document.querySelectorAll('.session-item').forEach(el => el.classList.remove('active'));
+  closeMobileSessions();
   document.getElementById('chat-input').focus();
 }
 
+// ──────────────────────────────────────────────
+// MOBILE SESSIONS BOTTOM SHEET
+// ──────────────────────────────────────────────
+function openMobileSessions() {
+  document.getElementById('chat-sessions-panel').classList.add('mobile-open');
+  document.getElementById('sessions-backdrop').classList.add('open');
+}
+function closeMobileSessions() {
+  document.getElementById('chat-sessions-panel').classList.remove('mobile-open');
+  document.getElementById('sessions-backdrop').classList.remove('open');
+}
+
+// ──────────────────────────────────────────────
+// CHAT SEARCH
+// ──────────────────────────────────────────────
+let _searchActive = false;
+
+function toggleChatSearch() {
+  _searchActive = !_searchActive;
+  const bar = document.getElementById('chat-search-bar');
+  bar.classList.toggle('visible', _searchActive);
+  if (_searchActive) {
+    document.getElementById('chat-search-input').focus();
+    document.getElementById('search-toggle-btn').style.background = 'var(--red-dim)';
+    document.getElementById('search-toggle-btn').style.color = 'var(--red)';
+  } else {
+    clearChatSearch();
+    document.getElementById('search-toggle-btn').style.background = '';
+    document.getElementById('search-toggle-btn').style.color = '';
+  }
+}
+
+function runChatSearch(query) {
+  const msgs = document.querySelectorAll('#messages .msg');
+  msgs.forEach(m => m.classList.remove('search-highlight'));
+  if (!query.trim()) { document.getElementById('search-match-count').textContent = ''; return; }
+  const q = query.toLowerCase();
+  let count = 0;
+  let firstMatch = null;
+  msgs.forEach(m => {
+    const text = m.querySelector('.bubble')?.textContent?.toLowerCase() || '';
+    if (text.includes(q)) {
+      m.classList.add('search-highlight');
+      count++;
+      if (!firstMatch) firstMatch = m;
+    }
+  });
+  document.getElementById('search-match-count').textContent = count ? `${count} match${count > 1 ? 'es' : ''}` : 'No matches';
+  if (firstMatch) firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function clearChatSearch() {
+  document.querySelectorAll('#messages .msg').forEach(m => m.classList.remove('search-highlight'));
+  document.getElementById('chat-search-input').value = '';
+  document.getElementById('search-match-count').textContent = '';
+}
+
+// ──────────────────────────────────────────────
+// CHAT EXPORT
+// ──────────────────────────────────────────────
+function showExportMenu() {
+  const menu = document.getElementById('export-menu');
+  const isOpen = menu.style.display === 'block';
+  menu.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    // Close when clicking outside
+    setTimeout(() => {
+      document.addEventListener('click', function closeMenu(e) {
+        if (!menu.contains(e.target) && e.target.id !== 'export-btn') {
+          menu.style.display = 'none';
+          document.removeEventListener('click', closeMenu);
+        }
+      });
+    }, 10);
+  }
+}
+
+function exportChat(format) {
+  document.getElementById('export-menu').style.display = 'none';
+  const msgs = [...document.querySelectorAll('#messages .msg')];
+  if (!msgs.length) { showToast('No messages to export', 'var(--gold)'); return; }
+
+  const sessionTitle = allSessions.find(s => s.id === currentSessionId)?.title || 'RenikGPT Conversation';
+  const date = new Date().toLocaleDateString('en-NG', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  if (format === 'print') {
+    // Build a clean print page
+    const content = msgs.map(m => {
+      const isBot = m.classList.contains('bot');
+      const text = m.querySelector('.bubble')?.innerText || '';
+      return `<div style="margin-bottom:18px"><strong style="color:${isBot ? '#CC1F1F' : '#111'}">${isBot ? 'RenikGPT' : 'You'}:</strong><p style="margin:6px 0 0;line-height:1.7;white-space:pre-wrap">${text}</p></div>`;
+    }).join('');
+    const win = window.open('', '_blank');
+    win.document.write(`<!DOCTYPE html><html><head><title>${sessionTitle}</title><style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:0 20px;color:#111}h1{font-size:22px;margin-bottom:4px}p.meta{font-size:13px;color:#666;margin-bottom:28px;border-bottom:1px solid #eee;padding-bottom:14px}@media print{button{display:none}}</style></head><body><h1>${sessionTitle}</h1><p class="meta">Exported from RenikGPT · ${date} · Not legal advice</p>${content}<button onclick="window.print()" style="padding:10px 22px;background:#CC1F1F;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;margin-top:20px">Print / Save as PDF</button></body></html>`);
+    win.document.close();
+    return;
+  }
+
+  // Build text content
+  let text = format === 'markdown'
+    ? `# ${sessionTitle}\n_Exported from RenikGPT · ${date} · Not legal advice_\n\n---\n\n`
+    : `${sessionTitle}\nExported from RenikGPT · ${date} · Not legal advice\n${'─'.repeat(60)}\n\n`;
+
+  msgs.forEach(m => {
+    const isBot = m.classList.contains('bot');
+    const bubble = m.querySelector('.bubble');
+    const raw = bubble?.innerText || '';
+    const speaker = isBot ? 'RenikGPT' : 'You';
+    if (format === 'markdown') {
+      text += `**${speaker}:**\n${raw}\n\n`;
+    } else {
+      text += `${speaker}:\n${raw}\n\n${'─'.repeat(40)}\n\n`;
+    }
+  });
+
+  const ext = format === 'markdown' ? 'md' : 'txt';
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `renikgpt-${sessionTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase().slice(0, 40)}.${ext}`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`Exported as .${ext}`, '#15803D');
+}
+
+// ──────────────────────────────────────────────
+// REAL-TIME SYNC (Supabase Realtime)
+// ──────────────────────────────────────────────
+let _realtimeChannel = null;
+
+function setupRealtimeSync() {
+  if (!currentUser || currentUser.id === 'guest' || !SUPABASE_CONFIGURED) return;
+  // Tear down any existing subscription
+  if (_realtimeChannel) { sb.removeChannel(_realtimeChannel); _realtimeChannel = null; }
+
+  _realtimeChannel = sb
+    .channel(`chat_realtime_${currentUser.id}`)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'chat_messages',
+      filter: `user_id=eq.${currentUser.id}`
+    }, payload => {
+      const msg = payload.new;
+      // Only render if the message belongs to the currently open session
+      // and was NOT sent by this tab (avoid double-render)
+      if (msg.session_id !== currentSessionId) {
+        // Mark the session as having unread messages from another device
+        _unreadSessions.add(msg.session_id);
+        renderSessionsList();
+        return;
+      }
+      // Check if this message is already rendered (same-tab sends are already shown)
+      const isDuplicate = chatHistory.some(m => m.content === msg.content && m.role === msg.role);
+      if (!isDuplicate) {
+        chatHistory.push({ role: msg.role, content: msg.content });
+        addMsg(msg.role === 'assistant' ? 'bot' : 'user', msg.content);
+      }
+    })
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'chat_sessions',
+      filter: `user_id=eq.${currentUser.id}`
+    }, payload => {
+      const session = payload.new;
+      // Add to sidebar if not already there (e.g. another device/tab created a session)
+      if (!allSessions.find(s => s.id === session.id)) {
+        allSessions.unshift(session);
+        renderSessionsList();
+      }
+    })
+    .on('postgres_changes', {
+      event: 'DELETE',
+      schema: 'public',
+      table: 'chat_sessions',
+      filter: `user_id=eq.${currentUser.id}`
+    }, payload => {
+      const deletedId = payload.old?.id;
+      allSessions = allSessions.filter(s => s.id !== deletedId);
+      renderSessionsList();
+    })
+    .subscribe(status => {
+      const dot = document.getElementById('realtime-dot');
+      const label = document.getElementById('realtime-label');
+      if (status === 'SUBSCRIBED') {
+        dot.style.background = '#16a34a';
+        label.textContent = 'Live';
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        dot.style.background = 'var(--gold)';
+        label.textContent = 'Reconnecting…';
+      }
+    });
+}
+
+// ──────────────────────────────────────────────
+// SEND CHAT
+// ──────────────────────────────────────────────
 async function sendChat() {
   const input = document.getElementById('chat-input');
   const q = input.value.trim();
@@ -3112,7 +3566,9 @@ async function sendChat() {
     }
   } catch(e) {
     typing.style.display = 'none';
-    addMsg('bot', '⚠️ Could not reach the AI. Ensure your Supabase Edge Function is deployed and ANTHROPIC_API_KEY secret is set.');
+    // Remove the user message from history so retry sends it fresh
+    chatHistory.pop();
+    addFailedMessage(sendText);
   }
   document.getElementById('send-btn').disabled = false;
   input.focus();
@@ -3366,19 +3822,66 @@ async function savePDFToSupabase() {
 async function loadUploadHistory() {
   const list = document.getElementById('history-list');
   try {
-    const { data } = await sb.from('uploaded_docs').select('*').eq('user_id', currentUser.id).order('created_at',{ascending:false}).limit(10);
+    const { data } = await sb.from('uploaded_docs').select('*').eq('user_id', currentUser.id).order('created_at',{ascending:false}).limit(20);
     if (!data || !data.length) { list.innerHTML = '<div style="font-size:13px;color:var(--text-muted);padding:4px 0">No documents uploaded yet.</div>'; return; }
     const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
     list.innerHTML = data.map(d => `
-      <div class="history-item">
+      <div class="history-item" style="cursor:pointer" onclick="openDocViewer(${JSON.stringify(d).replace(/"/g,'&quot;')})">
         <div class="history-icon">📄</div>
-        <div class="history-info">
-          <div class="history-name">${d.file_name}</div>
+        <div class="history-info" style="flex:1">
+          <div class="history-name">${escHtml(d.file_name||'')}</div>
           <div class="history-meta"><span class="agency-tag ${agClass[d.agency]||'tag-cac'}">${d.agency}</span> · ${new Date(d.created_at).toLocaleDateString('en-NG')}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button onclick="event.stopPropagation();askAboutDoc('${escHtml(d.file_name||'')}','${d.agency}')" style="padding:5px 10px;font-size:11px;font-weight:600;background:var(--red-dim);color:var(--red);border:1px solid rgba(204,31,31,0.2);border-radius:6px;cursor:pointer;font-family:var(--font)">Ask AI</button>
+          <button onclick="event.stopPropagation();deleteDoc('${d.id}')" style="padding:5px 8px;font-size:11px;background:transparent;color:var(--text-muted);border:1px solid var(--border-em);border-radius:6px;cursor:pointer" title="Delete">✕</button>
         </div>
       </div>
     `).join('');
   } catch(e) { list.innerHTML = ''; }
+}
+
+function askAboutDoc(fileName, agency) {
+  setView('chat');
+  const q = `I've uploaded a ${agency} regulation document called "${fileName}". Please summarise the key compliance requirements and what actions I need to take.`;
+  document.getElementById('chat-input').value = q;
+  sendChat();
+}
+
+async function deleteDoc(docId) {
+  if (!confirm('Remove this document from your library?')) return;
+  await sb.from('uploaded_docs').delete().eq('id', docId);
+  loadUploadHistory();
+  showToast('Document removed', 'var(--gold)');
+}
+
+// ── DOC VIEWER MODAL ──
+function openDocViewer(doc) {
+  // Parse if it came through as a string (from onclick attribute)
+  if (typeof doc === 'string') {
+    try { doc = JSON.parse(doc); } catch(e) { return; }
+  }
+  const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
+  const points = (doc.key_points||[]).map(p => `
+    <div class="key-point">
+      <div style="flex:1">
+        <div class="key-point-text">${escHtml(p.point||'')}</div>
+        ${p.ref?`<div style="font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);margin-top:3px">${escHtml(p.ref)}</div>`:''}
+      </div>
+      <span class="cl-priority pri-${p.priority||'medium'}">${(p.priority||'medium').toUpperCase()}</span>
+    </div>
+  `).join('');
+  const modal = document.getElementById('doc-viewer-modal');
+  document.getElementById('dvm-title').textContent = doc.file_name || 'Document';
+  document.getElementById('dvm-agency').innerHTML = `<span class="agency-tag ${agClass[doc.agency]||'tag-cac'}">${doc.agency}</span> · ${new Date(doc.created_at).toLocaleDateString('en-NG', {year:'numeric',month:'long',day:'numeric'})}`;
+  document.getElementById('dvm-summary').textContent = doc.summary || '';
+  document.getElementById('dvm-points').innerHTML = points || '<div style="color:var(--text-muted);font-size:13px">No key points extracted.</div>';
+  document.getElementById('dvm-ask-btn').onclick = () => { closeDocViewer(); askAboutDoc(doc.file_name, doc.agency); };
+  modal.classList.add('open');
+}
+
+function closeDocViewer() {
+  document.getElementById('doc-viewer-modal').classList.remove('open');
 }
 
 // ──────────────────────────────────────────────
@@ -4971,6 +5474,59 @@ async function leaveOrg() {
     <div class="lm-actions">
       <button class="auth-btn" style="flex:1" onclick="submitLawyerRequest()">Send Request →</button>
       <button class="lc-btn-sec" style="padding:13px 18px" onclick="closeLawyerModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- DOC VIEWER MODAL -->
+<style>
+#doc-viewer-modal {
+  display:none; position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,0.5); align-items:center; justify-content:center;
+  padding:20px; backdrop-filter:blur(4px);
+}
+#doc-viewer-modal.open { display:flex; }
+#doc-viewer-box {
+  background:#fff; border-radius:20px; width:580px; max-width:96vw;
+  max-height:88vh; display:flex; flex-direction:column;
+  box-shadow:0 12px 48px rgba(0,0,0,0.18); overflow:hidden;
+  animation:wm-in 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+#dvm-header {
+  padding:20px 22px 16px; border-bottom:1px solid var(--border);
+  display:flex; align-items:flex-start; gap:12px; flex-shrink:0;
+}
+#dvm-header-info { flex:1; min-width:0; }
+#dvm-title { font-size:16px; font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#dvm-agency { font-size:12px; color:var(--text-sub); margin-top:4px; }
+#dvm-close { padding:6px 10px; border-radius:8px; border:1px solid var(--border-em); background:transparent; color:var(--text-muted); cursor:pointer; font-size:16px; flex-shrink:0; }
+#dvm-close:hover { color:var(--red); border-color:var(--red); }
+#dvm-body { flex:1; overflow-y:auto; padding:20px 22px; display:flex; flex-direction:column; gap:16px; }
+#dvm-body::-webkit-scrollbar { width:4px; }
+#dvm-body::-webkit-scrollbar-thumb { background:var(--border-em); border-radius:2px; }
+#dvm-summary { font-size:14px; color:var(--text-sub); line-height:1.7; padding:14px; background:var(--bg-surface); border-radius:var(--r); }
+#dvm-points-title { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; }
+#dvm-footer { padding:14px 22px; border-top:1px solid var(--border); display:flex; gap:8px; flex-shrink:0; background:var(--bg-surface); }
+</style>
+
+<div id="doc-viewer-modal" onclick="if(event.target===this)closeDocViewer()">
+  <div id="doc-viewer-box">
+    <div id="dvm-header">
+      <div style="font-size:28px;flex-shrink:0">📄</div>
+      <div id="dvm-header-info">
+        <div id="dvm-title">Document</div>
+        <div id="dvm-agency"></div>
+      </div>
+      <button id="dvm-close" onclick="closeDocViewer()">✕</button>
+    </div>
+    <div id="dvm-body">
+      <div id="dvm-summary"></div>
+      <div id="dvm-points-title">Key Compliance Points</div>
+      <div id="dvm-points" class="key-points"></div>
+    </div>
+    <div id="dvm-footer">
+      <button id="dvm-ask-btn" class="auth-btn" style="flex:1;margin-top:0">Ask RenikGPT about this document →</button>
+      <button onclick="closeDocViewer()" class="lc-btn-sec" style="padding:13px 16px">Close</button>
     </div>
   </div>
 </div>
