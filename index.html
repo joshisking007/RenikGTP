@@ -1668,7 +1668,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     </div>
 
     <div id="auth-error" class="auth-error"></div>
-    <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:14px">Not legal advice. For informational purposes only. <a href="#" onclick="setView('legal');return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer →</a></p>
+    <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:14px">Not legal advice. For informational purposes only. · <a href="#" onclick="setView('lawyers');return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer</a></p>
     <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:14px;text-align:center">
       <span style="font-size:12px;color:var(--text-muted)">Testing without Supabase? </span>
       <span style="font-size:12px;color:var(--red);cursor:pointer;font-weight:600" onclick="enterGuestMode()">Continue as guest →</span>
@@ -1868,7 +1868,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
               Ask me anything about <strong>CBN, FIRS, CAC, SEC, NITDA, or NAFDAC</strong> regulations. I'll explain it in plain language with specific citations, deadlines, and penalties.<br><br>
               You can also browse the <strong>Regulatory DB</strong>, upload new PDFs, generate a <strong>Compliance Checklist</strong> for your business, or check the latest <strong>Reg Alerts</strong>.
             </div>
-            <div class="msg-meta">RenikGPT · Not legal advice · <a href="#" onclick="setView('legal');return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer →</a></div>
+            <div class="msg-meta">RenikGPT · Not legal advice · <a href="#" onclick="setView('lawyers');return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer</a></div>
           </div>
         </div>
       </div>
@@ -1891,7 +1891,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
             </button>
           </div>
         </div>
-        <div class="composer-disclaimer">RenikGPT is not a lawyer · Always verify with a qualified Nigerian solicitor · <a href="#" onclick="setView('legal');return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer →</a></div>
+        <div class="composer-disclaimer">RenikGPT is not a lawyer · Always verify with a qualified Nigerian solicitor · <a href="#" onclick="setView('lawyers');return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer</a></div>
       </div>
     </div><!-- /chat-main -->
     </div><!-- /view-chat -->
@@ -3198,7 +3198,7 @@ function addMsg(role, text) {
   if (role==='bot') {
     const meta = document.createElement('div');
     meta.className = 'msg-meta';
-    meta.innerHTML = 'RenikGPT · '+new Date().toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'}) + ' · Not legal advice · <a href="#" onclick="setView(\'legal\');return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer →</a>';
+    meta.innerHTML = 'RenikGPT · '+new Date().toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'}) + ' · Not legal advice · <a href="#" onclick="setView(\x27lawyers\x27);return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer</a>';
     inner.appendChild(meta);
   }
   div.appendChild(av);
@@ -3482,7 +3482,7 @@ async function deleteSession(sessionId) {
   if (currentSessionId === sessionId) {
     currentSessionId = null;
     chatHistory = [];
-    document.getElementById('messages').innerHTML = `<div class="msg bot"><div class="msg-avatar">RG</div><div><div class="bubble">Hello! I'm <strong>RenikGPT</strong> — your AI guide to Nigerian business compliance.<br><br>Ask me anything about <strong>CBN, FIRS, CAC, SEC, NITDA, or NAFDAC</strong> regulations.</div><div class="msg-meta">RenikGPT · Not legal advice · <a href="#" onclick="setView('legal');return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer →</a></div></div></div>`;
+    document.getElementById('messages').innerHTML = `<div class="msg bot"><div class="msg-avatar">RG</div><div><div class="bubble">Hello! I'm <strong>RenikGPT</strong> — your AI guide to Nigerian business compliance.<br><br>Ask me anything about <strong>CBN, FIRS, CAC, SEC, NITDA, or NAFDAC</strong> regulations.</div><div class="msg-meta">RenikGPT · Not legal advice · <a href="#" onclick="setView('lawyers');return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer</a></div></div></div>`;
   }
   renderSessionsList();
 }
@@ -3490,7 +3490,7 @@ async function deleteSession(sessionId) {
 function newChat() {
   currentSessionId = null;
   chatHistory = [];
-  document.getElementById('messages').innerHTML = `<div class="msg bot"><div class="msg-avatar">RG</div><div><div class="bubble">Hello! I'm <strong>RenikGPT</strong> — your AI guide to Nigerian business compliance.<br><br>Ask me anything about <strong>CBN, FIRS, CAC, SEC, NITDA, or NAFDAC</strong> regulations. I'll explain it in plain language with specific citations, deadlines, and penalties.<br><br>You can also browse the <strong>Regulatory DB</strong>, upload new PDFs, generate a <strong>Compliance Checklist</strong> for your business, or check the latest <strong>Reg Alerts</strong>.</div><div class="msg-meta">RenikGPT · Not legal advice · <a href="#" onclick="setView('legal');return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer →</a></div></div></div>`;
+  document.getElementById('messages').innerHTML = `<div class="msg bot"><div class="msg-avatar">RG</div><div><div class="bubble">Hello! I'm <strong>RenikGPT</strong> — your AI guide to Nigerian business compliance.<br><br>Ask me anything about <strong>CBN, FIRS, CAC, SEC, NITDA, or NAFDAC</strong> regulations. I'll explain it in plain language with specific citations, deadlines, and penalties.<br><br>You can also browse the <strong>Regulatory DB</strong>, upload new PDFs, generate a <strong>Compliance Checklist</strong> for your business, or check the latest <strong>Reg Alerts</strong>.</div><div class="msg-meta">RenikGPT · Not legal advice · <a href="#" onclick="setView('lawyers');return false;" style="color:var(--red);text-decoration:none;font-weight:600">Contact a Lawyer</a></div></div></div>`;
   document.querySelectorAll('.session-item').forEach(el => el.classList.remove('active'));
   closeMobileSessions();
   document.getElementById('chat-input').focus();
