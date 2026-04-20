@@ -72,6 +72,21 @@ create table if not exists chat_messages (
   created_at timestamptz default now()
 );
 
+-- ── PROFILES (business profile, synced across devices) ───────
+create table if not exists profiles (
+  id        uuid references auth.users(id) on delete cascade primary key,
+  full_name text,
+  email     text,
+  company   text,
+  biz_name  text,
+  biz_type  text,
+  industry  text,
+  turnover  text,
+  updated_at timestamptz default now()
+);
+alter table profiles enable row level security;
+create policy "Users own profile" on profiles for all using (auth.uid() = id);
+
 alter table regulations enable row level security;
 alter table checklists enable row level security;
 alter table uploaded_docs enable row level security;
@@ -3559,6 +3574,12 @@ const ADMIN_EMAILS = ['josiah.ode4@gmail.com'];
 // Paste your key below once you have it (starts with sk-ant-...)
 const ANTHROPIC_API_KEY = 'YOUR_ANTHROPIC_KEY_HERE';
 
+// ── Google OAuth — extra setup required ──────────────────────
+// In Supabase Dashboard → Authentication → URL Configuration → Redirect URLs
+// Add your app URL, e.g: https://renikgtp.pages.dev
+// Without this, Google sign-in redirects will be blocked by Supabase.
+// ─────────────────────────────────────────────────────────────
+
 const SUPABASE_CONFIGURED = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_KEY !== 'YOUR_SUPABASE_ANON_KEY';
 
 // Robust dummy client — prevents all crashes when Supabase isn't configured
@@ -3645,11 +3666,6 @@ function authBtnReset(btnId, label) {
   if (lbl && label) lbl.textContent = label;
 }
 
-function showAuthError(msg) {
-  const el = document.getElementById('auth-error');
-  el.textContent = msg;
-  el.classList.add('visible');
-}
 
 function clearAuthMessages() {
   const el = document.getElementById('auth-error');
@@ -3785,6 +3801,7 @@ function showAuthOverlay() {
 }
 
 function onAuth(user) {
+  if (currentUser?.id === user.id) return; // prevent double-fire (e.g. Google OAuth redirect + getSession both firing)
   currentUser = user;
   document.getElementById('auth-overlay').style.display = 'none';
   const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
@@ -4056,7 +4073,7 @@ function fmtText(raw) {
 }
 
 // ── AI: tries /api/chat (Cloudflare Pages), then falls back to Supabase Edge Function ──
-async async function callAI(payload) {
+async function callAI(payload) {
   // Option A: Cloudflare Pages Function at /api/chat
   try {
     const res = await fetch('/api/chat', {
@@ -5476,7 +5493,7 @@ async function loadAlerts() {
   try {
     const { data, error } = await sb.from('reg_alerts').select('*').order('published_at',{ascending:false});
     if (!error && data && data.length) alerts = data;
-  } catch(e) {}
+  } catch(e) { console.warn('loadAlerts error:', e); }
   document.getElementById('alert-badge').textContent = alerts.length;
   const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
   const icons = { critical:'🚨', high:'⚠️', medium:'ℹ️', info:'📢' };
@@ -5518,12 +5535,7 @@ try {
     document.getElementById('alert-badge').style.display = 'block';
     loadAlerts();
   }).subscribe();
-} catch(e) {}
-
-// ──────────────────────────────────────────────
-// UTILS
-// ──────────────────────────────────────────────
-function showToast(msg, color) {
+} catch(e) { console.warn('Realtime alerts subscription error:', e); }
   const t = document.createElement('div');
   t.className = 'toast';
   t.innerHTML = `<div class="toast-dot" style="background:${color}"></div>${msg}`;
@@ -6264,7 +6276,7 @@ async function leaveOrg() {
     // Restore existing session for returning users
     const { data: { session } } = await sb.auth.getSession();
     if (session?.user) onAuth(session.user);
-  } catch(e) {}
+  } catch(e) { console.warn('getSession error:', e); }
 
   // Listen for auth events: magic link callback, token refresh, sign-out
   sb.auth.onAuthStateChange((event, session) => {
