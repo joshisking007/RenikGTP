@@ -1622,6 +1622,251 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   padding: 12px 14px; display: flex; align-items: flex-start; gap: 12px;
 }
 .shared-report-row:hover { border-color: var(--border-em); }
+
+/* ═══════════════════════════════════════════════════════
+   COMPLIANCE JOURNEY — scoped dark theme inside #view-journey
+═══════════════════════════════════════════════════════ */
+#view-journey {
+  --j-bg:#060A12; --j-bg-s:#0C1220; --j-bg-c:#101828; --j-bg-h:#141F30;
+  --j-border:rgba(255,255,255,0.07); --j-border-em:rgba(255,255,255,0.13);
+  --j-green:#00D97E; --j-green-dim:rgba(0,217,126,0.12); --j-green-glow:rgba(0,217,126,0.25);
+  --j-blue:#3B82F6; --j-amber:#F59E0B; --j-purple:#A78BFA;
+  --j-cyan:#22D3EE; --j-red:#F87171; --j-pink:#F472B6;
+  --j-text:#EEF0F4; --j-sub:#8891A4; --j-muted:#4B5563;
+  --j-font:'Outfit',sans-serif; --j-font-d:'Fraunces',serif; --j-mono:'JetBrains Mono',monospace;
+  --j-r:12px; --j-r-lg:20px;
+  background: var(--j-bg);
+  color: var(--j-text);
+  font-family: var(--j-font);
+  position: relative;
+  overflow: hidden;
+}
+#view-journey * { box-sizing: border-box; }
+
+/* Journey screens — shown/hidden within the view */
+#view-journey .j-screen { display:none; flex-direction:column; position:absolute; inset:0; overflow:hidden; }
+#view-journey .j-screen.j-active { display:flex; }
+
+/* Noise overlay */
+#view-journey::before {
+  content:''; position:absolute; inset:0; opacity:.025; pointer-events:none; z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── INTAKE ── */
+#view-journey #j-screen-intake { justify-content:center; align-items:center; background:var(--j-bg); z-index:1; }
+#view-journey .j-intake-wrap { width:100%; max-width:560px; padding:24px; position:relative; z-index:2; }
+#view-journey .j-intake-logo { font-family:var(--j-font-d); font-size:15px; font-weight:600; letter-spacing:0.04em; color:var(--j-green); margin-bottom:48px; display:flex; align-items:center; gap:8px; }
+#view-journey .j-intake-logo span { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--j-green); box-shadow:0 0 12px var(--j-green); }
+#view-journey .j-q-progress { display:flex; gap:5px; margin-bottom:40px; }
+#view-journey .j-q-dot { flex:1; height:3px; border-radius:2px; background:var(--j-bg-h); transition:background .4s; }
+#view-journey .j-q-dot.done { background:var(--j-green); }
+#view-journey .j-q-dot.active { background:var(--j-green); opacity:.5; }
+#view-journey .j-q-label { font-size:12px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--j-green); margin-bottom:14px; opacity:0; transform:translateY(10px); transition:all .4s; }
+#view-journey .j-q-label.show { opacity:1; transform:translateY(0); }
+#view-journey .j-q-text { font-family:var(--j-font-d); font-size:28px; font-weight:600; line-height:1.3; color:var(--j-text); margin-bottom:32px; opacity:0; transform:translateY(16px); transition:all .4s .05s; }
+#view-journey .j-q-text.show { opacity:1; transform:translateY(0); }
+#view-journey .j-q-input { width:100%; background:var(--j-bg-s); border:1.5px solid var(--j-border-em); border-radius:var(--j-r); padding:16px 18px; font-family:var(--j-font); font-size:15px; color:var(--j-text); outline:none; transition:all .4s .1s; opacity:0; transform:translateY(16px); }
+#view-journey .j-q-input.show { opacity:1; transform:translateY(0); }
+#view-journey .j-q-input:focus { border-color:var(--j-green); }
+#view-journey .j-q-input::placeholder { color:var(--j-muted); }
+#view-journey .j-q-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; opacity:0; transform:translateY(16px); transition:all .4s .1s; }
+#view-journey .j-q-options.show { opacity:1; transform:translateY(0); }
+#view-journey .j-q-options.cols-1 { grid-template-columns:1fr; }
+#view-journey .j-q-opt { background:var(--j-bg-s); border:1.5px solid var(--j-border-em); border-radius:var(--j-r); padding:14px 16px; font-size:14px; font-weight:500; color:var(--j-sub); cursor:pointer; transition:all .2s; text-align:left; }
+#view-journey .j-q-opt:hover { border-color:var(--j-green); color:var(--j-text); background:var(--j-green-dim); }
+#view-journey .j-q-opt.selected { border-color:var(--j-green); color:var(--j-green); background:var(--j-green-dim); }
+#view-journey .j-q-actions { display:flex; gap:10px; margin-top:20px; opacity:0; transform:translateY(16px); transition:all .4s .15s; }
+#view-journey .j-q-actions.show { opacity:1; transform:translateY(0); }
+#view-journey .j-btn-next { background:var(--j-green); color:#030B05; font-family:var(--j-font); font-size:14px; font-weight:700; border:none; border-radius:var(--j-r); padding:13px 28px; cursor:pointer; transition:all .2s; letter-spacing:.02em; }
+#view-journey .j-btn-next:hover { background:#00f093; box-shadow:0 0 20px var(--j-green-glow); }
+#view-journey .j-btn-next:disabled { opacity:.4; cursor:not-allowed; }
+#view-journey .j-btn-skip { background:transparent; border:1.5px solid var(--j-border-em); color:var(--j-sub); font-family:var(--j-font); font-size:14px; border-radius:var(--j-r); padding:13px 20px; cursor:pointer; transition:all .2s; }
+#view-journey .j-btn-skip:hover { color:var(--j-text); }
+
+/* ── GENERATING ── */
+#view-journey #j-screen-generating { justify-content:center; align-items:center; background:var(--j-bg); z-index:1; }
+#view-journey .j-gen-inner { text-align:center; max-width:400px; padding:24px; position:relative; z-index:2; }
+#view-journey .j-gen-ring { width:80px; height:80px; margin:0 auto 28px; }
+#view-journey .j-gen-ring svg { animation:j-spin 2s linear infinite; }
+@keyframes j-spin { to{transform:rotate(360deg)} }
+#view-journey .j-gen-title { font-family:var(--j-font-d); font-size:22px; font-weight:600; margin-bottom:10px; color:var(--j-text); }
+#view-journey .j-gen-sub { font-size:14px; color:var(--j-sub); line-height:1.6; }
+#view-journey .j-gen-steps { margin-top:28px; text-align:left; background:var(--j-bg-s); border:1px solid var(--j-border); border-radius:var(--j-r-lg); padding:18px; display:flex; flex-direction:column; gap:12px; }
+#view-journey .j-gen-step { display:flex; align-items:center; gap:12px; font-size:13px; color:var(--j-sub); }
+#view-journey .j-gen-step.active { color:var(--j-text); }
+#view-journey .j-gen-step-dot { width:8px; height:8px; border-radius:50%; background:var(--j-muted); flex-shrink:0; }
+#view-journey .j-gen-step.done .j-gen-step-dot { background:var(--j-green); }
+#view-journey .j-gen-step.active .j-gen-step-dot { background:var(--j-green); box-shadow:0 0 8px var(--j-green); animation:j-pulse 1s ease-in-out infinite; }
+@keyframes j-pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── DASHBOARD ── */
+#view-journey #j-screen-dashboard { flex-direction:row; z-index:1; }
+#view-journey #j-dash-sidebar { width:300px; flex-shrink:0; background:var(--j-bg-s); border-right:1px solid var(--j-border); display:flex; flex-direction:column; overflow:hidden; }
+#view-journey .j-sidebar-top { padding:24px 20px 20px; border-bottom:1px solid var(--j-border); }
+#view-journey .j-s-logo { font-family:var(--j-font-d); font-size:13px; font-weight:600; color:var(--j-green); letter-spacing:.04em; display:flex; align-items:center; gap:6px; margin-bottom:20px; }
+#view-journey .j-s-logo-dot { width:7px; height:7px; border-radius:50%; background:var(--j-green); box-shadow:0 0 8px var(--j-green); }
+#view-journey .j-s-biz-name { font-weight:700; font-size:15px; color:var(--j-text); margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#view-journey .j-s-biz-type { font-size:12px; color:var(--j-sub); }
+#view-journey .j-s-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
+#view-journey .j-s-tag { background:var(--j-bg-h); border:1px solid var(--j-border-em); border-radius:6px; padding:3px 8px; font-size:11px; color:var(--j-sub); }
+#view-journey .j-score-section { padding:24px 20px; border-bottom:1px solid var(--j-border); display:flex; flex-direction:column; align-items:center; }
+#view-journey .j-score-ring-wrap { position:relative; width:140px; height:140px; margin-bottom:16px; }
+#view-journey .j-score-ring-wrap svg { transform:rotate(-90deg); }
+#view-journey #j-ring-bg { fill:none; stroke:var(--j-bg-h); stroke-width:8; }
+#view-journey #j-ring-fill { fill:none; stroke:var(--j-green); stroke-width:8; stroke-linecap:round; transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1),stroke .5s; filter:drop-shadow(0 0 8px var(--j-green)); }
+#view-journey .j-score-num { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+#view-journey #j-score-value { font-family:var(--j-mono); font-size:32px; font-weight:700; color:var(--j-text); line-height:1; transition:color .5s; }
+#view-journey .j-score-pct { font-size:12px; color:var(--j-sub); font-weight:500; }
+#view-journey #j-score-label { font-size:13px; font-weight:600; color:var(--j-green); text-align:center; transition:color .5s; }
+#view-journey .j-score-detail { font-size:12px; color:var(--j-sub); text-align:center; line-height:1.5; }
+#view-journey .j-phase-nav { flex:1; overflow-y:auto; padding:12px 10px; }
+#view-journey .j-phase-nav::-webkit-scrollbar { width:4px; }
+#view-journey .j-phase-nav::-webkit-scrollbar-thumb { background:var(--j-bg-h); border-radius:2px; }
+#view-journey .j-phase-btn { width:100%; text-align:left; background:transparent; border:none; padding:9px 12px; border-radius:8px; cursor:pointer; transition:background .15s; display:flex; align-items:center; gap:10px; color:var(--j-sub); font-family:var(--j-font); font-size:13px; font-weight:500; }
+#view-journey .j-phase-btn:hover { background:var(--j-bg-h); color:var(--j-text); }
+#view-journey .j-phase-btn.active { background:var(--j-green-dim); color:var(--j-green); }
+#view-journey .j-phase-btn-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+#view-journey .j-phase-btn-count { margin-left:auto; font-size:11px; background:var(--j-bg-h); border-radius:4px; padding:2px 6px; font-family:var(--j-mono); }
+#view-journey #j-dash-main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+#view-journey .j-dash-header { padding:20px 28px; border-bottom:1px solid var(--j-border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+#view-journey .j-dash-title { font-family:var(--j-font-d); font-size:20px; font-weight:700; color:var(--j-text); }
+#view-journey .j-dash-subtitle { font-size:13px; color:var(--j-sub); margin-top:2px; }
+#view-journey .j-btn-restart { background:var(--j-bg-s); border:1px solid var(--j-border-em); color:var(--j-sub); font-family:var(--j-font); font-size:12px; padding:7px 14px; border-radius:8px; cursor:pointer; transition:all .2s; }
+#view-journey .j-btn-restart:hover { color:var(--j-text); }
+#view-journey .j-dash-body { flex:1; overflow-y:auto; padding:24px 28px; }
+#view-journey .j-dash-body::-webkit-scrollbar { width:4px; }
+#view-journey .j-dash-body::-webkit-scrollbar-thumb { background:var(--j-bg-h); border-radius:2px; }
+#view-journey .j-ai-summary { background:var(--j-bg-s); border:1px solid var(--j-border-em); border-radius:var(--j-r-lg); padding:16px 20px; margin-bottom:28px; display:flex; gap:14px; }
+#view-journey .j-ai-icon { width:32px; height:32px; border-radius:8px; background:var(--j-green-dim); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px; }
+#view-journey .j-ai-summary-text { font-size:13px; color:var(--j-sub); line-height:1.6; flex:1; }
+#view-journey .j-ai-summary-text strong { color:var(--j-text); font-weight:600; }
+#view-journey .j-phase-section { margin-bottom:32px; }
+#view-journey .j-phase-header { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+#view-journey .j-phase-pill { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+#view-journey .j-phase-line { flex:1; height:1px; background:var(--j-border); }
+#view-journey .j-phase-progress { font-size:12px; color:var(--j-sub); font-family:var(--j-mono); }
+#view-journey .j-step-grid { display:grid; gap:10px; }
+#view-journey .j-step-card { background:var(--j-bg-c); border:1px solid var(--j-border); border-radius:var(--j-r); padding:16px; cursor:pointer; transition:all .2s; display:flex; gap:14px; position:relative; overflow:hidden; }
+#view-journey .j-step-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:2px 0 0 2px; background:var(--j-border-em); transition:background .3s; }
+#view-journey .j-step-card:hover { border-color:var(--j-border-em); background:var(--j-bg-h); }
+#view-journey .j-step-card.completed { border-color:rgba(0,217,126,.2); background:rgba(0,217,126,.04); }
+#view-journey .j-step-card.completed::before { background:var(--j-green); }
+#view-journey .j-step-check { width:24px; height:24px; border-radius:50%; border:2px solid var(--j-border-em); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all .3s; margin-top:1px; cursor:pointer; }
+#view-journey .j-step-check:hover { border-color:var(--j-green); }
+#view-journey .j-step-card.completed .j-step-check { background:var(--j-green); border-color:var(--j-green); }
+#view-journey .j-check-icon { opacity:0; color:#030B05; font-size:12px; font-weight:700; transition:opacity .2s; }
+#view-journey .j-step-card.completed .j-check-icon { opacity:1; }
+#view-journey .j-step-body { flex:1; min-width:0; }
+#view-journey .j-step-title-row { display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; }
+#view-journey .j-step-title { font-size:14px; font-weight:600; color:var(--j-text); flex:1; }
+#view-journey .j-step-card.completed .j-step-title { color:var(--j-sub); text-decoration:line-through; text-decoration-color:var(--j-muted); }
+#view-journey .j-agency-badge { font-size:10px; font-weight:700; letter-spacing:.06em; padding:2px 7px; border-radius:5px; flex-shrink:0; text-transform:uppercase; }
+#view-journey .j-step-desc { font-size:12px; color:var(--j-sub); line-height:1.5; margin-bottom:10px; }
+#view-journey .j-step-meta { display:flex; gap:12px; font-size:11px; color:var(--j-muted); }
+#view-journey .j-step-meta span { display:flex; align-items:center; gap:4px; }
+#view-journey .j-step-pts { margin-left:auto; font-family:var(--j-mono); font-size:11px; color:var(--j-green); font-weight:700; background:var(--j-green-dim); padding:2px 7px; border-radius:5px; }
+
+/* ── STEP DETAIL PANEL ── */
+#view-journey #j-panel-overlay { position:absolute; inset:0; background:rgba(0,0,0,.5); z-index:50; display:none; opacity:0; transition:opacity .3s; }
+#view-journey #j-panel-overlay.open { display:block; opacity:1; }
+#view-journey #j-step-panel { position:absolute; top:0; right:0; bottom:0; width:480px; background:var(--j-bg-s); border-left:1px solid var(--j-border); z-index:60; transform:translateX(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); overflow-y:auto; display:flex; flex-direction:column; }
+#view-journey #j-step-panel::-webkit-scrollbar { width:4px; }
+#view-journey #j-step-panel::-webkit-scrollbar-thumb { background:var(--j-bg-h); border-radius:2px; }
+#view-journey #j-step-panel.open { transform:translateX(0); }
+#view-journey .j-panel-header { padding:24px 24px 20px; border-bottom:1px solid var(--j-border); position:sticky; top:0; background:var(--j-bg-s); z-index:5; }
+#view-journey .j-panel-header-top { display:flex; align-items:flex-start; gap:12px; margin-bottom:16px; }
+#view-journey .j-panel-close { background:var(--j-bg-h); border:1px solid var(--j-border); color:var(--j-sub); width:32px; height:32px; border-radius:8px; cursor:pointer; flex-shrink:0; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all .2s; margin-left:auto; }
+#view-journey .j-panel-close:hover { color:var(--j-text); border-color:var(--j-border-em); }
+#view-journey .j-panel-agency { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:8px; }
+#view-journey .j-panel-title { font-family:var(--j-font-d); font-size:22px; font-weight:700; line-height:1.3; color:var(--j-text); }
+#view-journey .j-panel-meta-row { display:flex; gap:10px; flex-wrap:wrap; }
+#view-journey .j-panel-meta-chip { background:var(--j-bg-h); border:1px solid var(--j-border); border-radius:7px; padding:6px 12px; font-size:12px; color:var(--j-sub); display:flex; align-items:center; gap:6px; }
+#view-journey .j-panel-meta-chip strong { color:var(--j-text); font-weight:600; }
+#view-journey .j-panel-body { flex:1; padding:24px; }
+#view-journey .j-panel-section { margin-bottom:28px; }
+#view-journey .j-panel-section-title { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--j-muted); margin-bottom:12px; }
+#view-journey .j-panel-desc { font-size:14px; color:var(--j-sub); line-height:1.7; }
+#view-journey .j-panel-desc p { margin-bottom:10px; }
+#view-journey .j-docs-list { display:flex; flex-direction:column; gap:7px; }
+#view-journey .j-doc-item { display:flex; align-items:center; gap:10px; background:var(--j-bg-c); border:1px solid var(--j-border); border-radius:8px; padding:11px 14px; font-size:13px; color:var(--j-text); }
+#view-journey .j-doc-item::before { content:'📄'; font-size:14px; }
+#view-journey .j-citations-list { display:flex; flex-direction:column; gap:8px; }
+#view-journey .j-citation-link { display:flex; align-items:flex-start; gap:12px; background:var(--j-bg-c); border:1px solid var(--j-border); border-radius:10px; padding:14px; text-decoration:none; transition:all .2s; cursor:pointer; }
+#view-journey .j-citation-link:hover { border-color:var(--j-border-em); background:var(--j-bg-h); }
+#view-journey .j-citation-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+#view-journey .j-citation-content { flex:1; min-width:0; }
+#view-journey .j-citation-ref { font-size:13px; font-weight:600; color:var(--j-text); margin-bottom:3px; display:flex; align-items:center; gap:6px; }
+#view-journey .j-citation-ext { font-size:10px; color:var(--j-green); font-weight:700; letter-spacing:.06em; background:var(--j-green-dim); padding:1px 5px; border-radius:4px; }
+#view-journey .j-citation-desc { font-size:12px; color:var(--j-sub); line-height:1.5; }
+#view-journey .j-citation-url { font-size:11px; color:var(--j-muted); font-family:var(--j-mono); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#view-journey .j-panel-cta { padding:20px 24px; border-top:1px solid var(--j-border); background:var(--j-bg-s); position:sticky; bottom:0; }
+#view-journey .j-btn-begin { width:100%; background:var(--j-green); color:#030B05; font-family:var(--j-font); font-size:15px; font-weight:700; border:none; border-radius:var(--j-r); padding:15px; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+#view-journey .j-btn-begin:hover { background:#00f093; box-shadow:0 4px 24px var(--j-green-glow); }
+#view-journey .j-btn-complete { width:100%; background:transparent; border:1.5px solid var(--j-border-em); color:var(--j-sub); font-family:var(--j-font); font-size:13px; font-weight:500; border-radius:var(--j-r); padding:11px; cursor:pointer; transition:all .2s; margin-top:8px; }
+#view-journey .j-btn-complete:hover { border-color:var(--j-green); color:var(--j-green); }
+#view-journey .j-btn-complete.done { border-color:var(--j-green); color:var(--j-green); background:var(--j-green-dim); }
+
+/* ── FORM SCREEN ── */
+#view-journey #j-screen-form { flex-direction:column; overflow:hidden; background:var(--j-bg); z-index:1; }
+#view-journey .j-form-topbar { padding:16px 28px; border-bottom:1px solid var(--j-border); display:flex; align-items:center; gap:16px; flex-shrink:0; }
+#view-journey .j-form-back { background:var(--j-bg-s); border:1px solid var(--j-border); color:var(--j-sub); padding:8px 14px; border-radius:8px; cursor:pointer; font-family:var(--j-font); font-size:13px; transition:all .2s; display:flex; align-items:center; gap:6px; }
+#view-journey .j-form-back:hover { color:var(--j-text); border-color:var(--j-border-em); }
+#view-journey .j-form-topbar-info { flex:1; }
+#view-journey .j-form-topbar-title { font-family:var(--j-font-d); font-size:16px; font-weight:700; color:var(--j-text); }
+#view-journey .j-form-topbar-sub { font-size:12px; color:var(--j-sub); }
+#view-journey .j-form-body { flex:1; overflow-y:auto; padding:28px; max-width:800px; width:100%; margin:0 auto; }
+#view-journey .j-form-body::-webkit-scrollbar { width:4px; }
+#view-journey .j-form-body::-webkit-scrollbar-thumb { background:var(--j-bg-h); border-radius:2px; }
+#view-journey .j-form-loading { text-align:center; padding:60px 24px; color:var(--j-sub); }
+#view-journey .j-form-loading-ring { display:inline-block; width:36px; height:36px; margin-bottom:16px; }
+#view-journey .j-form-loading-ring svg { animation:j-spin 1.5s linear infinite; }
+#view-journey .j-form-section { margin-bottom:32px; }
+#view-journey .j-form-section-title { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--j-muted); margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--j-border); }
+#view-journey .j-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+#view-journey .j-form-field { display:flex; flex-direction:column; gap:6px; }
+#view-journey .j-form-field.full { grid-column:1/-1; }
+#view-journey .j-form-label { font-size:12px; font-weight:600; color:var(--j-sub); letter-spacing:.03em; }
+#view-journey .j-form-input { background:var(--j-bg-s); border:1.5px solid var(--j-border-em); border-radius:8px; padding:11px 14px; font-family:var(--j-font); font-size:14px; color:var(--j-text); outline:none; transition:border-color .2s; width:100%; }
+#view-journey .j-form-input:focus { border-color:var(--j-green); }
+#view-journey .j-form-input::placeholder { color:var(--j-muted); }
+#view-journey .j-form-hint { font-size:11px; color:var(--j-muted); line-height:1.4; }
+#view-journey .j-form-actions { display:flex; gap:12px; padding:20px 28px; border-top:1px solid var(--j-border); flex-shrink:0; background:var(--j-bg); max-width:800px; width:100%; margin:0 auto; }
+#view-journey .j-btn-download { background:var(--j-green); color:#030B05; font-family:var(--j-font); font-size:14px; font-weight:700; border:none; border-radius:var(--j-r); padding:13px 28px; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:8px; }
+#view-journey .j-btn-download:hover { background:#00f093; box-shadow:0 4px 24px var(--j-green-glow); }
+#view-journey .j-btn-mark-done { background:transparent; border:1.5px solid var(--j-green); color:var(--j-green); font-family:var(--j-font); font-size:14px; font-weight:600; border-radius:var(--j-r); padding:13px 24px; cursor:pointer; transition:all .2s; }
+#view-journey .j-btn-mark-done:hover { background:var(--j-green-dim); }
+
+/* Score flash / agency colours */
+@keyframes j-scoreFlash { 0%{transform:scale(1)} 30%{transform:scale(1.08)} 60%{transform:scale(.97)} 100%{transform:scale(1)} }
+#view-journey .j-score-flash { animation:j-scoreFlash .6s ease; }
+#view-journey .j-agency-CAC { background:rgba(59,130,246,.15); color:#60A5FA; }
+#view-journey .j-agency-FIRS { background:rgba(245,158,11,.15); color:#FCD34D; }
+#view-journey .j-agency-CBN { background:rgba(167,139,250,.15); color:#C4B5FD; }
+#view-journey .j-agency-NITDA { background:rgba(34,211,238,.15); color:#67E8F9; }
+#view-journey .j-agency-NAFDAC { background:rgba(248,113,113,.15); color:#FCA5A5; }
+#view-journey .j-agency-NSITF { background:rgba(0,217,126,.15); color:#6EE7B7; }
+#view-journey .j-agency-SEC { background:rgba(244,114,182,.15); color:#F9A8D4; }
+#view-journey .j-agency-SON { background:rgba(251,146,60,.15); color:#FED7AA; }
+#view-journey .j-agency-STATE { background:rgba(148,163,184,.15); color:#CBD5E1; }
+#view-journey .j-phase-foundation { background:rgba(59,130,246,.15); color:#60A5FA; }
+#view-journey .j-phase-tax { background:rgba(245,158,11,.15); color:#FCD34D; }
+#view-journey .j-phase-sector { background:rgba(167,139,250,.15); color:#C4B5FD; }
+#view-journey .j-phase-ongoing { background:rgba(0,217,126,.15); color:#6EE7B7; }
+
+/* Journey mobile */
+@media(max-width:768px) {
+  #view-journey #j-dash-sidebar { display:none; }
+  #view-journey #j-step-panel { width:100%; }
+  #view-journey .j-form-grid { grid-template-columns:1fr; }
+  #view-journey .j-dash-body { padding:16px; }
+  #view-journey .j-dash-header { padding:14px 16px; }
+  #view-journey .j-panel-body { padding:16px; }
+  #view-journey .j-panel-header { padding:16px; }
+  #view-journey .j-q-options { grid-template-columns:1fr; }
+  #view-journey .j-intake-wrap { padding:20px 16px; }
+  #view-journey .j-q-text { font-size:22px; }
+}
 </style>
 </head>
 <body>
@@ -1715,6 +1960,11 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       <!-- TOOLS -->
       <div class="nav-divider"></div>
       <div class="nav-section-label">Tools</div>
+      <div class="nav-item" onclick="setView('journey')" data-view="journey">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Compliance Journey
+        <span style="font-size:9px;padding:1px 5px;background:#00D97E;color:#030B05;border-radius:4px;margin-left:auto;font-weight:800;letter-spacing:.03em">NEW</span>
+      </div>
       <div class="nav-item" onclick="setView('checklist')" data-view="checklist">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         Compliance Checklist
@@ -5524,6 +5774,161 @@ async function leaveOrg() {
 })();
 </script>
 
+<!-- ═══════════════════════════════════════════════════════
+     COMPLIANCE JOURNEY VIEW
+═══════════════════════════════════════════════════════ -->
+<div class="view" id="view-journey">
+
+  <!-- INTAKE SCREEN -->
+  <div id="j-screen-intake" class="j-screen j-active">
+    <div class="j-intake-wrap">
+      <div class="j-intake-logo"><span></span>RenikGPT</div>
+      <div class="j-q-progress" id="j-q-progress"></div>
+      <div class="j-q-label" id="j-q-label"></div>
+      <div class="j-q-text" id="j-q-text"></div>
+      <div id="j-q-answer-area"></div>
+      <div class="j-q-actions" id="j-q-actions">
+        <button class="j-btn-next" id="j-btn-next" onclick="jNextQuestion()">Continue →</button>
+        <button class="j-btn-skip" id="j-btn-skip" onclick="jSkipQuestion()">Skip</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERATING SCREEN -->
+  <div id="j-screen-generating" class="j-screen">
+    <div class="j-gen-inner">
+      <div class="j-gen-ring">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="var(--j-bg-h)" stroke-width="6"/>
+          <circle cx="40" cy="40" r="34" fill="none" stroke="var(--j-green)" stroke-width="6"
+            stroke-dasharray="50 164" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+        </svg>
+      </div>
+      <div class="j-gen-title">Building Your Compliance Journey</div>
+      <div class="j-gen-sub">Analysing Nigerian regulations relevant to your business type and industry.</div>
+      <div class="j-gen-steps">
+        <div class="j-gen-step active" id="j-gs-1"><div class="j-gen-step-dot"></div>Identifying applicable agencies</div>
+        <div class="j-gen-step" id="j-gs-2"><div class="j-gen-step-dot"></div>Mapping regulatory requirements</div>
+        <div class="j-gen-step" id="j-gs-3"><div class="j-gen-step-dot"></div>Sourcing legal citations</div>
+        <div class="j-gen-step" id="j-gs-4"><div class="j-gen-step-dot"></div>Calculating compliance weights</div>
+        <div class="j-gen-step" id="j-gs-5"><div class="j-gen-step-dot"></div>Generating your journey</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD SCREEN -->
+  <div id="j-screen-dashboard" class="j-screen">
+    <div id="j-dash-sidebar">
+      <div class="j-sidebar-top">
+        <div class="j-s-logo"><div class="j-s-logo-dot"></div>RenikGPT</div>
+        <div class="j-s-biz-name" id="j-s-biz-name">—</div>
+        <div class="j-s-biz-type" id="j-s-biz-type">—</div>
+        <div class="j-s-tags" id="j-s-tags"></div>
+      </div>
+      <div class="j-score-section">
+        <div class="j-score-ring-wrap">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <circle id="j-ring-bg" cx="70" cy="70" r="54"/>
+            <circle id="j-ring-fill" cx="70" cy="70" r="54"
+              stroke-dasharray="339.3" stroke-dashoffset="339.3"
+              transform="rotate(-90 70 70)"/>
+          </svg>
+          <div class="j-score-num">
+            <div id="j-score-value">0</div>
+            <div class="j-score-pct">/ 100</div>
+          </div>
+        </div>
+        <div id="j-score-label">Not Started</div>
+        <div class="j-score-detail" id="j-score-detail">Complete steps below<br>to grow your score</div>
+      </div>
+      <div class="j-phase-nav" id="j-phase-nav"></div>
+    </div>
+
+    <div id="j-dash-main">
+      <div class="j-dash-header">
+        <div>
+          <div class="j-dash-title">Compliance Journey</div>
+          <div class="j-dash-subtitle" id="j-dash-subtitle">Your personalised roadmap to full compliance</div>
+        </div>
+        <button class="j-btn-restart" onclick="jRestartApp()">↺ Restart</button>
+      </div>
+      <div class="j-dash-body" id="j-dash-body">
+        <div class="j-ai-summary" id="j-ai-summary">
+          <div class="j-ai-icon">🤖</div>
+          <div class="j-ai-summary-text" id="j-ai-summary-text">Loading your compliance summary…</div>
+        </div>
+        <div id="j-phases-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP DETAIL PANEL (positioned inside view-journey) -->
+  <div id="j-panel-overlay" onclick="jClosePanel()"></div>
+  <div id="j-step-panel">
+    <div class="j-panel-header">
+      <div class="j-panel-header-top">
+        <div>
+          <div class="j-panel-agency" id="j-panel-agency"></div>
+          <div class="j-panel-title" id="j-panel-title"></div>
+        </div>
+        <button class="j-panel-close" onclick="jClosePanel()">✕</button>
+      </div>
+      <div class="j-panel-meta-row" id="j-panel-meta-row"></div>
+    </div>
+    <div class="j-panel-body">
+      <div class="j-panel-section">
+        <div class="j-panel-section-title">Why This Matters</div>
+        <div class="j-panel-desc" id="j-panel-why"></div>
+      </div>
+      <div class="j-panel-section">
+        <div class="j-panel-section-title">What You'll Need</div>
+        <div class="j-docs-list" id="j-panel-docs"></div>
+      </div>
+      <div class="j-panel-section">
+        <div class="j-panel-section-title">Legal Basis — Tap to open source ↗</div>
+        <div class="j-citations-list" id="j-panel-citations"></div>
+      </div>
+    </div>
+    <div class="j-panel-cta">
+      <button class="j-btn-begin" id="j-btn-begin-step" onclick="jOpenFormFill()">
+        <span>⚡</span> Begin This Step
+      </button>
+      <button class="j-btn-complete" id="j-btn-mark-complete" onclick="jMarkStepComplete()">
+        ✓ Mark as Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- FORM FILL SCREEN -->
+  <div id="j-screen-form" class="j-screen">
+    <div class="j-form-topbar">
+      <button class="j-form-back" onclick="jCloseForm()">← Back</button>
+      <div class="j-form-topbar-info">
+        <div class="j-form-topbar-title" id="j-form-topbar-title">Pre-filled Form</div>
+        <div class="j-form-topbar-sub" id="j-form-topbar-sub">Review and complete your details</div>
+      </div>
+      <div class="j-agency-badge" id="j-form-agency-badge"></div>
+    </div>
+    <div class="j-form-body" id="j-form-body">
+      <div class="j-form-loading">
+        <div class="j-form-loading-ring">
+          <svg width="36" height="36" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="14" fill="none" stroke="var(--j-bg-h)" stroke-width="4"/>
+            <circle cx="18" cy="18" r="14" fill="none" stroke="var(--j-green)" stroke-width="4"
+              stroke-dasharray="22 66" stroke-linecap="round" transform="rotate(-90 18 18)"/>
+          </svg>
+        </div>
+        <div>Generating your pre-filled form…</div>
+      </div>
+    </div>
+    <div class="j-form-actions">
+      <button class="j-btn-download" onclick="jDownloadForm()">⬇ Download Form</button>
+      <button class="j-btn-mark-done" onclick="jMarkFromForm()">✓ Mark Step Complete</button>
+    </div>
+  </div>
+
+</div><!-- /view-journey -->
+
 <!-- ONBOARDING WIZARD -->
 <div id="onboard-overlay">
   <div id="onboard-box">
@@ -5695,6 +6100,626 @@ async function leaveOrg() {
     </div>
   </div>
 </div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  COMPLIANCE JOURNEY — all globals prefixed with j
+// ═══════════════════════════════════════════════════════
+
+const jState = {
+  intake: { businessName:'', entityType:'', industry:'', state:'', turnover:'', hasEmployees:'', concerns:'' },
+  journey: null,
+  completed: new Set(),
+  score: 0,
+  animatingScore: false,
+  activeStep: null,
+  generatedForm: null,
+  activePhaseId: null
+};
+
+const J_QUESTIONS = [
+  { id:'businessName', label:'STEP 1 OF 6', text:'What is the name of your business?', type:'text', placeholder:'e.g. Apex Foods Limited', key:'businessName', required:true },
+  { id:'entityType', label:'STEP 2 OF 6', text:'What type of business entity are you registering?', type:'options', key:'entityType', required:true, options:['Sole Proprietorship','Business Name (Partnership)','Limited Liability Company (Ltd)','Non-Governmental Organisation (NGO)'] },
+  { id:'industry', label:'STEP 3 OF 6', text:'Which industry best describes your business?', type:'options', key:'industry', required:true, options:['Food & Beverage','Technology / Fintech','Retail & E-Commerce','Healthcare & Pharmaceuticals','Manufacturing','Consulting & Professional Services','Agriculture','Other'] },
+  { id:'state', label:'STEP 4 OF 6', text:'Which state will your business primarily operate from?', type:'options', key:'state', required:true, options:['Lagos','Abuja (FCT)','Rivers','Kano','Ogun','Delta','Oyo','Other State'] },
+  { id:'turnover', label:'STEP 5 OF 6', text:'What is your estimated annual turnover?', type:'options', key:'turnover', required:true, options:['Under ₦5 Million','₦5M – ₦25 Million','₦25M – ₦100 Million','Above ₦100 Million'] },
+  { id:'hasEmployees', label:'STEP 6 OF 6', text:'Will you be hiring employees?', type:'options', key:'hasEmployees', required:true, options:['Yes, immediately','Yes, in the next 12 months','No, solo for now','Unsure'] }
+];
+
+let jCurrentQ = 0;
+
+// ── Screen management (internal to journey view) ──
+function jShowScreen(id) {
+  document.querySelectorAll('#view-journey .j-screen').forEach(s => s.classList.remove('j-active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('j-active');
+}
+
+// ── Init when journey view becomes active ──
+const _origSetView = setView;
+function setView(name) {
+  _origSetView(name);
+  if (name === 'journey' && !jState.journey) {
+    jInitIntake();
+  }
+}
+
+function jInitIntake() {
+  jCurrentQ = 0;
+  jState.intake = { businessName:'', entityType:'', industry:'', state:'', turnover:'', hasEmployees:'', concerns:'' };
+  jState.journey = null; jState.completed = new Set(); jState.score = 0; jState.activeStep = null;
+  jShowScreen('j-screen-intake');
+  jRenderProgress();
+  jShowQuestion(0);
+}
+
+function jRenderProgress() {
+  const prog = document.getElementById('j-q-progress');
+  if (!prog) return;
+  prog.innerHTML = J_QUESTIONS.map((q,i) =>
+    `<div class="j-q-dot ${i<jCurrentQ?'done':i===jCurrentQ?'active':''}"></div>`
+  ).join('');
+}
+
+function jShowQuestion(idx) {
+  const q = J_QUESTIONS[idx];
+  const label = document.getElementById('j-q-label');
+  const text = document.getElementById('j-q-text');
+  const area = document.getElementById('j-q-answer-area');
+  const actions = document.getElementById('j-q-actions');
+  const btnSkip = document.getElementById('j-btn-skip');
+  if (!label || !text || !area) return;
+
+  [label, text].forEach(el => el.classList.remove('show'));
+  area.innerHTML = ''; area.style.opacity = 0; area.style.transform = 'translateY(16px)';
+
+  setTimeout(() => {
+    label.textContent = q.label;
+    text.textContent = q.text;
+    [label, text].forEach(el => el.classList.add('show'));
+
+    if (q.type === 'text') {
+      area.innerHTML = `<input class="j-q-input show" id="j-q-current-input" type="text" placeholder="${q.placeholder||''}" value="${jState.intake[q.key]||''}" onkeydown="if(event.key==='Enter')jNextQuestion()">`;
+    } else {
+      const cols = q.options.length > 4 ? 'cols-1' : '';
+      area.innerHTML = `<div class="j-q-options show ${cols}">${q.options.map(o =>
+        `<div class="j-q-opt${jState.intake[q.key]===o?' selected':''}" onclick="jSelectOption(this,'${o.replace(/'/g,"&#39;")}','${q.key}')">${o}</div>`
+      ).join('')}</div>`;
+    }
+    area.style.transition = 'all .4s .1s';
+    requestAnimationFrame(() => { area.style.opacity = 1; area.style.transform = 'translateY(0)'; });
+    if (actions) actions.classList.add('show');
+    if (btnSkip) btnSkip.style.display = q.required ? 'none' : '';
+    const next = document.getElementById('j-btn-next');
+    if (next) next.disabled = q.required && !jState.intake[q.key];
+  }, 120);
+}
+
+function jSelectOption(el, val, key) {
+  el.closest('.j-q-options').querySelectorAll('.j-q-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  jState.intake[key] = val;
+  const next = document.getElementById('j-btn-next');
+  if (next) next.disabled = false;
+}
+
+function jNextQuestion() {
+  const q = J_QUESTIONS[jCurrentQ];
+  if (q.type === 'text') {
+    const input = document.getElementById('j-q-current-input');
+    if (input) jState.intake[q.key] = input.value.trim();
+  }
+  if (q.required && !jState.intake[q.key]) return;
+  jCurrentQ++;
+  if (jCurrentQ >= J_QUESTIONS.length) { jStartGeneration(); return; }
+  jRenderProgress();
+  jShowQuestion(jCurrentQ);
+}
+
+function jSkipQuestion() {
+  jCurrentQ++;
+  if (jCurrentQ >= J_QUESTIONS.length) { jStartGeneration(); return; }
+  jRenderProgress();
+  jShowQuestion(jCurrentQ);
+}
+
+// ── Generation ──
+async function jStartGeneration() {
+  jShowScreen('j-screen-generating');
+  jAnimateGenSteps();
+  try {
+    await jGenerateJourney();
+  } catch(e) {
+    console.error(e);
+    alert('Error generating journey. Please check your connection and try again.');
+    jShowScreen('j-screen-intake');
+  }
+}
+
+function jAnimateGenSteps() {
+  let step = 1;
+  const interval = setInterval(() => {
+    if (step > 1) {
+      const prev = document.getElementById(`j-gs-${step-1}`);
+      if (prev) { prev.classList.remove('active'); prev.classList.add('done'); }
+    }
+    if (step <= 5) {
+      const cur = document.getElementById(`j-gs-${step}`);
+      if (cur) cur.classList.add('active');
+      step++;
+    } else { clearInterval(interval); }
+  }, 900);
+}
+
+const J_SYSTEM_PROMPT = `You are RenikGPT, a Nigerian business compliance expert with deep knowledge of all Nigerian regulatory agencies and laws. Given a business profile, generate a comprehensive, accurate compliance journey.
+
+Return ONLY a valid JSON object — no markdown, no backticks, no preamble — with this exact structure:
+{
+  "summary": "2-sentence plain-English summary of this business's specific compliance needs and key risks",
+  "phases": [
+    {
+      "id": "foundation",
+      "title": "Foundation",
+      "color": "foundation",
+      "description": "Core registration steps required before operations begin",
+      "steps": [
+        {
+          "id": "unique_snake_case_id",
+          "title": "Step title",
+          "agency": "CAC",
+          "agencyFull": "Corporate Affairs Commission",
+          "agencyUrl": "https://new.cac.gov.ng",
+          "weight": 15,
+          "estimatedDays": "2–5 business days",
+          "estimatedCost": "₦10,000 – ₦35,000",
+          "description": "Clear 1-sentence description of what this step involves.",
+          "whyItMatters": "2–3 sentences explaining legal obligation and consequences of non-compliance. Reference specific sections.",
+          "documents": ["Document 1", "Document 2", "Document 3"],
+          "legalBasis": [
+            {
+              "citation": "CAMA 2020 §18–40",
+              "url": "https://cac.gov.ng/companies-and-allied-matters-act-2020/",
+              "description": "Mandates registration of all companies and business names in Nigeria"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+RULES:
+1. Use real Nigerian law citations with accurate official government URLs.
+2. The 4 phases must be: "foundation" (CAC registration), "tax" (FIRS, VAT, etc.), "sector" (industry-specific licenses), "ongoing" (annual returns, renewals).
+3. Weights across ALL steps must sum to exactly 100.
+4. Include only steps relevant to this specific business type/industry/state.
+5. Be specific to the business. A food business needs NAFDAC. A fintech needs CBN. A pharma needs PCN. A tech company handling personal data needs NDPR.
+6. whyItMatters must mention specific law sections and penalties.
+7. Agency URLs: CAC=https://new.cac.gov.ng, FIRS=https://www.firs.gov.ng, CBN=https://www.cbn.gov.ng, NITDA=https://nitda.gov.ng, NAFDAC=https://www.nafdac.gov.ng, NSITF=https://www.nsitf.gov.ng, SEC=https://sec.gov.ng, SON=https://www.son.gov.ng, FCCPC=https://fccpc.gov.ng
+8. Generate at least 8–14 steps total across all 4 phases so the business gets a thorough roadmap.`;
+
+async function jGenerateJourney() {
+  const userMsg = `Business profile:
+- Business Name: ${jState.intake.businessName}
+- Entity Type: ${jState.intake.entityType}
+- Industry: ${jState.intake.industry}
+- Operating State: ${jState.intake.state}
+- Estimated Annual Turnover: ${jState.intake.turnover}
+- Has Employees: ${jState.intake.hasEmployees}
+
+Generate the full compliance journey for this business.`;
+
+  // Route through Supabase edge function via index.html's callAI()
+  const data = await callAI({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 4000,
+    system: J_SYSTEM_PROMPT,
+    messages: [{ role: 'user', content: userMsg }]
+  });
+
+  const raw = data.content.map(c => c.text || '').join('');
+  const clean = raw.replace(/```json|```/g, '').trim();
+  jState.journey = JSON.parse(clean);
+  jBuildDashboard();
+  jShowScreen('j-screen-dashboard');
+}
+
+// ── Dashboard ──
+function jBuildDashboard() {
+  const j = jState.journey;
+  const i = jState.intake;
+
+  document.getElementById('j-s-biz-name').textContent = i.businessName || 'Your Business';
+  document.getElementById('j-s-biz-type').textContent = i.entityType || '';
+  const tags = [i.industry, i.state, i.turnover].filter(Boolean);
+  document.getElementById('j-s-tags').innerHTML = tags.map(t => `<span class="j-s-tag">${t}</span>`).join('');
+  document.getElementById('j-ai-summary-text').innerHTML = j.summary.replace(/\b(CAMA|FIRS|CAC|CBN|NAFDAC|NITDA|NDPR|NSITF|SEC|PCN|SON|FCCPC)\b/g, '<strong>$1</strong>');
+
+  const nav = document.getElementById('j-phase-nav');
+  nav.innerHTML = j.phases.map(p => `
+    <button class="j-phase-btn" id="j-pnav-${p.id}" onclick="jScrollToPhase('${p.id}')">
+      <div class="j-phase-btn-dot" style="background:var(--j-${p.id === 'foundation' ? 'blue' : p.id === 'tax' ? 'amber' : p.id === 'sector' ? 'purple' : 'green'})"></div>
+      ${p.title}
+      <span class="j-phase-btn-count">${p.steps.length}</span>
+    </button>`).join('');
+
+  const container = document.getElementById('j-phases-container');
+  container.innerHTML = j.phases.map(p => jRenderPhase(p)).join('');
+
+  jUpdateScore(0);
+  jUpdateStepCount();
+}
+
+function jRenderPhase(phase) {
+  return `
+    <div class="j-phase-section" id="j-phase-${phase.id}">
+      <div class="j-phase-header">
+        <div class="j-phase-pill j-phase-${phase.id}">${phase.title}</div>
+        <div class="j-phase-line"></div>
+        <div class="j-phase-progress" id="j-pp-${phase.id}">0 / ${phase.steps.length}</div>
+      </div>
+      <div class="j-step-grid">${phase.steps.map(s => jRenderStepCard(s)).join('')}</div>
+    </div>`;
+}
+
+function jRenderStepCard(step) {
+  const done = jState.completed.has(step.id);
+  return `
+    <div class="j-step-card${done?' completed':''}" id="j-card-${step.id}" onclick="jOpenStep('${step.id}')">
+      <div class="j-step-check" onclick="event.stopPropagation();jToggleStep('${step.id}')">
+        <span class="j-check-icon">✓</span>
+      </div>
+      <div class="j-step-body">
+        <div class="j-step-title-row">
+          <div class="j-step-title">${step.title}</div>
+          <div class="j-agency-badge j-agency-${step.agency}">${step.agency}</div>
+        </div>
+        <div class="j-step-desc">${step.description}</div>
+        <div class="j-step-meta">
+          <span>⏱ ${step.estimatedDays}</span>
+          <span>💰 ${step.estimatedCost}</span>
+          <div class="j-step-pts">+${step.weight}pts</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function jScrollToPhase(id) {
+  const el = document.getElementById(`j-phase-${id}`);
+  if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+  document.querySelectorAll('.j-phase-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById(`j-pnav-${id}`);
+  if (btn) btn.classList.add('active');
+}
+
+// ── Step panel ──
+function jFindStep(id) {
+  if (!jState.journey) return null;
+  for (const phase of jState.journey.phases) {
+    const s = phase.steps.find(s => s.id === id);
+    if (s) return s;
+  }
+  return null;
+}
+
+function jOpenStep(id) {
+  const step = jFindStep(id);
+  if (!step) return;
+  jState.activeStep = step;
+
+  document.getElementById('j-panel-agency').textContent = `${step.agencyFull} (${step.agency})`;
+  document.getElementById('j-panel-agency').style.color = jGetAgencyColor(step.agency);
+  document.getElementById('j-panel-title').textContent = step.title;
+  document.getElementById('j-panel-meta-row').innerHTML = [
+    `<div class="j-panel-meta-chip">⏱ <strong>${step.estimatedDays}</strong></div>`,
+    `<div class="j-panel-meta-chip">💰 <strong>${step.estimatedCost}</strong></div>`,
+    `<div class="j-panel-meta-chip">⭐ <strong>+${step.weight} points</strong></div>`
+  ].join('');
+  document.getElementById('j-panel-why').innerHTML = `<p>${step.whyItMatters}</p>`;
+  document.getElementById('j-panel-docs').innerHTML = (step.documents||[]).map(d => `<div class="j-doc-item">${d}</div>`).join('');
+  document.getElementById('j-panel-citations').innerHTML = (step.legalBasis||[]).map(lb => `
+    <a class="j-citation-link" href="${lb.url}" target="_blank" rel="noopener noreferrer">
+      <div class="j-citation-icon">⚖️</div>
+      <div class="j-citation-content">
+        <div class="j-citation-ref">${lb.citation} <span class="j-citation-ext">↗ OPEN</span></div>
+        <div class="j-citation-desc">${lb.description}</div>
+        <div class="j-citation-url">${lb.url}</div>
+      </div>
+    </a>`).join('');
+
+  const done = jState.completed.has(step.id);
+  const btn = document.getElementById('j-btn-mark-complete');
+  btn.textContent = done ? '✓ Marked as Complete' : '✓ Mark as Complete';
+  btn.className = `j-btn-complete${done?' done':''}`;
+
+  document.getElementById('j-step-panel').style.borderLeftColor = jGetAgencyColor(step.agency);
+  document.getElementById('j-panel-overlay').classList.add('open');
+  document.getElementById('j-step-panel').classList.add('open');
+}
+
+function jClosePanel() {
+  document.getElementById('j-panel-overlay').classList.remove('open');
+  document.getElementById('j-step-panel').classList.remove('open');
+}
+
+function jGetAgencyColor(agency) {
+  const map = { CAC:'#60A5FA', FIRS:'#FCD34D', CBN:'#C4B5FD', NITDA:'#67E8F9', NAFDAC:'#FCA5A5', NSITF:'#6EE7B7', SEC:'#F9A8D4', SON:'#FED7AA', STATE:'#CBD5E1' };
+  return map[agency] || '#00D97E';
+}
+
+// ── Score ──
+function jToggleStep(id) {
+  if (jState.completed.has(id)) jState.completed.delete(id);
+  else jState.completed.add(id);
+  jRefreshCard(id);
+  jRecalcScore();
+  jUpdateStepCount();
+}
+
+function jMarkStepComplete() {
+  if (!jState.activeStep) return;
+  const id = jState.activeStep.id;
+  if (!jState.completed.has(id)) {
+    jState.completed.add(id);
+    jRefreshCard(id);
+    jRecalcScore();
+    jUpdateStepCount();
+  }
+  const btn = document.getElementById('j-btn-mark-complete');
+  btn.textContent = '✓ Marked as Complete';
+  btn.className = 'j-btn-complete done';
+}
+
+function jRefreshCard(id) {
+  const card = document.getElementById(`j-card-${id}`);
+  if (card) card.classList.toggle('completed', jState.completed.has(id));
+}
+
+function jRecalcScore() {
+  if (!jState.journey) return;
+  let total = 0;
+  for (const phase of jState.journey.phases)
+    for (const step of phase.steps)
+      if (jState.completed.has(step.id)) total += step.weight;
+  total = Math.min(100, total);
+  jAnimateScore(jState.score, total);
+  jState.score = total;
+}
+
+function jAnimateScore(from, to) {
+  const duration = 900;
+  const start = performance.now();
+  const ring = document.getElementById('j-ring-fill');
+  const val = document.getElementById('j-score-value');
+  if (!ring || !val) return;
+  const circumference = 2 * Math.PI * 54;
+
+  function step(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const cur = from + (to - from) * eased;
+    const curInt = Math.round(cur);
+    val.textContent = curInt;
+    ring.style.strokeDashoffset = circumference - (cur / 100) * circumference;
+    const color = jScoreColor(curInt);
+    ring.style.stroke = color;
+    ring.style.filter = `drop-shadow(0 0 10px ${color})`;
+    val.style.color = color;
+    jUpdateScoreLabel(curInt);
+    if (p < 1) requestAnimationFrame(step);
+    else {
+      const wrap = document.querySelector('#view-journey .j-score-ring-wrap');
+      if (wrap) { wrap.classList.add('j-score-flash'); setTimeout(() => wrap.classList.remove('j-score-flash'), 700); }
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function jScoreColor(v) {
+  if (v === 0) return '#4B5563';
+  if (v < 25) return '#F87171';
+  if (v < 50) return '#F59E0B';
+  if (v < 75) return '#22D3EE';
+  if (v < 90) return '#A78BFA';
+  return '#00D97E';
+}
+
+function jUpdateScoreLabel(v) {
+  const labels = [[0,'Not Started'],[1,'Just Beginning'],[26,'Establishing'],[51,'Growing'],[76,'Nearly Compliant'],[91,'Fully Compliant ✓']];
+  let label = 'Not Started';
+  for (const [min, lbl] of labels) if (v >= min) label = lbl;
+  const labelEl = document.getElementById('j-score-label');
+  const detailEl = document.getElementById('j-score-detail');
+  if (labelEl) { labelEl.textContent = label; labelEl.style.color = jScoreColor(v); }
+  const done = jState.completed.size;
+  const total = jState.journey ? jState.journey.phases.reduce((a, p) => a + p.steps.length, 0) : 0;
+  if (detailEl) detailEl.textContent = `${done} of ${total} steps completed`;
+}
+
+function jUpdateScore(v) { jAnimateScore(0, v); }
+
+function jUpdateStepCount() {
+  if (!jState.journey) return;
+  for (const phase of jState.journey.phases) {
+    const done = phase.steps.filter(s => jState.completed.has(s.id)).length;
+    const el = document.getElementById(`j-pp-${phase.id}`);
+    if (el) el.textContent = `${done} / ${phase.steps.length}`;
+  }
+}
+
+// ── Form pre-fill ──
+function jOpenFormFill() {
+  const step = jState.activeStep;
+  if (!step) return;
+  jClosePanel();
+  jShowScreen('j-screen-form');
+
+  document.getElementById('j-form-topbar-title').textContent = step.title;
+  document.getElementById('j-form-topbar-sub').textContent = `${step.agencyFull} — Pre-filled Form`;
+  const badge = document.getElementById('j-form-agency-badge');
+  badge.textContent = step.agency;
+  badge.className = `j-agency-badge j-agency-${step.agency}`;
+  badge.style.cssText = 'padding:6px 12px;font-size:11px;font-weight:700;letter-spacing:.06em;border-radius:7px';
+
+  document.getElementById('j-form-body').innerHTML = `
+    <div class="j-form-loading">
+      <div class="j-form-loading-ring">
+        <svg width="36" height="36" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="14" fill="none" stroke="var(--j-bg-h)" stroke-width="4"/>
+          <circle cx="18" cy="18" r="14" fill="none" stroke="var(--j-green)" stroke-width="4"
+            stroke-dasharray="22 66" stroke-linecap="round" transform="rotate(-90 18 18)">
+            <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="-90 18 18" to="270 18 18" dur="1.2s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+      <div style="color:var(--j-sub);font-size:14px">Generating your pre-filled ${step.title} form…</div>
+    </div>`;
+
+  jGenerateForm(step);
+}
+
+const J_FORM_SYSTEM = `You are a Nigerian compliance form assistant. Given a business profile and a specific compliance step, generate the pre-filled form data.
+
+Return ONLY valid JSON with this structure:
+{
+  "sections": [
+    {
+      "title": "Section Name",
+      "fields": [
+        {
+          "label": "Field Label",
+          "key": "field_key",
+          "type": "text|select|textarea",
+          "value": "Pre-filled value or empty string",
+          "hint": "Brief guidance on what to enter, referencing the relevant law section",
+          "options": ["Option 1"]
+        }
+      ]
+    }
+  ]
+}
+
+RULES:
+- Pre-fill fields you can from the business profile (name, industry, state, etc.)
+- Use empty string for fields the user must fill themselves
+- Include ALL fields required for this specific Nigerian government form
+- hints should reference relevant law sections
+- Be thorough — only include fields actually on the real form
+- For select types include realistic options array`;
+
+async function jGenerateForm(step) {
+  const userMsg = `Business: ${jState.intake.businessName || 'Unknown'}
+Entity: ${jState.intake.entityType}
+Industry: ${jState.intake.industry}
+State: ${jState.intake.state}
+Turnover: ${jState.intake.turnover}
+Employees: ${jState.intake.hasEmployees}
+
+Generate the pre-filled form for: ${step.title} (${step.agencyFull})
+Form should cover all fields required to ${step.description}`;
+
+  try {
+    // Route through Supabase edge function via callAI()
+    const data = await callAI({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      system: J_FORM_SYSTEM,
+      messages: [{ role: 'user', content: userMsg }]
+    });
+    const raw = data.content.map(c => c.text || '').join('');
+    const clean = raw.replace(/```json|```/g, '').trim();
+    jState.generatedForm = JSON.parse(clean);
+    jRenderForm(jState.generatedForm, step);
+  } catch(e) {
+    document.getElementById('j-form-body').innerHTML = `<div style="padding:40px;color:var(--j-red);text-align:center">Error generating form. Please try again.</div>`;
+  }
+}
+
+function jRenderForm(formData, step) {
+  const html = formData.sections.map(sec => `
+    <div class="j-form-section">
+      <div class="j-form-section-title">${sec.title}</div>
+      <div class="j-form-grid">
+        ${sec.fields.map(f => jRenderField(f)).join('')}
+      </div>
+    </div>`).join('');
+
+  const notice = `
+    <div style="background:var(--j-bg-s);border:1px solid var(--j-border-em);border-radius:var(--j-r);padding:14px 16px;margin-bottom:28px;font-size:13px;color:var(--j-sub);line-height:1.6">
+      <strong style="color:var(--j-text)">ℹ️ AI Pre-filled Form</strong> — Fields have been auto-filled where possible from your intake answers.
+      Review carefully before submission. Based on requirements from
+      <a href="${step.agencyUrl}" target="_blank" rel="noopener" style="color:var(--j-green)">${step.agencyFull} ↗</a>
+    </div>`;
+
+  document.getElementById('j-form-body').innerHTML = notice + html;
+}
+
+function jRenderField(f) {
+  const full = f.type === 'textarea' ? 'full' : '';
+  if (f.type === 'select') {
+    return `<div class="j-form-field ${full}">
+      <label class="j-form-label">${f.label}</label>
+      <select class="j-form-input" id="jff-${f.key}">
+        <option value="">Select…</option>
+        ${(f.options||[]).map(o => `<option value="${o}"${f.value===o?' selected':''}>${o}</option>`).join('')}
+      </select>
+      ${f.hint ? `<div class="j-form-hint">${f.hint}</div>` : ''}
+    </div>`;
+  }
+  if (f.type === 'textarea') {
+    return `<div class="j-form-field ${full}">
+      <label class="j-form-label">${f.label}</label>
+      <textarea class="j-form-input" id="jff-${f.key}" rows="3">${f.value||''}</textarea>
+      ${f.hint ? `<div class="j-form-hint">${f.hint}</div>` : ''}
+    </div>`;
+  }
+  return `<div class="j-form-field ${full}">
+    <label class="j-form-label">${f.label}</label>
+    <input class="j-form-input" id="jff-${f.key}" type="text" value="${f.value||''}" placeholder="">
+    ${f.hint ? `<div class="j-form-hint">${f.hint}</div>` : ''}
+  </div>`;
+}
+
+function jCloseForm() {
+  jShowScreen('j-screen-dashboard');
+}
+
+function jDownloadForm() {
+  if (!jState.generatedForm || !jState.activeStep) return;
+  const step = jState.activeStep;
+  const lines = [`${step.title} — ${step.agencyFull}`, `Business: ${jState.intake.businessName}`, `Generated by RenikGPT`, '', ''];
+  jState.generatedForm.sections.forEach(sec => {
+    lines.push(`=== ${sec.title} ===`);
+    sec.fields.forEach(f => {
+      const el = document.getElementById(`jff-${f.key}`);
+      const val = el ? el.value : f.value || '';
+      lines.push(`${f.label}: ${val}`);
+    });
+    lines.push('');
+  });
+  const blob = new Blob([lines.join('\n')], { type:'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${step.id}_form.txt`;
+  a.click();
+}
+
+function jMarkFromForm() {
+  if (!jState.activeStep) return;
+  jMarkStepComplete();
+  jCloseForm();
+  jShowScreen('j-screen-dashboard');
+}
+
+function jRestartApp() {
+  if (!confirm('Restart your compliance journey? All progress will be lost.')) return;
+  jState.intake = { businessName:'', entityType:'', industry:'', state:'', turnover:'', hasEmployees:'', concerns:'' };
+  jState.journey = null; jState.completed = new Set(); jState.score = 0; jState.activeStep = null;
+  jCurrentQ = 0;
+  jShowScreen('j-screen-intake');
+  jInitIntake();
+}
+</script>
 
 </body>
 </html>
