@@ -274,6 +274,91 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   #sessions-backdrop.open { display: block; }
   /* header chat action buttons */
   #chat-header-actions { display: flex !important; }
+
+  /* Show hamburger in ALL view headers on mobile */
+  .view-header .chat-header-menu { display: flex !important; }
+
+  /* ── UNIVERSAL VIEW FIT: every view fills the screen exactly ── */
+  #app { height: 100dvh; overflow: hidden; }
+  #main { height: 100dvh; overflow: hidden; flex-direction: column; }
+
+  /* All views: flex column, fill main, never overflow the shell */
+  .view { height: 100%; max-height: 100dvh; overflow: hidden; flex-direction: column; }
+
+  /* View headers: never shrink, compact on mobile */
+  .view-header {
+    flex-shrink: 0; padding: 14px 16px 10px;
+  }
+  .view-title { font-size: 17px; }
+  .view-sub { font-size: 12px; }
+
+  /* All scrollable bodies: fill remaining space, scroll internally */
+  .upload-body,
+  .checklist-body,
+  .alerts-body {
+    flex: 1; min-height: 0; overflow-y: auto; padding: 14px;
+  }
+  #reg-grid {
+    flex: 1; min-height: 0; overflow-y: auto;
+    padding: 12px 14px; grid-template-columns: 1fr;
+  }
+  #deadlines-body {
+    flex: 1 !important; min-height: 0; overflow-y: auto !important;
+    padding: 14px 16px !important;
+  }
+  .reports-grid {
+    flex: 1; min-height: 0; overflow-y: auto; padding: 14px 16px;
+  }
+  .templates-grid {
+    flex: 1; min-height: 0; overflow-y: auto;
+    padding: 14px 16px;
+    grid-template-columns: 1fr;
+  }
+  .dcm-body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 12px 20px; }
+
+  /* Lawyers & Pricing & Reports: inline-style overflow divs need overriding */
+  #view-lawyers > div:last-child,
+  #view-pricing > div:last-child {
+    flex: 1 !important; min-height: 0 !important; overflow-y: auto !important;
+    padding: 14px 16px !important;
+  }
+  /* Lawyer grid: single column on mobile */
+  #lawyer-cards { grid-template-columns: 1fr !important; }
+  /* Pricing grid: single column on mobile */
+  #view-pricing .price-card { min-width: 0; }
+  #view-pricing > div:last-child > div:first-child {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Admin & Team views */
+  #view-admin,
+  #view-team { overflow: hidden; }
+  .admin-tab-body,
+  #team-no-org,
+  #team-body-members,
+  #team-body-shared,
+  #team-body-settings {
+    flex: 1; min-height: 0; overflow-y: auto !important;
+  }
+
+  /* Filter bar stays fixed height */
+  .filter-bar { flex-shrink: 0; }
+
+  /* Templates banner: no shrink */
+  .templates-banner { flex-shrink: 0; }
+
+  /* Subscribe bar in alerts: compact on mobile */
+  .subscribe-bar { margin: 0 14px 12px; padding: 12px 14px; }
+
+  /* Team no-org grid: single column on mobile */
+  #team-no-org > div:nth-child(2) { grid-template-columns: 1fr !important; }
+
+  /* Org invite pill: compact on small screens */
+  #org-invite-pill { padding: 5px 10px; }
+  #org-invite-pill span:first-child { display: none; }
+
+  /* Export button: hide label on mobile, show icon only */
+  .export-btn { padding: 8px 10px; font-size: 12px; }
 }
 @media (min-width: 641px) {
   #sessions-backdrop { display: none !important; }
@@ -1814,7 +1899,8 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <!-- REGULATIONS VIEW -->
     <div class="view" id="view-regulations">
       <div class="view-header">
-        <div>
+        <div class="chat-header-menu" onclick="openSidebar()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+        <div style="flex:1;min-width:0">
           <div class="view-title">Regulatory Database</div>
           <div class="view-sub">Browse Nigerian compliance requirements by agency</div>
         </div>
@@ -1837,6 +1923,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <!-- UPLOAD VIEW -->
     <div class="view" id="view-upload">
       <div class="view-header">
+        <div class="chat-header-menu" onclick="openSidebar()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
         <div>
           <div class="view-title">Upload Regulation PDF</div>
           <div class="view-sub">Upload a PDF regulation — RenikGPT will extract and summarise it</div>
@@ -1873,7 +1960,8 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <!-- CHECKLIST VIEW -->
     <div class="view" id="view-checklist">
       <div class="view-header">
-        <div>
+        <div class="chat-header-menu" onclick="openSidebar()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+        <div style="flex:1;min-width:0">
           <div class="view-title">Compliance Checklist Generator</div>
           <div class="view-sub">Get a personalised regulatory checklist for your business</div>
         </div>
@@ -1948,6 +2036,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <!-- DEADLINE TRACKER VIEW -->
     <div class="view" id="view-deadlines">
       <div class="view-header">
+        <div class="chat-header-menu" onclick="openSidebar()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
         <div>
           <div class="view-title">Compliance Deadline Tracker</div>
           <div class="view-sub">Key Nigerian regulatory filing dates — never miss a deadline again</div>
@@ -1959,6 +2048,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <!-- LEGAL CONNECT VIEW -->
     <div class="view" id="view-lawyers">
       <div class="view-header">
+        <div class="chat-header-menu" onclick="openSidebar()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
         <div>
           <div class="view-title">Legal Connect</div>
           <div class="view-sub">Connect with verified Nigerian compliance lawyers and consultants</div>
@@ -2077,6 +2167,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <!-- PRICING VIEW -->
     <div class="view" id="view-pricing">
       <div class="view-header">
+        <div class="chat-header-menu" onclick="openSidebar()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
         <div>
           <div class="view-title">Plans & Pricing</div>
           <div class="view-sub">Transparent compliance intelligence — from free to enterprise</div>
@@ -2172,6 +2263,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <!-- ALERTS VIEW -->
     <div class="view" id="view-alerts">
       <div class="view-header">
+        <div class="chat-header-menu" onclick="openSidebar()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
         <div>
           <div class="view-title">Regulation Alerts</div>
           <div class="view-sub">Latest changes from CBN, FIRS, CAC, SEC, NITDA, NAFDAC</div>
@@ -2196,6 +2288,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <!-- SAVED REPORTS VIEW -->
     <div class="view" id="view-reports">
       <div class="view-header">
+        <div class="chat-header-menu" onclick="openSidebar()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
         <div>
           <div class="view-title">Saved Reports</div>
           <div class="view-sub">Your generated compliance checklists — pick up where you left off</div>
@@ -2213,6 +2306,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <!-- TEMPLATES STORE VIEW -->
     <div class="view" id="view-templates">
       <div class="view-header">
+        <div class="chat-header-menu" onclick="openSidebar()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
         <div>
           <div class="view-title">Templates Store</div>
           <div class="view-sub">Nigerian compliance document templates — free and premium</div>
@@ -2228,6 +2322,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     <!-- DOC-TO-CHECKLIST MAPPING VIEW (Feature 8) -->
     <div class="view" id="view-docmap">
       <div class="view-header">
+        <div class="chat-header-menu" onclick="openSidebar()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
         <div>
           <div class="view-title">Doc Mapper</div>
           <div class="view-sub">Compare a document against a saved checklist — find gaps instantly</div>
@@ -2349,6 +2444,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
         <!-- Header bar -->
         <div class="view-header" style="background:linear-gradient(135deg,#1a0505 0%,#2d0a0a 100%);border-bottom:2px solid var(--red);flex-shrink:0">
+          <div class="chat-header-menu" onclick="openSidebar()" style="color:rgba(255,255,255,0.7)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
           <div style="flex:1">
             <div class="view-title" style="color:#fff;display:flex;align-items:center;gap:10px">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#CC1F1F" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -2534,9 +2630,12 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
       <!-- No org yet — create or join -->
       <div id="team-no-org" style="flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:20px">
-        <div style="max-width:680px">
-          <div class="view-title" style="margin-bottom:6px">Team Accounts</div>
-          <div class="view-sub">Collaborate with your compliance team — shared checklists, docs, and reports across your whole organisation.</div>
+        <div style="display:flex;align-items:flex-start;gap:10px;max-width:680px">
+          <div class="chat-header-menu" onclick="openSidebar()" style="flex-shrink:0;margin-top:2px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+          <div>
+            <div class="view-title" style="margin-bottom:6px">Team Accounts</div>
+            <div class="view-sub">Collaborate with your compliance team — shared checklists, docs, and reports across your whole organisation.</div>
+          </div>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:680px">
@@ -2585,8 +2684,9 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
         <!-- Org header bar -->
         <div style="padding:14px 22px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-shrink:0">
+          <div class="chat-header-menu" onclick="openSidebar()" style="margin-right:0"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
           <div style="width:40px;height:40px;border-radius:10px;background:var(--red-dim);border:1.5px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🏢</div>
-          <div style="flex:1">
+          <div style="flex:1;min-width:0">
             <div id="org-display-name" style="font-size:16px;font-weight:700;color:var(--text)">Organisation</div>
             <div id="org-display-meta" style="font-size:12px;color:var(--text-sub);margin-top:1px"></div>
           </div>
