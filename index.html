@@ -2049,7 +2049,48 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   #view-journey .j-q-options-scroll { grid-template-columns:1fr 1fr; max-height:260px; }
   #view-journey .j-intake-wrap { padding:20px 16px; }
   #view-journey .j-q-text { font-size:22px; }
+  #view-journey #j-vault-panel { width:100%; }
 }
+
+/* ── WELCOME SCREEN ── */
+#view-journey .j-welcome-badge { display:inline-block; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--j-green); background:var(--j-green-dim); border:1px solid rgba(0,217,126,.2); padding:4px 10px; border-radius:20px; margin-bottom:16px; }
+#view-journey .j-welcome-title { font-family:var(--j-font-d); font-size:28px; font-weight:700; color:var(--j-text); line-height:1.25; margin-bottom:14px; }
+#view-journey .j-welcome-sub { font-size:15px; color:var(--j-sub); line-height:1.7; margin-bottom:28px; }
+#view-journey .j-welcome-info-box { display:flex; gap:14px; align-items:flex-start; background:var(--j-bg-s); border:1px solid var(--j-border-em); border-radius:var(--j-r-lg); padding:16px 18px; margin-bottom:16px; }
+#view-journey .j-welcome-info-icon { font-size:22px; flex-shrink:0; margin-top:2px; }
+#view-journey .j-welcome-info-title { font-size:14px; font-weight:700; color:var(--j-text); margin-bottom:4px; }
+#view-journey .j-welcome-info-text { font-size:13px; color:var(--j-sub); }
+#view-journey .j-welcome-docs-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
+#view-journey .j-welcome-doc { display:flex; align-items:center; gap:10px; background:var(--j-bg-s); border:1px solid var(--j-border); border-radius:var(--j-r); padding:10px 12px; font-size:13px; color:var(--j-sub); }
+#view-journey .j-welcome-doc-icon { font-size:18px; flex-shrink:0; }
+#view-journey .j-welcome-note { font-size:12px; color:var(--j-muted); line-height:1.5; text-align:center; border-top:1px solid var(--j-border); padding-top:14px; }
+@media(max-width:640px) { #view-journey .j-welcome-docs-grid { grid-template-columns:1fr; } #view-journey .j-welcome-title { font-size:22px; } }
+
+/* ── MODULE LABEL ── */
+#view-journey .j-module-label { font-size:10px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--j-green); background:var(--j-green-dim); border:1px solid rgba(0,217,126,.15); display:inline-block; padding:3px 10px; border-radius:20px; margin-bottom:20px; }
+
+/* ── DOC UPLOAD GRID (Module D) ── */
+#view-journey .j-doc-upload-grid { display:flex; flex-direction:column; gap:10px; }
+#view-journey .j-doc-upload-row { display:flex; align-items:center; gap:12px; background:var(--j-bg-s); border:1.5px dashed var(--j-border-em); border-radius:var(--j-r); padding:14px 16px; cursor:pointer; transition:all .2s; }
+#view-journey .j-doc-upload-row:hover { border-color:var(--j-green); background:var(--j-green-dim); }
+#view-journey .j-doc-upload-row.has-file { border-style:solid; border-color:var(--j-green); background:var(--j-green-dim); }
+#view-journey .j-doc-upload-row-icon { font-size:20px; flex-shrink:0; }
+#view-journey .j-doc-upload-row-label { flex:1; font-size:14px; font-weight:600; color:var(--j-text); }
+#view-journey .j-doc-upload-row-sub { font-size:12px; color:var(--j-sub); margin-top:2px; }
+#view-journey .j-doc-upload-row-status { font-size:12px; font-weight:600; color:var(--j-green); flex-shrink:0; }
+
+/* ── STEP UPLOAD ZONE ── */
+#view-journey .j-step-upload-zone { border:1.5px dashed var(--j-border-em); border-radius:var(--j-r); padding:18px; text-align:center; cursor:pointer; transition:all .2s; margin-top:8px; }
+#view-journey .j-step-upload-zone:hover { border-color:var(--j-green); background:var(--j-green-dim); }
+#view-journey .j-step-upload-icon { font-size:22px; margin-bottom:6px; }
+#view-journey .j-step-upload-text { font-size:13px; font-weight:600; color:var(--j-sub); margin-bottom:3px; }
+#view-journey .j-step-upload-sub { font-size:11px; color:var(--j-muted); }
+#view-journey .j-step-file-chip { display:flex; align-items:center; gap:8px; background:var(--j-bg-s); border:1px solid var(--j-border-em); border-radius:8px; padding:8px 12px; font-size:12px; color:var(--j-sub); }
+#view-journey .j-step-file-chip.verified { border-color:var(--j-green); color:var(--j-text); }
+#view-journey .j-step-file-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }
+#view-journey .j-step-file-status { font-size:11px; color:var(--j-green); font-weight:700; flex-shrink:0; }
+#view-journey .j-step-file-remove { color:var(--j-muted); cursor:pointer; flex-shrink:0; font-size:14px; padding:0 2px; }
+#view-journey .j-step-file-remove:hover { color:var(--j-red); }
 </style>
 </head>
 <body>
@@ -3296,13 +3337,46 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 ═══════════════════════════════════════════════════════ -->
 <div class="view" id="view-journey">
 
-  <!-- INTAKE SCREEN -->
-  <div id="j-screen-intake" class="j-screen j-active">
-    <div class="j-intake-wrap">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:48px">
+  <!-- WELCOME / INTRO SCREEN -->
+  <div id="j-screen-welcome" class="j-screen j-active">
+    <div class="j-intake-wrap" style="max-width:600px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:40px">
         <div class="chat-header-menu" onclick="openSidebar()" style="color:var(--j-sub)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
         <div class="j-intake-logo" style="margin-bottom:0"><span></span>RenikGPT</div>
       </div>
+      <div class="j-welcome-badge">Compliance Journey</div>
+      <div class="j-welcome-title">Your personalised Nigerian compliance roadmap</div>
+      <div class="j-welcome-sub">We'll ask you a series of questions about your business, then generate a step-by-step compliance journey with pre-filled forms, legal citations, and a living dashboard.</div>
+
+      <div class="j-welcome-info-box">
+        <div class="j-welcome-info-icon">⏱</div>
+        <div>
+          <div class="j-welcome-info-title">This will take 15–20 minutes</div>
+          <div class="j-welcome-info-text">Please have the following ready before you begin:</div>
+        </div>
+      </div>
+      <div class="j-welcome-docs-grid">
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">📄</div><div>CAC Certificate (if registered)</div></div>
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">🪪</div><div>Director / Owner ID (NIN or Passport)</div></div>
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">🏦</div><div>Tax Identification Number (TIN)</div></div>
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">📍</div><div>Business address proof</div></div>
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">📋</div><div>Any existing licences or permits</div></div>
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">💳</div><div>BVN (for banking / fintech)</div></div>
+      </div>
+      <div class="j-welcome-note">Don't have everything? No problem — you can upload documents later on each compliance step.</div>
+      <button class="j-btn-next" style="width:100%;margin-top:24px;padding:16px" onclick="jStartIntake()">Begin My Compliance Journey →</button>
+    </div>
+  </div>
+
+  <!-- INTAKE SCREEN -->
+  <div id="j-screen-intake" class="j-screen">
+    <div class="j-intake-wrap">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px">
+        <div class="chat-header-menu" onclick="openSidebar()" style="color:var(--j-sub)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+        <div class="j-intake-logo" style="margin-bottom:0"><span></span>RenikGPT</div>
+        <button class="j-btn-skip" style="margin-left:auto;padding:6px 14px;font-size:12px" onclick="jShowScreen('j-screen-welcome')">← Back</button>
+      </div>
+      <div class="j-module-label" id="j-module-label">MODULE A — BUSINESS IDENTITY</div>
       <div class="j-q-progress" id="j-q-progress"></div>
       <div class="j-q-label" id="j-q-label"></div>
       <div class="j-q-text" id="j-q-text"></div>
@@ -3310,6 +3384,29 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       <div class="j-q-actions" id="j-q-actions">
         <button class="j-btn-next" id="j-btn-next" onclick="jNextQuestion()">Continue →</button>
         <button class="j-btn-skip" id="j-btn-skip" onclick="jSkipQuestion()">Skip</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCUMENT UPLOAD SCREEN (Module D) -->
+  <div id="j-screen-docs" class="j-screen">
+    <div class="j-intake-wrap" style="max-width:640px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px">
+        <div class="chat-header-menu" onclick="openSidebar()" style="color:var(--j-sub)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+        <div class="j-intake-logo" style="margin-bottom:0"><span></span>RenikGPT</div>
+      </div>
+      <div class="j-module-label">MODULE D — DOCUMENT UPLOAD</div>
+      <div class="j-q-label" style="opacity:1;transform:none;margin-bottom:8px">Upload your documents</div>
+      <div class="j-q-text" style="opacity:1;transform:none;font-size:20px;margin-bottom:24px">Upload what you have — RenikGPT will scan each document and auto-fill your compliance steps.</div>
+
+      <div class="j-doc-upload-grid" id="j-doc-upload-grid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="j-welcome-note" style="margin-top:16px">All documents are stored securely. You can also skip this and upload them individually on each compliance step.</div>
+      <div style="display:flex;gap:12px;margin-top:24px">
+        <button class="j-btn-skip" style="flex:1;padding:14px" onclick="jStartGeneration()">Skip for now →</button>
+        <button class="j-btn-next" style="flex:2;padding:14px" onclick="jStartGeneration()">Generate My Journey →</button>
       </div>
     </div>
   </div>
@@ -3361,6 +3458,12 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
         <div id="j-score-label">Not Started</div>
         <div class="j-score-detail" id="j-score-detail">Complete steps below<br>to grow your score</div>
       </div>
+      <!-- Doc Vault button in sidebar -->
+      <div style="padding:12px 16px;border-top:1px solid var(--j-border)">
+        <button onclick="jOpenVault()" style="width:100%;background:var(--j-bg-h);border:1px solid var(--j-border-em);color:var(--j-sub);font-family:var(--j-font);font-size:12px;font-weight:600;border-radius:8px;padding:10px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s">
+          <span style="font-size:14px">🗂</span> Document Vault <span id="j-vault-count" style="margin-left:auto;background:var(--j-green);color:#030B05;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;display:none">0</span>
+        </button>
+      </div>
       <div class="j-phase-nav" id="j-phase-nav"></div>
     </div>
 
@@ -3383,7 +3486,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     </div>
   </div>
 
-  <!-- STEP DETAIL PANEL (positioned inside view-journey) -->
+  <!-- STEP DETAIL PANEL -->
   <div id="j-panel-overlay" onclick="jClosePanel()"></div>
   <div id="j-step-panel">
     <div class="j-panel-header">
@@ -3402,8 +3505,22 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
         <div class="j-panel-desc" id="j-panel-why"></div>
       </div>
       <div class="j-panel-section">
-        <div class="j-panel-section-title">What You'll Need</div>
+        <div class="j-panel-section-title">Documents Required</div>
         <div class="j-docs-list" id="j-panel-docs"></div>
+      </div>
+      <!-- Per-step document upload zone -->
+      <div class="j-panel-section">
+        <div class="j-panel-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>Upload Documents for this Step</span>
+          <span id="j-step-upload-count" style="font-size:11px;color:var(--j-green);font-weight:700"></span>
+        </div>
+        <div class="j-step-upload-zone" id="j-step-upload-zone" onclick="document.getElementById('j-step-file-input').click()">
+          <input type="file" id="j-step-file-input" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" style="display:none" onchange="jHandleStepUpload(this)">
+          <div class="j-step-upload-icon">📎</div>
+          <div class="j-step-upload-text">Tap to upload — PDF, JPG, PNG, DOCX</div>
+          <div class="j-step-upload-sub">RenikGPT will scan and verify each document</div>
+        </div>
+        <div id="j-step-uploaded-files" style="display:flex;flex-direction:column;gap:6px;margin-top:10px"></div>
       </div>
       <div class="j-panel-section">
         <div class="j-panel-section-title">Legal Basis — Tap to open source ↗</div>
@@ -3412,11 +3529,26 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     </div>
     <div class="j-panel-cta">
       <button class="j-btn-begin" id="j-btn-begin-step" onclick="jOpenFormFill()">
-        <span>⚡</span> Begin This Step
+        <span>⚡</span> Generate Pre-filled Form
       </button>
       <button class="j-btn-complete" id="j-btn-mark-complete" onclick="jMarkStepComplete()">
         ✓ Mark as Complete
       </button>
+    </div>
+  </div>
+
+  <!-- DOCUMENT VAULT PANEL -->
+  <div id="j-vault-overlay" onclick="jCloseVault()" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:70"></div>
+  <div id="j-vault-panel" style="display:none;position:absolute;top:0;right:0;bottom:0;width:420px;max-width:100%;background:var(--j-bg-s);border-left:1px solid var(--j-border);z-index:71;flex-direction:column;overflow:hidden">
+    <div style="padding:20px 24px 16px;border-bottom:1px solid var(--j-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div>
+        <div style="font-family:var(--j-font-d);font-size:16px;font-weight:700;color:var(--j-text)">🗂 Document Vault</div>
+        <div style="font-size:12px;color:var(--j-sub);margin-top:2px">All documents uploaded across your compliance steps</div>
+      </div>
+      <button onclick="jCloseVault()" style="background:var(--j-bg-h);border:1px solid var(--j-border);color:var(--j-sub);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:var(--j-font);font-size:13px">✕</button>
+    </div>
+    <div id="j-vault-body" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px">
+      <div style="text-align:center;padding:40px 20px;color:var(--j-muted);font-size:13px">No documents uploaded yet.<br>Upload on each compliance step.</div>
     </div>
   </div>
 
@@ -6489,19 +6621,25 @@ async function leaveOrg() {
 
 <script>
 // ═══════════════════════════════════════════════════════
-//  COMPLIANCE JOURNEY — all globals prefixed with j
+//  COMPLIANCE JOURNEY v6 — Option C Full Rebuild
+//  Modules: A=Identity, B=Scale, C=Operations, D=Docs
 // ═══════════════════════════════════════════════════════
 
 const jState = {
   intake: {
-    businessName:'', cacRegistered:'', cacTimeline:'',
-    entityType:'', industry:'', industryOther:'',
-    state:'', turnover:'',
-    hasEmployees:'', employeeCount:'', hiringTimeline:'',
-    concerns:''
+    // Module A — Identity
+    businessName:'', cacRegistered:'', cacTimeline:'', incorporationDate:'',
+    entityType:'', industry:'', industryOther:'', state:'', rcNumber:'',
+    // Module B — Scale
+    turnover:'', hasEmployees:'', employeeCount:'', hiringTimeline:'', hasTIN:'', hasVAT:'',
+    // Module C — Operations
+    processesPayments:'', collectsPersonalData:'', importsExports:'', sellsFood:'',
+    hasPhysicalPremises:'', financialSector:'', hasExistingLicences:'', existingLicencesDetail:'',
+    // Module D — Docs (tracked separately in jVault)
   },
   journey: null,
   completed: new Set(),
+  stepUploads: {},      // stepId → [{name, size, verified}]
   score: 0,
   animatingScore: false,
   activeStep: null,
@@ -6509,7 +6647,10 @@ const jState = {
   activePhaseId: null
 };
 
-// ── All 36 Nigerian states + FCT ──
+// Document Vault — all uploaded docs across all steps
+let jVault = [];   // [{stepId, stepTitle, name, size, dataUrl, verified, uploadedAt}]
+
+// ── 36 Nigerian States ──
 const NG_STATES = [
   'Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno',
   'Cross River','Delta','Ebonyi','Edo','Ekiti','Enugu','FCT (Abuja)',
@@ -6518,89 +6659,138 @@ const NG_STATES = [
   'Plateau','Rivers','Sokoto','Taraba','Yobe','Zamfara'
 ];
 
-// ── Dynamic question builder ──
-// Each question is a function so it can inspect jState.intake and return
-// null to skip itself entirely.
+// ── Module definitions for progress label ──
+const J_MODULES = [
+  { id:'A', label:'MODULE A — BUSINESS IDENTITY', range:[0,5] },
+  { id:'B', label:'MODULE B — SCALE & FINANCE',   range:[6,10] },
+  { id:'C', label:'MODULE C — OPERATIONS',         range:[11,17] },
+];
+
+// ── Dynamic question definitions ──
 const J_QUESTION_DEFS = [
-  // Q0: Business name
-  () => ({ id:'businessName', text:'What is the name of your business?', type:'text',
-    placeholder:'e.g. Apex Foods Limited', key:'businessName', required:true }),
-
-  // Q1: CAC registered?
-  () => ({ id:'cacRegistered', text:'Is your business currently registered with the CAC (Corporate Affairs Commission)?',
-    type:'options', key:'cacRegistered', required:true,
+  // ─── MODULE A: IDENTITY ───────────────────────────────
+  // 0
+  () => ({ id:'businessName', text:'What is the name of your business?',
+    type:'text', placeholder:'e.g. Apex Foods Limited', key:'businessName', required:true,
+    module:'A' }),
+  // 1
+  () => ({ id:'cacRegistered', text:'Is your business currently registered with the CAC?',
+    type:'options', key:'cacRegistered', required:true, module:'A',
     options:['Yes — already registered','No — not yet registered'] }),
-
-  // Q2: CAC timeline (only if NOT registered)
+  // 2 — only if registered
+  () => jState.intake.cacRegistered === 'Yes — already registered'
+    ? { id:'rcNumber', text:'What is your RC Number (CAC registration number)?',
+        type:'text', placeholder:'e.g. RC 1234567', key:'rcNumber', required:false, module:'A' }
+    : null,
+  // 3 — only if NOT registered
   () => jState.intake.cacRegistered === 'No — not yet registered'
-    ? { id:'cacTimeline', text:'When are you planning to register with the CAC?', type:'options',
-        key:'cacTimeline', required:true,
+    ? { id:'cacTimeline', text:'When do you plan to register with the CAC?',
+        type:'options', key:'cacTimeline', required:true, module:'A',
         options:['Within a week','Within a month','Within 3 months','Within 6 months','Not sure yet'] }
     : null,
-
-  // Q3: Entity type
-  () => ({ id:'entityType', text:'What type of business entity is this?', type:'options',
-    key:'entityType', required:true,
-    options:[
-      'Sole Proprietorship',
-      'Partnership',
-      'Limited Liability Company (Ltd)',
-      'Public Limited Company (PLC)',
-      'Non-Governmental Organisation (NGO)',
-      'Cooperative Society',
-      'Franchise',
-      'Joint Venture',
-      'Incorporated Trustee',
-      'Other'
-    ] }),
-
-  // Q4: Industry
-  () => ({ id:'industry', text:'Which industry best describes your business?', type:'options',
-    key:'industry', required:true,
-    options:[
-      'Food & Beverage','Technology / Fintech','Retail & E-Commerce',
+  // 4
+  () => ({ id:'entityType', text:'What type of business entity is this?',
+    type:'options', key:'entityType', required:true, module:'A',
+    options:['Sole Proprietorship','Partnership','Limited Liability Company (Ltd)',
+      'Public Limited Company (PLC)','Non-Governmental Organisation (NGO)',
+      'Cooperative Society','Franchise','Joint Venture','Incorporated Trustee','Other'] }),
+  // 5
+  () => ({ id:'industry', text:'Which industry best describes your business?',
+    type:'options', key:'industry', required:true, module:'A',
+    options:['Food & Beverage','Technology / Fintech','Retail & E-Commerce',
       'Healthcare & Pharmaceuticals','Manufacturing','Consulting & Professional Services',
       'Agriculture','Real Estate & Construction','Education','Logistics & Transportation',
       'Media & Entertainment','Oil & Gas','Hospitality & Tourism','Legal & Compliance',
-      'Other'
-    ] }),
-
-  // Q5: Industry "Other" text input (only if Other selected)
+      'Financial Services','Insurance','Telecommunications','Other'] }),
+  // 6 — Other industry free text
   () => jState.intake.industry === 'Other'
-    ? { id:'industryOther', text:'Please describe your industry:', type:'text',
-        placeholder:'e.g. Waste Management, Renewable Energy…', key:'industryOther', required:true }
+    ? { id:'industryOther', text:'Describe your industry:', type:'text',
+        placeholder:'e.g. Waste Management, Renewable Energy…', key:'industryOther', required:true, module:'A' }
     : null,
-
-  // Q6: State — all 36
+  // 7
   () => ({ id:'state', text:'Which state will your business primarily operate from?',
-    type:'options-scroll', key:'state', required:true, options: NG_STATES }),
+    type:'options-scroll', key:'state', required:true, module:'A', options:NG_STATES }),
 
-  // Q7: Turnover
-  () => ({ id:'turnover', text:'What is your estimated annual turnover?', type:'options',
-    key:'turnover', required:true,
-    options:['Under ₦5 Million','₦5M – ₦25 Million','₦25M – ₦100 Million','Above ₦100 Million','Not sure yet'] }),
-
-  // Q8: Do you have employees RIGHT NOW?
-  () => ({ id:'hasEmployees', text:'Do you currently have any employees?', type:'options',
-    key:'hasEmployees', required:true,
+  // ─── MODULE B: SCALE & FINANCE ────────────────────────
+  // 8
+  () => ({ id:'turnover', text:'What is your estimated annual turnover?',
+    type:'options', key:'turnover', required:true, module:'B',
+    options:['Under ₦5 Million','₦5M – ₦25 Million','₦25M – ₦100 Million','Above ₦100 Million','Pre-revenue / Not sure'] }),
+  // 9
+  () => ({ id:'hasTIN', text:'Do you have a Tax Identification Number (TIN) from FIRS?',
+    type:'options', key:'hasTIN', required:true, module:'B',
+    options:['Yes — TIN registered','No — not yet registered','Not sure'] }),
+  // 10
+  () => ({ id:'hasVAT', text:'Are you currently registered for VAT?',
+    type:'options', key:'hasVAT', required:true, module:'B',
+    options:['Yes — VAT registered','No','Not applicable (below ₦25M threshold)'] }),
+  // 11 — employees
+  () => ({ id:'hasEmployees', text:'Do you currently have any employees?',
+    type:'options', key:'hasEmployees', required:true, module:'B',
     options:['Yes','No'] }),
-
-  // Q9a: If YES — how many?
+  // 12a — if yes, how many
   () => jState.intake.hasEmployees === 'Yes'
-    ? { id:'employeeCount', text:'How many employees do you currently have?', type:'options',
-        key:'employeeCount', required:true,
+    ? { id:'employeeCount', text:'How many employees do you currently have?',
+        type:'options', key:'employeeCount', required:true, module:'B',
         options:['1 – 5','6 – 20','21 – 50','51 – 200','200+'] }
     : null,
-
-  // Q9b: If NO — planning to hire?
+  // 12b — if no, hiring plan
   () => jState.intake.hasEmployees === 'No'
-    ? { id:'hiringTimeline', text:'Are you planning to hire employees?', type:'options',
-        key:'hiringTimeline', required:true,
+    ? { id:'hiringTimeline', text:'Are you planning to hire employees?',
+        type:'options', key:'hiringTimeline', required:true, module:'B',
         options:['Yes — within 3 months','Yes — within 6–12 months','Not anytime soon','No plans to hire'] }
+    : null,
+
+  // ─── MODULE C: OPERATIONS ────────────────────────────
+  // 13
+  () => ({ id:'processesPayments', text:'Do you process electronic or card payments from customers?',
+    type:'options', key:'processesPayments', required:true, module:'C',
+    options:['Yes — we accept card / mobile / bank transfers','No — cash only','No — B2B invoicing only'] }),
+  // 14
+  () => ({ id:'collectsPersonalData', text:'Do you collect, store or process personal data from customers or employees?',
+    type:'options', key:'collectsPersonalData', required:true, module:'C',
+    options:['Yes — names, emails, addresses, BVN etc.','Minimal — only what\'s strictly necessary','No'] }),
+  // 15
+  () => ({ id:'importsExports', text:'Do you import or export goods or services?',
+    type:'options', key:'importsExports', required:true, module:'C',
+    options:['Yes — import goods','Yes — export goods','Yes — both','No'] }),
+  // 16
+  () => ({ id:'sellsFood', text:'Does your business sell, manufacture or distribute food, beverages or health products?',
+    type:'options', key:'sellsFood', required:true, module:'C',
+    options:['Yes — food / beverages','Yes — health / pharma products','Yes — both','No'] }),
+  // 17
+  () => ({ id:'hasPhysicalPremises', text:'Do you operate from a physical business premises (office, shop, factory, warehouse)?',
+    type:'options', key:'hasPhysicalPremises', required:true, module:'C',
+    options:['Yes — owned premises','Yes — rented premises','No — fully remote / online'] }),
+  // 18
+  () => ({ id:'financialSector', text:'Does your business operate in the financial sector?',
+    type:'options', key:'financialSector', required:true, module:'C',
+    options:['Yes — fintech / payments','Yes — lending / credit','Yes — insurance',
+      'Yes — investment / securities','Yes — forex / remittance','No'] }),
+  // 19
+  () => ({ id:'hasExistingLicences', text:'Do you already hold any government licences or permits?',
+    type:'options', key:'hasExistingLicences', required:true, module:'C',
+    options:['Yes','No'] }),
+  // 20 — list existing licences if yes
+  () => jState.intake.hasExistingLicences === 'Yes'
+    ? { id:'existingLicencesDetail', text:'List the licences / permits you already hold:',
+        type:'text', placeholder:'e.g. NAFDAC registration, CBN licence…',
+        key:'existingLicencesDetail', required:false, module:'C' }
     : null,
 ];
 
-// Build the active question list by evaluating each def against current state
+// ── Module D upload slots ──
+const J_UPLOAD_SLOTS = [
+  { id:'cac_cert',     icon:'📄', label:'CAC Certificate of Incorporation', sub:'Required for all registered businesses' },
+  { id:'director_id',  icon:'🪪', label:'Director / Owner ID (NIN or Passport)', sub:'Valid government-issued ID' },
+  { id:'tin_cert',     icon:'🏦', label:'Tax Identification Number (TIN) Certificate', sub:'Issued by FIRS' },
+  { id:'address_proof',icon:'📍', label:'Business Address Proof', sub:'Utility bill, tenancy agreement, or LASRA document' },
+  { id:'vat_cert',     icon:'💰', label:'VAT Registration Certificate', sub:'If applicable' },
+  { id:'existing_lic', icon:'📋', label:'Existing Licences / Permits', sub:'Any current government approvals' },
+];
+// Track Module D uploads keyed by slot id
+let jModuleDUploads = {}; // slotId → {name, size}
+
 function jBuildQuestions() {
   return J_QUESTION_DEFS.map(fn => fn()).filter(q => q !== null);
 }
@@ -6608,30 +6798,43 @@ function jBuildQuestions() {
 let jCurrentQ = 0;
 let jActiveQuestions = [];
 
-// ── Screen management (internal to journey view) ──
+// ── Screen management ──
 function jShowScreen(id) {
   document.querySelectorAll('#view-journey .j-screen').forEach(s => s.classList.remove('j-active'));
   const el = document.getElementById(id);
   if (el) el.classList.add('j-active');
 }
 
-// ── Journey init is handled inside setView() in the main script block ──
-// No patching needed here.
-
+// ── Entry point called by setView('journey') ──
 function jInitIntake() {
+  // Show welcome screen first — don't reset if journey already exists
+  if (jState.journey) { jShowScreen('j-screen-dashboard'); return; }
+  jShowScreen('j-screen-welcome');
+}
+
+// Called by "Begin" button on welcome screen
+function jStartIntake() {
   jCurrentQ = 0;
   jState.intake = {
-    businessName:'', cacRegistered:'', cacTimeline:'',
-    entityType:'', industry:'', industryOther:'',
-    state:'', turnover:'',
-    hasEmployees:'', employeeCount:'', hiringTimeline:'',
-    concerns:''
+    businessName:'', cacRegistered:'', cacTimeline:'', incorporationDate:'',
+    entityType:'', industry:'', industryOther:'', state:'', rcNumber:'',
+    turnover:'', hasEmployees:'', employeeCount:'', hiringTimeline:'', hasTIN:'', hasVAT:'',
+    processesPayments:'', collectsPersonalData:'', importsExports:'', sellsFood:'',
+    hasPhysicalPremises:'', financialSector:'', hasExistingLicences:'', existingLicencesDetail:'',
   };
   jState.journey = null; jState.completed = new Set(); jState.score = 0; jState.activeStep = null;
+  jModuleDUploads = {};
   jActiveQuestions = jBuildQuestions();
   jShowScreen('j-screen-intake');
   jRenderProgress();
   jShowQuestion(0);
+}
+
+function jGetModuleLabel(idx) {
+  const q = jActiveQuestions[idx];
+  if (!q) return '';
+  const mod = J_MODULES.find(m => m.id === q.module);
+  return mod ? mod.label : '';
 }
 
 function jRenderProgress() {
@@ -6640,14 +6843,16 @@ function jRenderProgress() {
   prog.innerHTML = jActiveQuestions.map((q,i) =>
     `<div class="j-q-dot ${i<jCurrentQ?'done':i===jCurrentQ?'active':''}"></div>`
   ).join('');
+  const modLabel = document.getElementById('j-module-label');
+  if (modLabel) modLabel.textContent = jGetModuleLabel(jCurrentQ);
 }
 
 function jShowQuestion(idx) {
   const q = jActiveQuestions[idx];
   if (!q) return;
-  const label = document.getElementById('j-q-label');
-  const text  = document.getElementById('j-q-text');
-  const area  = document.getElementById('j-q-answer-area');
+  const label   = document.getElementById('j-q-label');
+  const text    = document.getElementById('j-q-text');
+  const area    = document.getElementById('j-q-answer-area');
   const actions = document.getElementById('j-q-actions');
   const btnSkip = document.getElementById('j-btn-skip');
   if (!label || !text || !area) return;
@@ -6664,19 +6869,12 @@ function jShowQuestion(idx) {
       area.innerHTML = `<input class="j-q-input show" id="j-q-current-input" type="text"
         placeholder="${q.placeholder||''}" value="${jState.intake[q.key]||''}"
         onkeydown="if(event.key==='Enter')jNextQuestion()">`;
-
     } else if (q.type === 'options-scroll') {
-      // Full 36-state scrollable grid
-      area.innerHTML = `
-        <div class="j-q-options-scroll show">
-          ${q.options.map(o =>
-            `<div class="j-q-opt${jState.intake[q.key]===o?' selected':''}"
-              onclick="jSelectOption(this,'${o.replace(/'/g,"&#39;")}','${q.key}')">${o}</div>`
-          ).join('')}
-        </div>`;
-
+      area.innerHTML = `<div class="j-q-options-scroll show">${q.options.map(o =>
+        `<div class="j-q-opt${jState.intake[q.key]===o?' selected':''}"
+          onclick="jSelectOption(this,'${o.replace(/'/g,"&#39;")}','${q.key}')">${o}</div>`
+      ).join('')}</div>`;
     } else {
-      // standard options grid
       area.innerHTML = `<div class="j-q-options show">${q.options.map(o =>
         `<div class="j-q-opt${jState.intake[q.key]===o?' selected':''}"
           onclick="jSelectOption(this,'${o.replace(/'/g,"&#39;")}','${q.key}')">${o}</div>`
@@ -6707,11 +6905,13 @@ function jNextQuestion() {
     if (input) jState.intake[q.key] = input.value.trim();
   }
   if (q.required && !jState.intake[q.key]) return;
-
-  // Rebuild question list — branching may change after each answer
   jActiveQuestions = jBuildQuestions();
   jCurrentQ++;
-  if (jCurrentQ >= jActiveQuestions.length) { jStartGeneration(); return; }
+  if (jCurrentQ >= jActiveQuestions.length) {
+    // All Q&A done — show Module D (document upload)
+    jShowDocUploadScreen();
+    return;
+  }
   jRenderProgress();
   jShowQuestion(jCurrentQ);
 }
@@ -6719,12 +6919,152 @@ function jNextQuestion() {
 function jSkipQuestion() {
   jActiveQuestions = jBuildQuestions();
   jCurrentQ++;
-  if (jCurrentQ >= jActiveQuestions.length) { jStartGeneration(); return; }
+  if (jCurrentQ >= jActiveQuestions.length) { jShowDocUploadScreen(); return; }
   jRenderProgress();
   jShowQuestion(jCurrentQ);
 }
 
-// ── Generation ──
+// ── Module D: Document upload screen ──
+function jShowDocUploadScreen() {
+  jShowScreen('j-screen-docs');
+  const grid = document.getElementById('j-doc-upload-grid');
+  if (!grid) return;
+  grid.innerHTML = J_UPLOAD_SLOTS.map(slot => `
+    <div class="j-doc-upload-row${jModuleDUploads[slot.id] ? ' has-file' : ''}"
+      id="j-slot-${slot.id}" onclick="jTriggerSlotUpload('${slot.id}')">
+      <input type="file" id="j-slot-input-${slot.id}" style="display:none"
+        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+        onchange="jHandleSlotUpload(this,'${slot.id}')">
+      <div class="j-doc-upload-row-icon">${slot.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="j-doc-upload-row-label">${slot.label}</div>
+        <div class="j-doc-upload-row-sub">${slot.sub}</div>
+      </div>
+      <div class="j-doc-upload-row-status" id="j-slot-status-${slot.id}">
+        ${jModuleDUploads[slot.id] ? '✓ Uploaded' : '+ Upload'}
+      </div>
+    </div>`).join('');
+}
+
+function jTriggerSlotUpload(slotId) {
+  const inp = document.getElementById(`j-slot-input-${slotId}`);
+  if (inp) inp.click();
+}
+
+function jHandleSlotUpload(input, slotId) {
+  const file = input.files[0];
+  if (!file) return;
+  jModuleDUploads[slotId] = { name: file.name, size: file.size };
+  const row = document.getElementById(`j-slot-${slotId}`);
+  const status = document.getElementById(`j-slot-status-${slotId}`);
+  if (row) row.classList.add('has-file');
+  if (status) status.textContent = '✓ Uploaded';
+  // Also add to vault with slot context
+  const slot = J_UPLOAD_SLOTS.find(s => s.id === slotId);
+  jVault.push({ stepId: 'intake', stepTitle: slot ? slot.label : slotId,
+    name: file.name, size: file.size, uploadedAt: new Date().toISOString(), verified: false });
+  jUpdateVaultCount();
+}
+
+// ── Step-level document uploads ──
+function jHandleStepUpload(input) {
+  const step = jState.activeStep;
+  if (!step) return;
+  Array.from(input.files).forEach(file => {
+    if (!jState.stepUploads[step.id]) jState.stepUploads[step.id] = [];
+    jState.stepUploads[step.id].push({ name: file.name, size: file.size, verified: false });
+    jVault.push({ stepId: step.id, stepTitle: step.title,
+      name: file.name, size: file.size, uploadedAt: new Date().toISOString(), verified: false });
+  });
+  input.value = '';
+  jRenderStepUploadedFiles(step.id);
+  jUpdateVaultCount();
+  // Update card to show doc count
+  jRefreshCard(step.id);
+}
+
+function jRenderStepUploadedFiles(stepId) {
+  const container = document.getElementById('j-step-uploaded-files');
+  if (!container) return;
+  const files = jState.stepUploads[stepId] || [];
+  const countEl = document.getElementById('j-step-upload-count');
+  if (countEl) countEl.textContent = files.length ? `${files.length} file${files.length>1?'s':''} uploaded` : '';
+  container.innerHTML = files.map((f,i) => `
+    <div class="j-step-file-chip${f.verified?' verified':''}">
+      <span style="font-size:14px">${f.verified?'✅':'📎'}</span>
+      <span class="j-step-file-name">${f.name}</span>
+      <span class="j-step-file-status">${f.verified?'Verified':formatBytes(f.size)}</span>
+      <span class="j-step-file-remove" onclick="jRemoveStepFile('${stepId}',${i})">×</span>
+    </div>`).join('');
+}
+
+function jRemoveStepFile(stepId, idx) {
+  if (jState.stepUploads[stepId]) {
+    const removed = jState.stepUploads[stepId].splice(idx, 1)[0];
+    jVault = jVault.filter(v => !(v.stepId === stepId && v.name === removed.name));
+    jRenderStepUploadedFiles(stepId);
+    jUpdateVaultCount();
+    jRefreshCard(stepId);
+  }
+}
+
+function formatBytes(b) {
+  if (b < 1024) return b+'B';
+  if (b < 1048576) return (b/1024).toFixed(1)+'KB';
+  return (b/1048576).toFixed(1)+'MB';
+}
+
+// ── Document Vault ──
+function jUpdateVaultCount() {
+  const n = jVault.length;
+  const badge = document.getElementById('j-vault-count');
+  if (!badge) return;
+  badge.textContent = n;
+  badge.style.display = n > 0 ? 'inline-block' : 'none';
+}
+
+function jOpenVault() {
+  const panel = document.getElementById('j-vault-panel');
+  const overlay = document.getElementById('j-vault-overlay');
+  if (!panel || !overlay) return;
+  panel.style.display = 'flex';
+  overlay.style.display = 'block';
+  jRenderVault();
+}
+
+function jCloseVault() {
+  const panel = document.getElementById('j-vault-panel');
+  const overlay = document.getElementById('j-vault-overlay');
+  if (panel) panel.style.display = 'none';
+  if (overlay) overlay.style.display = 'none';
+}
+
+function jRenderVault() {
+  const body = document.getElementById('j-vault-body');
+  if (!body) return;
+  if (!jVault.length) {
+    body.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--j-muted);font-size:13px">No documents uploaded yet.<br>Upload on each compliance step.</div>`;
+    return;
+  }
+  // Group by step
+  const grouped = {};
+  jVault.forEach(v => {
+    if (!grouped[v.stepTitle]) grouped[v.stepTitle] = [];
+    grouped[v.stepTitle].push(v);
+  });
+  body.innerHTML = Object.entries(grouped).map(([title, files]) => `
+    <div style="background:var(--j-bg-h);border:1px solid var(--j-border);border-radius:var(--j-r);overflow:hidden">
+      <div style="padding:10px 14px;font-size:11px;font-weight:700;color:var(--j-sub);text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--j-border)">${title}</div>
+      ${files.map(f => `
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--j-border);font-size:13px">
+          <span style="font-size:16px">${f.verified?'✅':'📎'}</span>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--j-text);font-weight:500">${f.name}</span>
+          <span style="font-size:11px;color:var(--j-muted);flex-shrink:0">${f.verified?'<span style="color:var(--j-green);font-weight:700">Verified</span>':formatBytes(f.size)}</span>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ── AI Generation ──
 async function jStartGeneration() {
   jShowScreen('j-screen-generating');
   jAnimateGenSteps();
@@ -6733,7 +7073,7 @@ async function jStartGeneration() {
   } catch(e) {
     console.error(e);
     alert('Error generating journey. Please check your connection and try again.');
-    jShowScreen('j-screen-intake');
+    jShowScreen('j-screen-docs');
   }
 }
 
@@ -6752,11 +7092,11 @@ function jAnimateGenSteps() {
   }, 900);
 }
 
-const J_SYSTEM_PROMPT = `You are RenikGPT, a Nigerian business compliance expert with deep knowledge of all Nigerian regulatory agencies and laws. Given a business profile, generate a comprehensive, accurate compliance journey.
+const J_SYSTEM_PROMPT = `You are RenikGPT, a Nigerian business compliance expert. Given a detailed business profile, generate a comprehensive, accurate compliance journey.
 
 Return ONLY a valid JSON object — no markdown, no backticks, no preamble — with this exact structure:
 {
-  "summary": "2-sentence plain-English summary of this business's specific compliance needs and key risks",
+  "summary": "2-3 sentence plain-English summary of this business's specific compliance needs and key risks",
   "phases": [
     {
       "id": "foundation",
@@ -6774,8 +7114,8 @@ Return ONLY a valid JSON object — no markdown, no backticks, no preamble — w
           "estimatedDays": "2–5 business days",
           "estimatedCost": "₦10,000 – ₦35,000",
           "description": "Clear 1-sentence description of what this step involves.",
-          "whyItMatters": "2–3 sentences explaining legal obligation and consequences of non-compliance. Reference specific sections.",
-          "documents": ["Document 1", "Document 2", "Document 3"],
+          "whyItMatters": "2–3 sentences explaining legal obligation and consequences of non-compliance with specific law sections.",
+          "documents": ["Document 1", "Document 2"],
           "legalBasis": [
             {
               "citation": "CAMA 2020 §18–40",
@@ -6791,35 +7131,58 @@ Return ONLY a valid JSON object — no markdown, no backticks, no preamble — w
 
 RULES:
 1. Use real Nigerian law citations with accurate official government URLs.
-2. The 4 phases must be: "foundation" (CAC registration), "tax" (FIRS, VAT, etc.), "sector" (industry-specific licenses), "ongoing" (annual returns, renewals).
+2. The 4 phases MUST be: "foundation" (CAC, legal setup), "tax" (FIRS, VAT, PAYE), "sector" (industry-specific: NAFDAC, CBN, NITDA, SEC etc.), "ongoing" (annual returns, renewals, audits).
 3. Weights across ALL steps must sum to exactly 100.
-4. Include only steps relevant to this specific business type/industry/state.
-5. Be specific to the business. A food business needs NAFDAC. A fintech needs CBN. A pharma needs PCN. A tech company handling personal data needs NDPR.
-6. whyItMatters must mention specific law sections and penalties.
-7. Agency URLs: CAC=https://new.cac.gov.ng, FIRS=https://www.firs.gov.ng, CBN=https://www.cbn.gov.ng, NITDA=https://nitda.gov.ng, NAFDAC=https://www.nafdac.gov.ng, NSITF=https://www.nsitf.gov.ng, SEC=https://sec.gov.ng, SON=https://www.son.gov.ng, FCCPC=https://fccpc.gov.ng
-8. Generate at least 8–14 steps total across all 4 phases so the business gets a thorough roadmap.`;
+4. Include only steps relevant to THIS specific business. Skip steps that don't apply.
+5. Industry specifics: Food→NAFDAC; Fintech→CBN PSP/PSB licence; Data→NDPR/NITDA; Pharma→NAPC/PCN; Employees→NSITF/PAYE/NHF/Pension; Import/Export→Customs/SON; Physical premises→State environmental/fire; Financial services→CBN/SEC/PENCOM.
+6. If not yet CAC-registered, make CAC registration the FIRST and most urgent step.
+7. If payment processing mentioned, add CBN PSSP requirements.
+8. If personal data collected, add NITDA/NDPR compliance.
+9. If food/health products, add NAFDAC registration.
+10. If employees exist, add NSITF, PAYE, pension, NHF steps.
+11. whyItMatters MUST cite specific law sections and naira penalties.
+12. Agency URLs: CAC=https://new.cac.gov.ng, FIRS=https://www.firs.gov.ng, CBN=https://www.cbn.gov.ng, NITDA=https://nitda.gov.ng, NAFDAC=https://www.nafdac.gov.ng, NSITF=https://www.nsitf.gov.ng, SEC=https://sec.gov.ng, SON=https://www.son.gov.ng, FCCPC=https://fccpc.gov.ng, PENCOM=https://www.pencom.gov.ng, NHF=https://www.fmbn.gov.ng
+13. Generate 10–16 steps across all 4 phases for a thorough roadmap.`;
 
 async function jGenerateJourney() {
   const i = jState.intake;
   const effectiveIndustry = i.industry === 'Other' && i.industryOther ? i.industryOther : i.industry;
   const employeeInfo = i.hasEmployees === 'Yes'
     ? `Currently has ${i.employeeCount} employees`
-    : `No current employees — hiring plan: ${i.hiringTimeline || 'not specified'}`;
+    : `No current employees — hiring plan: ${i.hiringTimeline||'not specified'}`;
+  const uploadedDocs = J_UPLOAD_SLOTS.filter(s => jModuleDUploads[s.id]).map(s => s.label);
 
-  const userMsg = `Business profile:
+  const userMsg = `Business Profile:
+MODULE A — IDENTITY
 - Business Name: ${i.businessName}
-- CAC Registration Status: ${i.cacRegistered}${i.cacTimeline ? ` (plans to register: ${i.cacTimeline})` : ''}
+- CAC Status: ${i.cacRegistered}${i.cacTimeline ? ` — plans to register: ${i.cacTimeline}` : ''}${i.rcNumber ? ` — RC Number: ${i.rcNumber}` : ''}
 - Entity Type: ${i.entityType}
 - Industry: ${effectiveIndustry}
 - Operating State: ${i.state}
-- Estimated Annual Turnover: ${i.turnover}
+
+MODULE B — SCALE & FINANCE
+- Annual Turnover: ${i.turnover}
+- TIN Registration: ${i.hasTIN}
+- VAT Registration: ${i.hasVAT}
 - Employees: ${employeeInfo}
 
-Generate the full compliance journey for this business. If not yet CAC-registered, include CAC registration as a critical first step.`;
+MODULE C — OPERATIONS
+- Processes Payments: ${i.processesPayments}
+- Collects Personal Data: ${i.collectsPersonalData}
+- Imports / Exports: ${i.importsExports}
+- Sells Food/Health Products: ${i.sellsFood}
+- Physical Premises: ${i.hasPhysicalPremises}
+- Financial Sector: ${i.financialSector}
+- Existing Licences: ${i.hasExistingLicences}${i.existingLicencesDetail ? `: ${i.existingLicencesDetail}` : ''}
+
+MODULE D — DOCUMENTS UPLOADED
+${uploadedDocs.length ? uploadedDocs.map(d => `- ${d}`).join('\n') : '- None uploaded yet'}
+
+Generate the complete compliance journey for this business.`;
 
   const data = await callAI({
     model: 'claude-sonnet-4-6',
-    max_tokens: 4000,
+    max_tokens: 5000,
     system: J_SYSTEM_PROMPT,
     messages: [{ role: 'user', content: userMsg }]
   });
@@ -6828,16 +7191,14 @@ Generate the full compliance journey for this business. If not yet CAC-registere
   const clean = raw.replace(/```json|```/g, '').trim();
   jState.journey = JSON.parse(clean);
 
-  // Save intake to Supabase profiles table for this user
+  // Persist profile to Supabase
   if (currentUser && currentUser.id !== 'guest') {
     try {
       await sb.from('profiles').upsert({
-        id: currentUser.id,
-        email: currentUser.email,
-        biz_name: i.businessName,
-        biz_type: i.entityType,
-        industry: effectiveIndustry,
-        turnover: i.turnover,
+        id: currentUser.id, email: currentUser.email,
+        full_name: currentUser.user_metadata?.full_name || '',
+        biz_name: i.businessName, biz_type: i.entityType,
+        industry: effectiveIndustry, turnover: i.turnover,
         updated_at: new Date().toISOString()
       }, { onConflict: 'id' });
     } catch(e) { console.warn('Profile save error:', e); }
@@ -6851,26 +7212,30 @@ Generate the full compliance journey for this business. If not yet CAC-registere
 function jBuildDashboard() {
   const j = jState.journey;
   const i = jState.intake;
+  const effectiveIndustry = i.industry === 'Other' && i.industryOther ? i.industryOther : i.industry;
 
   document.getElementById('j-s-biz-name').textContent = i.businessName || 'Your Business';
   document.getElementById('j-s-biz-type').textContent = i.entityType || '';
-  const tags = [i.industry, i.state, i.turnover].filter(Boolean);
+  const tags = [effectiveIndustry, i.state, i.turnover].filter(Boolean);
   document.getElementById('j-s-tags').innerHTML = tags.map(t => `<span class="j-s-tag">${t}</span>`).join('');
-  document.getElementById('j-ai-summary-text').innerHTML = j.summary.replace(/\b(CAMA|FIRS|CAC|CBN|NAFDAC|NITDA|NDPR|NSITF|SEC|PCN|SON|FCCPC)\b/g, '<strong>$1</strong>');
+  document.getElementById('j-ai-summary-text').innerHTML = j.summary.replace(
+    /\b(CAMA|FIRS|CAC|CBN|NAFDAC|NITDA|NDPR|NSITF|SEC|PCN|SON|FCCPC|PENCOM|NHF)\b/g,
+    '<strong>$1</strong>');
 
   const nav = document.getElementById('j-phase-nav');
+  const colorMap = { foundation:'#60A5FA', tax:'#FCD34D', sector:'#C4B5FD', ongoing:'#6EE7B7' };
   nav.innerHTML = j.phases.map(p => `
     <button class="j-phase-btn" id="j-pnav-${p.id}" onclick="jScrollToPhase('${p.id}')">
-      <div class="j-phase-btn-dot" style="background:var(--j-${p.id === 'foundation' ? 'blue' : p.id === 'tax' ? 'amber' : p.id === 'sector' ? 'purple' : 'green'})"></div>
+      <div class="j-phase-btn-dot" style="background:${colorMap[p.id]||'var(--j-green)'}"></div>
       ${p.title}
       <span class="j-phase-btn-count">${p.steps.length}</span>
     </button>`).join('');
 
   const container = document.getElementById('j-phases-container');
   container.innerHTML = j.phases.map(p => jRenderPhase(p)).join('');
-
   jUpdateScore(0);
   jUpdateStepCount();
+  jUpdateVaultCount();
 }
 
 function jRenderPhase(phase) {
@@ -6887,6 +7252,7 @@ function jRenderPhase(phase) {
 
 function jRenderStepCard(step) {
   const done = jState.completed.has(step.id);
+  const uploads = (jState.stepUploads[step.id] || []).length;
   return `
     <div class="j-step-card${done?' completed':''}" id="j-card-${step.id}" onclick="jOpenStep('${step.id}')">
       <div class="j-step-check" onclick="event.stopPropagation();jToggleStep('${step.id}')">
@@ -6901,6 +7267,7 @@ function jRenderStepCard(step) {
         <div class="j-step-meta">
           <span>⏱ ${step.estimatedDays}</span>
           <span>💰 ${step.estimatedCost}</span>
+          ${uploads ? `<span style="color:var(--j-green);font-weight:600">📎 ${uploads} doc${uploads>1?'s':''}</span>` : ''}
           <div class="j-step-pts">+${step.weight}pts</div>
         </div>
       </div>
@@ -6939,7 +7306,8 @@ function jOpenStep(id) {
     `<div class="j-panel-meta-chip">⭐ <strong>+${step.weight} points</strong></div>`
   ].join('');
   document.getElementById('j-panel-why').innerHTML = `<p>${step.whyItMatters}</p>`;
-  document.getElementById('j-panel-docs').innerHTML = (step.documents||[]).map(d => `<div class="j-doc-item">${d}</div>`).join('');
+  document.getElementById('j-panel-docs').innerHTML = (step.documents||[]).map(d =>
+    `<div class="j-doc-item">📋 ${d}</div>`).join('');
   document.getElementById('j-panel-citations').innerHTML = (step.legalBasis||[]).map(lb => `
     <a class="j-citation-link" href="${lb.url}" target="_blank" rel="noopener noreferrer">
       <div class="j-citation-icon">⚖️</div>
@@ -6958,6 +7326,9 @@ function jOpenStep(id) {
   document.getElementById('j-step-panel').style.borderLeftColor = jGetAgencyColor(step.agency);
   document.getElementById('j-panel-overlay').classList.add('open');
   document.getElementById('j-step-panel').classList.add('open');
+
+  // Render any existing uploads for this step
+  jRenderStepUploadedFiles(step.id);
 }
 
 function jClosePanel() {
@@ -6966,7 +7337,9 @@ function jClosePanel() {
 }
 
 function jGetAgencyColor(agency) {
-  const map = { CAC:'#60A5FA', FIRS:'#FCD34D', CBN:'#C4B5FD', NITDA:'#67E8F9', NAFDAC:'#FCA5A5', NSITF:'#6EE7B7', SEC:'#F9A8D4', SON:'#FED7AA', STATE:'#CBD5E1' };
+  const map = { CAC:'#60A5FA', FIRS:'#FCD34D', CBN:'#C4B5FD', NITDA:'#67E8F9',
+    NAFDAC:'#FCA5A5', NSITF:'#6EE7B7', SEC:'#F9A8D4', SON:'#FED7AA',
+    PENCOM:'#A3E635', NHF:'#FB923C', STATE:'#CBD5E1' };
   return map[agency] || '#00D97E';
 }
 
@@ -6982,12 +7355,10 @@ function jToggleStep(id) {
 function jMarkStepComplete() {
   if (!jState.activeStep) return;
   const id = jState.activeStep.id;
-  if (!jState.completed.has(id)) {
-    jState.completed.add(id);
-    jRefreshCard(id);
-    jRecalcScore();
-    jUpdateStepCount();
-  }
+  jState.completed.add(id);
+  jRefreshCard(id);
+  jRecalcScore();
+  jUpdateStepCount();
   const btn = document.getElementById('j-btn-mark-complete');
   btn.textContent = '✓ Marked as Complete';
   btn.className = 'j-btn-complete done';
@@ -6995,7 +7366,10 @@ function jMarkStepComplete() {
 
 function jRefreshCard(id) {
   const card = document.getElementById(`j-card-${id}`);
-  if (card) card.classList.toggle('completed', jState.completed.has(id));
+  if (!card) return;
+  // Re-render the full card to update doc count too
+  const step = jFindStep(id);
+  if (step) card.outerHTML = jRenderStepCard(step);
 }
 
 function jRecalcScore() {
@@ -7010,13 +7384,11 @@ function jRecalcScore() {
 }
 
 function jAnimateScore(from, to) {
-  const duration = 900;
-  const start = performance.now();
+  const duration = 900, start = performance.now();
   const ring = document.getElementById('j-ring-fill');
-  const val = document.getElementById('j-score-value');
+  const val  = document.getElementById('j-score-value');
   if (!ring || !val) return;
   const circumference = 2 * Math.PI * 54;
-
   function step(now) {
     const p = Math.min((now - start) / duration, 1);
     const eased = 1 - Math.pow(1 - p, 3);
@@ -7040,10 +7412,10 @@ function jAnimateScore(from, to) {
 
 function jScoreColor(v) {
   if (v === 0) return '#4B5563';
-  if (v < 25) return '#F87171';
-  if (v < 50) return '#F59E0B';
-  if (v < 75) return '#22D3EE';
-  if (v < 90) return '#A78BFA';
+  if (v < 25)  return '#F87171';
+  if (v < 50)  return '#F59E0B';
+  if (v < 75)  return '#22D3EE';
+  if (v < 90)  return '#A78BFA';
   return '#00D97E';
 }
 
@@ -7055,7 +7427,7 @@ function jUpdateScoreLabel(v) {
   const detailEl = document.getElementById('j-score-detail');
   if (labelEl) { labelEl.textContent = label; labelEl.style.color = jScoreColor(v); }
   const done = jState.completed.size;
-  const total = jState.journey ? jState.journey.phases.reduce((a, p) => a + p.steps.length, 0) : 0;
+  const total = jState.journey ? jState.journey.phases.reduce((a,p) => a + p.steps.length, 0) : 0;
   if (detailEl) detailEl.textContent = `${done} of ${total} steps completed`;
 }
 
@@ -7097,13 +7469,12 @@ function jOpenFormFill() {
       </div>
       <div style="color:var(--j-sub);font-size:14px">Generating your pre-filled ${step.title} form…</div>
     </div>`;
-
   jGenerateForm(step);
 }
 
-const J_FORM_SYSTEM = `You are a Nigerian compliance form assistant. Given a business profile and a specific compliance step, generate the pre-filled form data.
+const J_FORM_SYSTEM = `You are a Nigerian compliance form assistant. Given a business profile and a specific compliance step, generate pre-filled form data.
 
-Return ONLY valid JSON with this structure:
+Return ONLY valid JSON:
 {
   "sections": [
     {
@@ -7114,7 +7485,7 @@ Return ONLY valid JSON with this structure:
           "key": "field_key",
           "type": "text|select|textarea",
           "value": "Pre-filled value or empty string",
-          "hint": "Brief guidance on what to enter, referencing the relevant law section",
+          "hint": "Brief guidance referencing the relevant law section",
           "options": ["Option 1"]
         }
       ]
@@ -7122,80 +7493,73 @@ Return ONLY valid JSON with this structure:
   ]
 }
 
-RULES:
-- Pre-fill fields you can from the business profile (name, industry, state, etc.)
-- Use empty string for fields the user must fill themselves
-- Include ALL fields required for this specific Nigerian government form
-- hints should reference relevant law sections
-- Be thorough — only include fields actually on the real form
-- For select types include realistic options array`;
+Rules:
+- Pre-fill every field you can from the business profile
+- Include ALL fields on the real Nigerian government form
+- hints must reference specific law sections
+- For selects include realistic Nigerian-specific options
+- Be thorough and accurate`;
 
 async function jGenerateForm(step) {
-  const userMsg = `Business: ${jState.intake.businessName || 'Unknown'}
-Entity: ${jState.intake.entityType}
-Industry: ${jState.intake.industry}
-State: ${jState.intake.state}
-Turnover: ${jState.intake.turnover}
-Employees: ${jState.intake.hasEmployees}
+  const i = jState.intake;
+  const effectiveIndustry = i.industry === 'Other' && i.industryOther ? i.industryOther : i.industry;
+  const userMsg = `Business: ${i.businessName}
+Entity: ${i.entityType}
+Industry: ${effectiveIndustry}
+State: ${i.state}
+Turnover: ${i.turnover}
+TIN: ${i.hasTIN}
+VAT: ${i.hasVAT}
+Employees: ${i.hasEmployees === 'Yes' ? i.employeeCount : 'None'}
+Payments: ${i.processesPayments}
+Personal Data: ${i.collectsPersonalData}
 
 Generate the pre-filled form for: ${step.title} (${step.agencyFull})
-Form should cover all fields required to ${step.description}`;
+Form should cover all fields required to: ${step.description}`;
 
   try {
-    // Route through Supabase edge function via callAI()
-    const data = await callAI({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
-      system: J_FORM_SYSTEM,
-      messages: [{ role: 'user', content: userMsg }]
-    });
-    const raw = data.content.map(c => c.text || '').join('');
-    const clean = raw.replace(/```json|```/g, '').trim();
+    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:2500,
+      system: J_FORM_SYSTEM, messages:[{ role:'user', content:userMsg }] });
+    const raw = data.content.map(c => c.text||'').join('');
+    const clean = raw.replace(/```json|```/g,'').trim();
     jState.generatedForm = JSON.parse(clean);
     jRenderForm(jState.generatedForm, step);
   } catch(e) {
-    document.getElementById('j-form-body').innerHTML = `<div style="padding:40px;color:var(--j-red);text-align:center">Error generating form. Please try again.</div>`;
+    document.getElementById('j-form-body').innerHTML =
+      `<div style="padding:40px;color:var(--j-red);text-align:center">Error generating form. Please try again.</div>`;
   }
 }
 
 function jRenderForm(formData, step) {
-  const html = formData.sections.map(sec => `
-    <div class="j-form-section">
-      <div class="j-form-section-title">${sec.title}</div>
-      <div class="j-form-grid">
-        ${sec.fields.map(f => jRenderField(f)).join('')}
-      </div>
-    </div>`).join('');
-
   const notice = `
     <div style="background:var(--j-bg-s);border:1px solid var(--j-border-em);border-radius:var(--j-r);padding:14px 16px;margin-bottom:28px;font-size:13px;color:var(--j-sub);line-height:1.6">
-      <strong style="color:var(--j-text)">ℹ️ AI Pre-filled Form</strong> — Fields have been auto-filled where possible from your intake answers.
+      <strong style="color:var(--j-text)">ℹ️ AI Pre-filled Form</strong> — Auto-filled from your intake answers.
       Review carefully before submission. Based on requirements from
       <a href="${step.agencyUrl}" target="_blank" rel="noopener" style="color:var(--j-green)">${step.agencyFull} ↗</a>
     </div>`;
-
+  const html = formData.sections.map(sec => `
+    <div class="j-form-section">
+      <div class="j-form-section-title">${sec.title}</div>
+      <div class="j-form-grid">${sec.fields.map(f => jRenderField(f)).join('')}</div>
+    </div>`).join('');
   document.getElementById('j-form-body').innerHTML = notice + html;
 }
 
 function jRenderField(f) {
   const full = f.type === 'textarea' ? 'full' : '';
-  if (f.type === 'select') {
-    return `<div class="j-form-field ${full}">
-      <label class="j-form-label">${f.label}</label>
-      <select class="j-form-input" id="jff-${f.key}">
-        <option value="">Select…</option>
-        ${(f.options||[]).map(o => `<option value="${o}"${f.value===o?' selected':''}>${o}</option>`).join('')}
-      </select>
-      ${f.hint ? `<div class="j-form-hint">${f.hint}</div>` : ''}
-    </div>`;
-  }
-  if (f.type === 'textarea') {
-    return `<div class="j-form-field ${full}">
-      <label class="j-form-label">${f.label}</label>
-      <textarea class="j-form-input" id="jff-${f.key}" rows="3">${f.value||''}</textarea>
-      ${f.hint ? `<div class="j-form-hint">${f.hint}</div>` : ''}
-    </div>`;
-  }
+  if (f.type === 'select') return `<div class="j-form-field ${full}">
+    <label class="j-form-label">${f.label}</label>
+    <select class="j-form-input" id="jff-${f.key}">
+      <option value="">Select…</option>
+      ${(f.options||[]).map(o => `<option value="${o}"${f.value===o?' selected':''}>${o}</option>`).join('')}
+    </select>
+    ${f.hint ? `<div class="j-form-hint">${f.hint}</div>` : ''}
+  </div>`;
+  if (f.type === 'textarea') return `<div class="j-form-field ${full}">
+    <label class="j-form-label">${f.label}</label>
+    <textarea class="j-form-input" id="jff-${f.key}" rows="3">${f.value||''}</textarea>
+    ${f.hint ? `<div class="j-form-hint">${f.hint}</div>` : ''}
+  </div>`;
   return `<div class="j-form-field ${full}">
     <label class="j-form-label">${f.label}</label>
     <input class="j-form-input" id="jff-${f.key}" type="text" value="${f.value||''}" placeholder="">
@@ -7203,20 +7567,17 @@ function jRenderField(f) {
   </div>`;
 }
 
-function jCloseForm() {
-  jShowScreen('j-screen-dashboard');
-}
+function jCloseForm() { jShowScreen('j-screen-dashboard'); }
 
 function jDownloadForm() {
   if (!jState.generatedForm || !jState.activeStep) return;
   const step = jState.activeStep;
-  const lines = [`${step.title} — ${step.agencyFull}`, `Business: ${jState.intake.businessName}`, `Generated by RenikGPT`, '', ''];
+  const lines = [`${step.title} — ${step.agencyFull}`,`Business: ${jState.intake.businessName}`,`Generated by RenikGPT`,'',''];
   jState.generatedForm.sections.forEach(sec => {
     lines.push(`=== ${sec.title} ===`);
     sec.fields.forEach(f => {
       const el = document.getElementById(`jff-${f.key}`);
-      const val = el ? el.value : f.value || '';
-      lines.push(`${f.label}: ${val}`);
+      lines.push(`${f.label}: ${el ? el.value : f.value||''}`);
     });
     lines.push('');
   });
@@ -7231,25 +7592,25 @@ function jMarkFromForm() {
   if (!jState.activeStep) return;
   jMarkStepComplete();
   jCloseForm();
-  jShowScreen('j-screen-dashboard');
 }
 
 function jRestartApp() {
   if (!confirm('Restart your compliance journey? All progress will be lost.')) return;
+  jVault = []; jModuleDUploads = {};
   jState.intake = {
-    businessName:'', cacRegistered:'', cacTimeline:'',
-    entityType:'', industry:'', industryOther:'',
-    state:'', turnover:'',
-    hasEmployees:'', employeeCount:'', hiringTimeline:'',
-    concerns:''
+    businessName:'', cacRegistered:'', cacTimeline:'', incorporationDate:'',
+    entityType:'', industry:'', industryOther:'', state:'', rcNumber:'',
+    turnover:'', hasEmployees:'', employeeCount:'', hiringTimeline:'', hasTIN:'', hasVAT:'',
+    processesPayments:'', collectsPersonalData:'', importsExports:'', sellsFood:'',
+    hasPhysicalPremises:'', financialSector:'', hasExistingLicences:'', existingLicencesDetail:'',
   };
-  jState.journey = null; jState.completed = new Set(); jState.score = 0; jState.activeStep = null;
-  jActiveQuestions = [];
-  jCurrentQ = 0;
-  jShowScreen('j-screen-intake');
-  jInitIntake();
+  jState.journey = null; jState.completed = new Set(); jState.stepUploads = {};
+  jState.score = 0; jState.activeStep = null;
+  jActiveQuestions = []; jCurrentQ = 0;
+  jShowScreen('j-screen-welcome');
 }
 </script>
+
 
 </body>
 </html>
