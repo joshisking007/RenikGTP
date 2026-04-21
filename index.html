@@ -205,26 +205,28 @@ create policy "Users or org members access docs"
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #FFFFFF;
-  --bg-surface: #F5F5F5;
-  --bg-card: #FAFAFA;
-  --bg-hover: #F0F0F0;
-  --border: rgba(0,0,0,0.09);
-  --border-em: rgba(0,0,0,0.16);
+  --bg: #FAFAF8;
+  --bg-surface: #F2F2EF;
+  --bg-card: #FAFAF8;
+  --bg-hover: #EBEBЕ6;
+  --border: rgba(20,20,10,0.08);
+  --border-em: rgba(20,20,10,0.15);
 
-  --green: #CC1F1F;
-  --green-dim: rgba(204,31,31,0.08);
-  --green-glow: rgba(204,31,31,0.18);
-  --gold: #B45309;
-  --gold-dim: rgba(180,83,9,0.10);
-  --red: #CC1F1F;
-  --red-dim: rgba(204,31,31,0.08);
-  --blue: #1D4ED8;
-  --blue-dim: rgba(29,78,216,0.10);
+  /* Primary accent: deep amber/ochre — distinctive, B2B, Nigerian flag-adjacent */
+  --green: #C47B1A;
+  --green-dim: rgba(196,123,26,0.10);
+  --green-glow: rgba(196,123,26,0.20);
+  --gold: #9A5F0F;
+  --gold-dim: rgba(154,95,15,0.10);
+  /* Keep --red as the "critical/danger" semantic color */
+  --red: #B83232;
+  --red-dim: rgba(184,50,50,0.08);
+  --blue: #1A3A6B;
+  --blue-dim: rgba(26,58,107,0.10);
 
-  --text: #111111;
-  --text-sub: #555555;
-  --text-muted: #999999;
+  --text: #0F0F0D;
+  --text-sub: #4A4A42;
+  --text-muted: #8A8A7E;
 
   --font-d: 'Playfair Display', serif;
   --font: 'DM Sans', sans-serif;
@@ -1805,13 +1807,13 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
    COMPLIANCE JOURNEY — scoped dark theme inside #view-journey
 ═══════════════════════════════════════════════════════ */
 #view-journey {
-  --j-bg:#060A12; --j-bg-s:#0C1220; --j-bg-c:#101828; --j-bg-h:#141F30;
-  --j-border:rgba(255,255,255,0.07); --j-border-em:rgba(255,255,255,0.13);
-  --j-green:#00D97E; --j-green-dim:rgba(0,217,126,0.12); --j-green-glow:rgba(0,217,126,0.25);
-  --j-blue:#3B82F6; --j-amber:#F59E0B; --j-purple:#A78BFA;
-  --j-cyan:#22D3EE; --j-red:#F87171; --j-pink:#F472B6;
-  --j-text:#EEF0F4; --j-sub:#8891A4; --j-muted:#4B5563;
-  --j-font:'Outfit',sans-serif; --j-font-d:'Fraunces',serif; --j-mono:'JetBrains Mono',monospace;
+  --j-bg:#0D1117; --j-bg-s:#141B24; --j-bg-c:#182030; --j-bg-h:#1E2A3A;
+  --j-border:rgba(255,255,255,0.06); --j-border-em:rgba(255,255,255,0.12);
+  --j-green:#C47B1A; --j-green-dim:rgba(196,123,26,0.13); --j-green-glow:rgba(196,123,26,0.28);
+  --j-blue:#2E6CB4; --j-amber:#C47B1A; --j-purple:#7C6FA0;
+  --j-cyan:#2E8FA0; --j-red:#C94040; --j-pink:#A05070;
+  --j-text:#E8EAF0; --j-sub:#8A92A6; --j-muted:#4E5668;
+  --j-font:'DM Sans',sans-serif; --j-font-d:'Playfair Display',serif; --j-mono:'JetBrains Mono',monospace;
   --j-r:12px; --j-r-lg:20px;
   background: var(--j-bg);
   color: var(--j-text);
@@ -1842,7 +1844,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 #view-journey .j-q-dot.active { background:var(--j-green); opacity:.5; }
 #view-journey .j-q-label { font-size:12px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--j-green); margin-bottom:14px; opacity:0; transform:translateY(10px); transition:all .4s; }
 #view-journey .j-q-label.show { opacity:1; transform:translateY(0); }
-#view-journey .j-q-text { font-family:var(--j-font-d); font-size:28px; font-weight:600; line-height:1.3; color:var(--j-text); margin-bottom:32px; opacity:0; transform:translateY(16px); transition:all .4s .05s; }
+#view-journey .j-q-text { font-family:var(--j-font-d); font-size:22px; font-weight:600; line-height:1.4; color:var(--j-text); margin-bottom:32px; opacity:0; transform:translateY(16px); transition:all .4s .05s; }
 #view-journey .j-q-text.show { opacity:1; transform:translateY(0); }
 #view-journey .j-q-input { width:100%; background:var(--j-bg-s); border:1.5px solid var(--j-border-em); border-radius:var(--j-r); padding:16px 18px; font-family:var(--j-font); font-size:15px; color:var(--j-text); outline:none; transition:all .4s .1s; opacity:0; transform:translateY(16px); }
 #view-journey .j-q-input.show { opacity:1; transform:translateY(0); }
@@ -1858,10 +1860,12 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 #view-journey .j-q-opt { background:var(--j-bg-s); border:1.5px solid var(--j-border-em); border-radius:var(--j-r); padding:14px 16px; font-size:14px; font-weight:500; color:var(--j-sub); cursor:pointer; transition:all .2s; text-align:left; }
 #view-journey .j-q-opt:hover { border-color:var(--j-green); color:var(--j-text); background:var(--j-green-dim); }
 #view-journey .j-q-opt.selected { border-color:var(--j-green); color:var(--j-green); background:var(--j-green-dim); }
-#view-journey .j-q-actions { display:flex; gap:10px; margin-top:20px; opacity:0; transform:translateY(16px); transition:all .4s .15s; }
+#view-journey .j-q-actions { display:flex; gap:10px; margin-top:20px; opacity:0; transform:translateY(16px); transition:all .4s .15s; align-items:center; }
 #view-journey .j-q-actions.show { opacity:1; transform:translateY(0); }
-#view-journey .j-btn-next { background:var(--j-green); color:#030B05; font-family:var(--j-font); font-size:14px; font-weight:700; border:none; border-radius:var(--j-r); padding:13px 28px; cursor:pointer; transition:all .2s; letter-spacing:.02em; }
-#view-journey .j-btn-next:hover { background:#00f093; box-shadow:0 0 20px var(--j-green-glow); }
+#view-journey .j-btn-prev { background:transparent; border:1.5px solid var(--j-border-em); color:var(--j-sub); font-family:var(--j-font); font-size:14px; border-radius:var(--j-r); padding:13px 20px; cursor:pointer; transition:all .2s; }
+#view-journey .j-btn-prev:hover { color:var(--j-text); border-color:var(--j-green); }
+#view-journey .j-btn-next { background:var(--j-green); color:#ffffff; font-family:var(--j-font); font-size:14px; font-weight:700; border:none; border-radius:var(--j-r); padding:13px 28px; cursor:pointer; transition:all .2s; letter-spacing:.02em; }
+#view-journey .j-btn-next:hover { background:#D98B2A; box-shadow:0 0 20px var(--j-green-glow); }
 #view-journey .j-btn-next:disabled { opacity:.4; cursor:not-allowed; }
 #view-journey .j-btn-skip { background:transparent; border:1.5px solid var(--j-border-em); color:var(--j-sub); font-family:var(--j-font); font-size:14px; border-radius:var(--j-r); padding:13px 20px; cursor:pointer; transition:all .2s; }
 #view-journey .j-btn-skip:hover { color:var(--j-text); }
@@ -1972,7 +1976,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 #view-journey .j-panel-desc p { margin-bottom:10px; }
 #view-journey .j-docs-list { display:flex; flex-direction:column; gap:7px; }
 #view-journey .j-doc-item { display:flex; align-items:center; gap:10px; background:var(--j-bg-c); border:1px solid var(--j-border); border-radius:8px; padding:11px 14px; font-size:13px; color:var(--j-text); }
-#view-journey .j-doc-item::before { content:'📄'; font-size:14px; }
+#view-journey .j-doc-item::before { content:''; font-size:14px; }
 #view-journey .j-citations-list { display:flex; flex-direction:column; gap:8px; }
 #view-journey .j-citation-link { display:flex; align-items:flex-start; gap:12px; background:var(--j-bg-c); border:1px solid var(--j-border); border-radius:10px; padding:14px; text-decoration:none; transition:all .2s; cursor:pointer; }
 #view-journey .j-citation-link:hover { border-color:var(--j-border-em); background:var(--j-bg-h); }
@@ -2074,7 +2078,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 #view-journey .j-doc-upload-row { display:flex; align-items:center; gap:12px; background:var(--j-bg-s); border:1.5px dashed var(--j-border-em); border-radius:var(--j-r); padding:14px 16px; cursor:pointer; transition:all .2s; }
 #view-journey .j-doc-upload-row:hover { border-color:var(--j-green); background:var(--j-green-dim); }
 #view-journey .j-doc-upload-row.has-file { border-style:solid; border-color:var(--j-green); background:var(--j-green-dim); }
-#view-journey .j-doc-upload-row-icon { font-size:20px; flex-shrink:0; }
+#view-journey .j-doc-upload-row-icon { font-size:10px; font-weight:800; letter-spacing:.04em; flex-shrink:0; background:var(--j-bg-h); border:1px solid var(--j-border-em); border-radius:6px; padding:4px 7px; color:var(--j-sub); font-family:var(--j-mono); }
 #view-journey .j-doc-upload-row-label { flex:1; font-size:14px; font-weight:600; color:var(--j-text); }
 #view-journey .j-doc-upload-row-sub { font-size:12px; color:var(--j-sub); margin-top:2px; }
 #view-journey .j-doc-upload-row-status { font-size:12px; font-weight:600; color:var(--j-green); flex-shrink:0; }
@@ -2225,7 +2229,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
             <span class="auth-btn-label">Send magic link</span>
           </button>
           <div id="magic-sent" class="auth-success-msg" style="display:none">
-            ✅ Magic link sent! Check your inbox and click the link to sign in.
+            Magic link sent! Check your inbox and click the link to sign in.
           </div>
         </div>
 
@@ -2410,7 +2414,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
             Export
           </button>
           <div id="export-menu" style="display:none;position:absolute;right:16px;top:56px;background:#fff;border:1px solid var(--border-em);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,0.10);z-index:50;min-width:160px;overflow:hidden">
-            <div onclick="exportChat('text')" style="padding:11px 16px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background=''">📄 Export as .txt</div>
+            <div onclick="exportChat('text')" style="padding:11px 16px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background=''">Export as .txt</div>
             <div onclick="exportChat('markdown')" style="padding:11px 16px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border)" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background=''">📝 Export as .md</div>
             <div onclick="exportChat('print')" style="padding:11px 16px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border)" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background=''">🖨️ Print / Save PDF</div>
           </div>
@@ -2516,7 +2520,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
           </select>
         </div>
         <div id="drop-zone" onclick="document.getElementById('file-input').click()">
-          <div class="dz-icon">📄</div>
+          <div class="dz-icon" style="font-size:13px;font-weight:800;letter-spacing:.04em">PDF</div>
           <div class="dz-title">Drop a PDF regulation here</div>
           <div class="dz-sub">CBN circulars, FIRS guidelines, NITDA frameworks, CAC forms…</div>
           <div class="dz-btn">Choose PDF file</div>
@@ -2631,7 +2635,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
         <!-- Banner -->
         <div style="background:var(--red-dim);border:1px solid rgba(204,31,31,0.2);border-radius:var(--r-lg);padding:18px 20px;display:flex;gap:14px;align-items:flex-start">
-          <div style="font-size:28px;flex-shrink:0">⚖️</div>
+          <div style="font-size:13px;font-weight:700;flex-shrink:0">LAW</div>
           <div>
             <div style="font-size:15px;font-weight:700;color:var(--red);margin-bottom:4px">When RenikGPT says "consult a lawyer" — we mean it</div>
             <div style="font-size:13.5px;color:var(--text-sub);line-height:1.6">RenikGPT gives you the map. A licensed professional walks the road with you. The lawyers below specialise in Nigerian corporate, tax, and regulatory law.</div>
@@ -2651,7 +2655,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
               </div>
             </div>
             <div class="lc-bio">10+ years advising Nigerian SMEs on company registration, tax structuring, and CAC compliance. Former FIRS counsel.</div>
-            <div class="lc-meta"><span>📍 Lagos, Nigeria</span><span>💼 Okonkwo & Associates</span></div>
+            <div class="lc-meta"><span>Lagos, Nigeria</span><span>Okonkwo & Associates</span></div>
             <div class="lc-actions">
               <button class="lc-btn-primary" onclick="openLawyerModal('Adaeze Okonkwo')">Request Consultation</button>
               <button class="lc-btn-sec" onclick="showToast('WhatsApp link copied','var(--green)')">WhatsApp</button>
@@ -2668,7 +2672,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
               </div>
             </div>
             <div class="lc-bio">Specialist in CBN licensing, PSB applications, and fintech regulatory frameworks. Handled 30+ PSSP licence applications.</div>
-            <div class="lc-meta"><span>📍 Abuja, Nigeria</span><span>💼 Usman Legal Partners</span></div>
+            <div class="lc-meta"><span>Abuja, Nigeria</span><span>Usman Legal Partners</span></div>
             <div class="lc-actions">
               <button class="lc-btn-primary" onclick="openLawyerModal('Babatunde Usman')">Request Consultation</button>
               <button class="lc-btn-sec" onclick="showToast('WhatsApp link copied','var(--green)')">WhatsApp</button>
@@ -2685,7 +2689,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
               </div>
             </div>
             <div class="lc-bio">Certified Data Protection Officer with expertise in NDPR audits, breach notification, and NITDA compliance for tech companies.</div>
-            <div class="lc-meta"><span>📍 Lagos, Nigeria</span><span>💼 Digital Compliance Hub</span></div>
+            <div class="lc-meta"><span>Lagos, Nigeria</span><span>Digital Compliance Hub</span></div>
             <div class="lc-actions">
               <button class="lc-btn-primary" onclick="openLawyerModal('Chisom Ike')">Request Consultation</button>
               <button class="lc-btn-sec" onclick="showToast('WhatsApp link copied','var(--green)')">WhatsApp</button>
@@ -2702,7 +2706,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
               </div>
             </div>
             <div class="lc-bio">20 years in NAFDAC product registration, food safety, and pharmaceutical import/export permits. Based in Lagos with national reach.</div>
-            <div class="lc-meta"><span>📍 Lagos, Nigeria</span><span>💼 Adeyemi Regulatory Counsel</span></div>
+            <div class="lc-meta"><span>Lagos, Nigeria</span><span>Adeyemi Regulatory Counsel</span></div>
             <div class="lc-actions">
               <button class="lc-btn-primary" onclick="openLawyerModal('Kemi Adeyemi')">Request Consultation</button>
               <button class="lc-btn-sec" onclick="showToast('WhatsApp link copied','var(--green)')">WhatsApp</button>
@@ -2719,7 +2723,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
               </div>
             </div>
             <div class="lc-bio">Barrister & Solicitor at O. M. A. Ode & Co. — Reliance Chambers. Specialises in Nigerian corporate law, regulatory compliance, and business advisory services.</div>
-            <div class="lc-meta"><span>📍 Nigeria</span><span>💼 O. M. A. Ode & Co.</span></div>
+            <div class="lc-meta"><span>Nigeria</span><span>O. M. A. Ode & Co.</span></div>
             <div class="lc-actions">
               <button class="lc-btn-primary" onclick="openLawyerModal('Omenka M.A. Ode')">Request Consultation</button>
               <button class="lc-btn-sec" onclick="window.open('https://wa.me/2348032520505','_blank')">WhatsApp</button>
@@ -2843,7 +2847,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
         </div>
       </div>
       <div class="subscribe-bar">
-        <div class="sub-icon">🔔</div>
+        <div class="sub-icon" style="font-size:11px;font-weight:800;letter-spacing:.04em;width:32px;height:32px;border-radius:8px;background:var(--bg-surface);border:1px solid var(--border-em);display:flex;align-items:center;justify-content:center;color:var(--text-muted)">ALT</div>
         <div class="sub-info">
           <div class="sub-title">Email alerts for regulation changes</div>
           <div class="sub-sub">Get notified instantly when a new regulation is published</div>
@@ -2869,9 +2873,9 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       </div>
       <div class="reports-grid" id="reports-grid">
         <div class="reports-empty">
-          <div class="re-icon">📋</div>
+          <div class="re-icon" style="font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--text-muted)">EMPTY</div>
           <div class="re-title">No saved reports yet</div>
-          <div class="re-sub">Generate a compliance checklist and click <strong>💾 Save Report</strong> to store it here.</div>
+          <div class="re-sub">Generate a compliance checklist and click <strong>Save Report</strong> to store it here.</div>
         </div>
       </div>
     </div>
@@ -2886,7 +2890,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
         </div>
       </div>
       <div class="templates-banner">
-        <div class="tb-icon">📄</div>
+        <div class="tb-icon" style="font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--text-muted)">DOC</div>
         <div class="tb-text"><strong>Free templates</strong> download instantly. <strong>Premium templates</strong> are available via Paystack — wiring up payment soon.</div>
       </div>
       <div class="templates-grid" id="templates-grid"></div>
@@ -2930,7 +2934,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
           </div>
           <div class="dcm-step-body">
             <div class="dcm-drop-zone" id="dcm-drop-zone" onclick="document.getElementById('dcm-file-input').click()">
-              <div class="dcm-dz-icon">📄</div>
+              <div class="dcm-dz-icon" style="font-size:13px;font-weight:800">PDF</div>
               <div class="dcm-dz-text" id="dcm-dz-text"><strong>Tap to choose a PDF</strong><br>or drag and drop</div>
               <div class="dcm-dz-btn">Browse files</div>
               <input type="file" id="dcm-file-input" accept=".pdf" style="display:none" onchange="dcmHandleFile(this.files[0])">
@@ -2960,7 +2964,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
           <!-- Covered -->
           <div class="dcm-step-card" id="dcm-card-covered">
             <div class="dcm-result-header" onclick="dcmToggleSection('covered')">
-              <div class="dcm-result-icon">✅</div>
+              <div class="dcm-result-icon">OK</div>
               <div class="dcm-result-label">Covered by document</div>
               <span class="dcm-result-count dcm-count-covered" id="dcm-ct-covered">0</span>
               <span class="dcm-chevron" id="dcm-chev-covered">▶</span>
@@ -2971,7 +2975,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
           <!-- Gaps -->
           <div class="dcm-step-card" id="dcm-card-gaps">
             <div class="dcm-result-header" onclick="dcmToggleSection('gaps')">
-              <div class="dcm-result-icon">⚠️</div>
+              <div class="dcm-result-icon">!</div>
               <div class="dcm-result-label">Gaps — not addressed in document</div>
               <span class="dcm-result-count dcm-count-gaps" id="dcm-ct-gaps">0</span>
               <span class="dcm-chevron" id="dcm-chev-gaps">▶</span>
@@ -3003,7 +3007,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       <!-- Gate: shown to non-admins -->
       <div id="admin-gate" style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px">
         <div style="text-align:center;max-width:380px">
-          <div style="font-size:48px;margin-bottom:16px">🔐</div>
+          <div style="font-size:13px;font-weight:800;letter-spacing:.06em;margin-bottom:16px">ADMIN</div>
           <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">Admin Access Required</div>
           <div style="font-size:14px;color:var(--text-sub);margin-bottom:24px;line-height:1.6">
             This panel is restricted to RenikGPT administrators.<br>Sign in with an authorised admin email to continue.
@@ -3031,8 +3035,8 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
         <!-- Tab bar -->
         <div style="display:flex;border-bottom:1px solid var(--border);background:var(--bg-surface);flex-shrink:0;overflow-x:auto">
           <div class="admin-tab active" id="atab-add"    onclick="adminSwitchTab('add')">➕ Add Regulation</div>
-          <div class="admin-tab"        id="atab-alert"  onclick="adminSwitchTab('alert')">🚨 Publish Alert</div>
-          <div class="admin-tab"        id="atab-manage" onclick="adminSwitchTab('manage')">🗂 Manage DB</div>
+          <div class="admin-tab"        id="atab-alert"  onclick="adminSwitchTab('alert')">Publish Alert</div>
+          <div class="admin-tab"        id="atab-manage" onclick="adminSwitchTab('manage')">Manage DB</div>
           <div class="admin-tab"        id="atab-stats"  onclick="adminSwitchTab('stats')">📊 Stats</div>
         </div>
 
@@ -3101,7 +3105,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
             </div>
 
             <div class="admin-form-actions">
-              <button class="admin-btn-sec" onclick="adminPreviewReg()">👁 Preview</button>
+              <button class="admin-btn-sec" onclick="adminPreviewReg()">Preview</button>
               <button class="admin-btn-sec" onclick="adminClearRegForm()">✕ Clear</button>
               <button class="admin-btn-primary" id="af-submit-btn" onclick="adminSubmitRegulation()">✓ Publish to Database</button>
             </div>
@@ -3151,7 +3155,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
             <div class="admin-form-actions">
               <button class="admin-btn-sec" onclick="adminClearAlertForm()">✕ Clear</button>
-              <button class="admin-btn-primary" id="aa-submit-btn" onclick="adminSubmitAlert()">🚨 Publish Alert</button>
+              <button class="admin-btn-primary" id="aa-submit-btn" onclick="adminSubmitAlert()">Publish Alert</button>
             </div>
 
             <div class="admin-log-title">Session log</div>
@@ -3214,14 +3218,14 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:680px">
           <!-- Create org card -->
           <div class="team-option-card">
-            <div class="toc-icon">🏢</div>
+            <div class="toc-icon" style="font-size:13px;font-weight:700;letter-spacing:.05em;color:var(--text-muted)">NEW</div>
             <div class="toc-title">Create a Team</div>
             <div class="toc-desc">Set up a new organisation workspace. Invite teammates, share checklists, and manage compliance together.</div>
             <button class="toc-btn" onclick="showCreateOrg()">Create Organisation →</button>
           </div>
           <!-- Join org card -->
           <div class="team-option-card">
-            <div class="toc-icon">🔗</div>
+            <div class="toc-icon" style="font-size:13px;font-weight:700;letter-spacing:.05em;color:var(--text-muted)">JOIN</div>
             <div class="toc-title">Join a Team</div>
             <div class="toc-desc">Got an invite code from your team owner? Enter it below to join your organisation's workspace.</div>
             <div style="display:flex;gap:8px;margin-top:8px">
@@ -3258,7 +3262,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
         <!-- Org header bar -->
         <div style="padding:14px 22px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-shrink:0">
           <div class="chat-header-menu" onclick="openSidebar()" style="margin-right:0"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
-          <div style="width:40px;height:40px;border-radius:10px;background:var(--red-dim);border:1.5px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🏢</div>
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--red-dim);border:1.5px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--red);flex-shrink:0">ORG</div>
           <div style="flex:1;min-width:0">
             <div id="org-display-name" style="font-size:16px;font-weight:700;color:var(--text)">Organisation</div>
             <div id="org-display-meta" style="font-size:12px;color:var(--text-sub);margin-top:1px"></div>
@@ -3266,15 +3270,15 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
           <div id="org-invite-pill" style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border-em);border-radius:20px;padding:6px 14px;cursor:pointer" onclick="copyInviteCode()" title="Click to copy invite code">
             <span style="font-size:11px;color:var(--text-muted)">Invite code:</span>
             <span id="org-invite-code" style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--red);letter-spacing:.08em"></span>
-            <span style="font-size:12px;color:var(--text-muted)">📋</span>
+            <span style="font-size:11px;font-weight:700;color:var(--text-muted)">COPY</span>
           </div>
         </div>
 
         <!-- Tabs -->
         <div style="display:flex;border-bottom:1px solid var(--border);background:var(--bg-surface);flex-shrink:0">
-          <div class="admin-tab active" id="ttab-members" onclick="teamSwitchTab('members')">👥 Members</div>
-          <div class="admin-tab" id="ttab-shared"  onclick="teamSwitchTab('shared')">📋 Shared Reports</div>
-          <div class="admin-tab" id="ttab-settings" onclick="teamSwitchTab('settings')">⚙️ Settings</div>
+          <div class="admin-tab active" id="ttab-members" onclick="teamSwitchTab('members')">Members</div>
+          <div class="admin-tab" id="ttab-shared"  onclick="teamSwitchTab('shared')">Shared Reports</div>
+          <div class="admin-tab" id="ttab-settings" onclick="teamSwitchTab('settings')">Settings</div>
         </div>
 
         <!-- Tab: Members -->
@@ -3349,19 +3353,19 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       <div class="j-welcome-sub">We'll ask you a series of questions about your business, then generate a step-by-step compliance journey with pre-filled forms, legal citations, and a living dashboard.</div>
 
       <div class="j-welcome-info-box">
-        <div class="j-welcome-info-icon">⏱</div>
+        <div class="j-welcome-info-icon">~15 min</div>
         <div>
           <div class="j-welcome-info-title">This will take 15–20 minutes</div>
           <div class="j-welcome-info-text">Please have the following ready before you begin:</div>
         </div>
       </div>
       <div class="j-welcome-docs-grid">
-        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">📄</div><div>CAC Certificate (if registered)</div></div>
-        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">🪪</div><div>Director / Owner ID (NIN or Passport)</div></div>
-        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">🏦</div><div>Tax Identification Number (TIN)</div></div>
-        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">📍</div><div>Business address proof</div></div>
-        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">📋</div><div>Any existing licences or permits</div></div>
-        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">💳</div><div>BVN (for banking / fintech)</div></div>
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">—</div><div>CAC Certificate (if registered)</div></div>
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">—</div><div>Director / Owner ID — NIN (11 digits) or Passport</div></div>
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">—</div><div>Tax Identification Number (TIN) — 10–11 digits</div></div>
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">—</div><div>Business address proof</div></div>
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">—</div><div>Any existing licences or permits</div></div>
+        <div class="j-welcome-doc"><div class="j-welcome-doc-icon">—</div><div>BVN (11 digits) — for banking / fintech businesses</div></div>
       </div>
       <div class="j-welcome-note">Don't have everything? No problem — you can upload documents later on each compliance step.</div>
       <button class="j-btn-next" style="width:100%;margin-top:24px;padding:16px" onclick="jStartIntake()">Begin My Compliance Journey →</button>
@@ -3382,6 +3386,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       <div class="j-q-text" id="j-q-text"></div>
       <div id="j-q-answer-area"></div>
       <div class="j-q-actions" id="j-q-actions">
+        <button class="j-btn-prev" id="j-btn-prev" onclick="jPrevQuestion()" style="display:none">← Previous</button>
         <button class="j-btn-next" id="j-btn-next" onclick="jNextQuestion()">Continue →</button>
         <button class="j-btn-skip" id="j-btn-skip" onclick="jSkipQuestion()">Skip</button>
       </div>
@@ -3461,7 +3466,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       <!-- Doc Vault button in sidebar -->
       <div style="padding:12px 16px;border-top:1px solid var(--j-border)">
         <button onclick="jOpenVault()" style="width:100%;background:var(--j-bg-h);border:1px solid var(--j-border-em);color:var(--j-sub);font-family:var(--j-font);font-size:12px;font-weight:600;border-radius:8px;padding:10px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s">
-          <span style="font-size:14px">🗂</span> Document Vault <span id="j-vault-count" style="margin-left:auto;background:var(--j-green);color:#030B05;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;display:none">0</span>
+          <span style="font-size:12px;font-weight:700;font-family:var(--j-mono);letter-spacing:.04em">DOC</span> Document Vault <span id="j-vault-count" style="margin-left:auto;background:var(--j-green);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;display:none">0</span>
         </button>
       </div>
       <div class="j-phase-nav" id="j-phase-nav"></div>
@@ -3478,7 +3483,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       </div>
       <div class="j-dash-body" id="j-dash-body">
         <div class="j-ai-summary" id="j-ai-summary">
-          <div class="j-ai-icon">🤖</div>
+          <div class="j-ai-icon" style="font-size:11px;font-weight:800;font-family:var(--j-mono)">AI</div>
           <div class="j-ai-summary-text" id="j-ai-summary-text">Loading your compliance summary…</div>
         </div>
         <!-- FIX 3 & 4: Agency breakdown and deadline tracker -->
@@ -3519,7 +3524,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
         </div>
         <div class="j-step-upload-zone" id="j-step-upload-zone" onclick="document.getElementById('j-step-file-input').click()">
           <input type="file" id="j-step-file-input" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" style="display:none" onchange="jHandleStepUpload(this)">
-          <div class="j-step-upload-icon">📎</div>
+          <div class="j-step-upload-icon">+</div>
           <div class="j-step-upload-text">Tap to upload — PDF, JPG, PNG, DOCX</div>
           <div class="j-step-upload-sub">RenikGPT will scan and verify each document</div>
         </div>
@@ -3532,7 +3537,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
     </div>
     <div class="j-panel-cta">
       <button class="j-btn-begin" id="j-btn-begin-step" onclick="jOpenFormFill()">
-        <span>⚡</span> Generate Pre-filled Form
+        Generate Pre-filled Form
       </button>
       <button class="j-btn-complete" id="j-btn-mark-complete" onclick="jMarkStepComplete()">
         ✓ Mark as Complete
@@ -3545,7 +3550,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   <div id="j-vault-panel" style="display:none;position:absolute;top:0;right:0;bottom:0;width:420px;max-width:100%;background:var(--j-bg-s);border-left:1px solid var(--j-border);z-index:71;flex-direction:column;overflow:hidden">
     <div style="padding:20px 24px 16px;border-bottom:1px solid var(--j-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
       <div>
-        <div style="font-family:var(--j-font-d);font-size:16px;font-weight:700;color:var(--j-text)">🗂 Document Vault</div>
+        <div style="font-family:var(--j-font-d);font-size:16px;font-weight:700;color:var(--j-text)">Document Vault</div>
         <div style="font-size:12px;color:var(--j-sub);margin-top:2px">All documents uploaded across your compliance steps</div>
       </div>
       <button onclick="jCloseVault()" style="background:var(--j-bg-h);border:1px solid var(--j-border);color:var(--j-sub);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:var(--j-font);font-size:13px">✕</button>
@@ -3578,8 +3583,8 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
       </div>
     </div>
     <div class="j-form-actions">
-      <button class="j-btn-download" onclick="jDownloadForm()">⬇ Download Form</button>
-      <button class="j-btn-mark-done" onclick="jMarkFromForm()">✓ Mark Step Complete</button>
+      <button class="j-btn-download" onclick="jDownloadForm()">Download Form</button>
+      <button class="j-btn-mark-done" onclick="jMarkFromForm()">Mark Step Complete</button>
     </div>
   </div>
 
@@ -3645,7 +3650,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
       <div class="wm-slide active" id="wm-slide-1">
         <div class="wm-num">01 / 03 &nbsp;·&nbsp; WHAT WE DO</div>
-        <div class="wm-icon">⚖️</div>
+        <div class="wm-icon" style="font-size:13px;font-weight:800">LAW</div>
         <div class="wm-title">Nigerian compliance, in plain language</div>
         <div class="wm-desc">
           Navigating CBN, FIRS, CAC, NITDA, SEC, and NAFDAC costs Nigerian businesses
@@ -3660,7 +3665,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
       <div class="wm-slide" id="wm-slide-2">
         <div class="wm-num">02 / 03 &nbsp;·&nbsp; THE TOOLS</div>
-        <div class="wm-icon">🏢</div>
+        <div class="wm-icon" style="font-size:13px;font-weight:800">ORG</div>
         <div class="wm-title">Built for founders, CFOs, and compliance teams</div>
         <div class="wm-desc">
           RenikGPT is a <strong>B2B compliance platform</strong> — every tool is designed around how Nigerian businesses actually operate.
@@ -4102,7 +4107,7 @@ Rules:
 5. End every response with one bold "Next Step" action.
 6. Use bullet points for lists of requirements.
 7. Focus exclusively on Nigeria-specific regulations.
-8. Always end with: "⚖️ Not legal advice — consult a qualified solicitor for your specific situation."`;
+8. Always end with: "Not legal advice — consult a qualified solicitor for your specific situation."`;
 
 function addMsg(role, text) {
   const msgs = document.getElementById('messages');
@@ -4136,7 +4141,7 @@ function addFailedMessage(originalText) {
     <div class="msg-avatar">RG</div>
     <div>
       <div class="bubble" style="border:1.5px solid var(--red);background:var(--red-dim)">
-        <div style="color:var(--red);font-size:13px;font-weight:600;margin-bottom:8px">⚠️ Could not reach the AI</div>
+        <div style="color:var(--red);font-size:13px;font-weight:600;margin-bottom:8px">Could not reach the AI</div>
         <div style="font-size:13px;color:var(--text-sub)">Check your connection and ensure your Edge Function is deployed.</div>
         <button onclick="retryLastMessage(${JSON.stringify(originalText).replace(/"/g,'&quot;')},this)"
           style="margin-top:10px;padding:7px 16px;background:var(--red);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">
@@ -4632,7 +4637,7 @@ async function sendChat() {
   attachRow.classList.remove('has-files');
 
   document.getElementById('send-btn').disabled = true;
-  addMsg('user', sendText + (fileNames.length ? '\n\n📎 ' + fileNames.join(', ') : ''));
+  addMsg('user', sendText + (fileNames.length ? '\n\n' + fileNames.join(', ') : ''));
   const typing = document.getElementById('typing-indicator');
   typing.style.display = 'flex';
   chatHistory.push({ role:'user', content: sendText });
@@ -4712,7 +4717,7 @@ function renderAttachChips() {
   attachedFiles.forEach((f, i) => {
     const chip = document.createElement('div');
     chip.className = 'attach-chip';
-    chip.innerHTML = `<span>📎 ${f.name}</span><span class="attach-chip-x" onclick="removeAttach(${i})">×</span>`;
+    chip.innerHTML = `<span>${f.name}</span><span class="attach-chip-x" onclick="removeAttach(${i})">x</span>`;
     row.appendChild(chip);
   });
 }
@@ -4873,7 +4878,7 @@ function renderPDFResult(d) {
   `).join('');
   document.getElementById('pdf-result').innerHTML = `
     <div class="result-title">${d.title||'Regulation Extracted'}</div>
-    <div class="result-file">📄 ${d.file_name} · <span class="agency-tag ${agClass[d.agency]||'tag-cac'}">${d.agency}</span></div>
+    <div class="result-file">${d.file_name} · <span class="agency-tag ${agClass[d.agency]||'tag-cac'}">${d.agency}</span></div>
     <div class="result-body">${d.summary||''}</div>
     ${d.penalties?`<div style="margin-top:12px;padding:10px 14px;background:var(--red-dim);border-radius:8px;border-left:2px solid var(--red);font-size:13px;color:var(--text)"><strong>Penalties:</strong> ${d.penalties}</div>`:''}
     <div class="key-points">${points}</div>
@@ -4914,7 +4919,7 @@ async function loadUploadHistory() {
     const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
     list.innerHTML = data.map(d => `
       <div class="history-item" style="cursor:pointer" onclick="openDocViewer(${JSON.stringify(d).replace(/"/g,'&quot;')})">
-        <div class="history-icon">📄</div>
+        <div class="history-icon" style="font-size:11px;font-weight:800">DOC</div>
         <div class="history-info" style="flex:1">
           <div class="history-name">${escHtml(d.file_name||'')}</div>
           <div class="history-meta"><span class="agency-tag ${agClass[d.agency]||'tag-cac'}">${d.agency}</span> · ${new Date(d.created_at).toLocaleDateString('en-NG')}</div>
@@ -5058,7 +5063,7 @@ function renderChecklist(data, bizName, bizType, industry, stage, turnover) {
   });
   html += `
     <div class="cl-save-row">
-      <button class="cl-save-btn" onclick="saveReport(${JSON.stringify(data).replace(/"/g,'&quot;')}, '${bizName}','${bizType}','${industry}','${stage}','${turnover}')">💾 Save Report</button>
+      <button class="cl-save-btn" onclick="saveReport(${JSON.stringify(data).replace(/"/g,'&quot;')}, '${bizName}','${bizType}','${industry}','${stage}','${turnover}')">Save Report</button>
     </div>
   `;
   output.innerHTML = html;
@@ -5252,9 +5257,9 @@ function renderReports() {
   const reports = JSON.parse(localStorage.getItem(`renik_reports_${currentUser.id}`) || '[]');
   if (!reports.length) {
     grid.innerHTML = `<div class="reports-empty">
-      <div class="re-icon">📋</div>
+      <div class="re-icon" style="font-size:11px;font-weight:800;letter-spacing:.04em">RPT</div>
       <div class="re-title">No saved reports yet</div>
-      <div class="re-sub">Generate a compliance checklist and click <strong>💾 Save Report</strong> to store it here.</div>
+      <div class="re-sub">Generate a compliance checklist and click <strong>Save Report</strong> to store it here.</div>
     </div>`;
     return;
   }
@@ -5263,7 +5268,7 @@ function renderReports() {
     const agencyTags = (r.agencies||[]).map(a => `<span class="rsc-tag">${a}</span>`).join('');
     return `
       <div class="report-saved-card">
-        <div class="rsc-icon">📋</div>
+        <div class="rsc-icon" style="font-size:11px;font-weight:800">RPT</div>
         <div class="rsc-info">
           <div class="rsc-name">${r.bizName}</div>
           <div class="rsc-meta">
@@ -5575,10 +5580,10 @@ const TEMPLATES = [
   { id:'t2', title:'NDPR Privacy Policy', icon:'🔒', desc:'Full NITDA/NDPR-compliant privacy policy for websites and apps collecting Nigerian user data.', price:1500, agency:'NITDA', free:false },
   { id:'t3', title:'Tax Compliance Calendar', icon:'📅', desc:'12-month FIRS compliance calendar pre-filled with CIT, VAT, WHT, and payroll tax deadlines for your industry.', price:2000, agency:'FIRS', free:false },
   { id:'t4', title:"Shareholders' Agreement", icon:'🤝', desc:'Comprehensive shareholders agreement covering equity split, vesting, voting rights, and exit provisions under CAMA 2020.', price:5000, agency:'CAC', free:false },
-  { id:'t5', title:'NDPR Data Processing Agreement', icon:'📋', desc:'DPA template for third-party data processors as required under NDPR 2019 Article 2.7 — include with every vendor contract.', price:2500, agency:'NITDA', free:false },
+  { id:'t5', title:'NDPR Data Processing Agreement', icon:'DOC', desc:'DPA template for third-party data processors as required under NDPR 2019 Article 2.7 — include with every vendor contract.', price:2500, agency:'NITDA', free:false },
   { id:'t6', title:'Employee Contract (Nigeria)', icon:'👤', desc:'Standard employment contract compliant with the Labour Act Cap L1, covering terms, benefits, and IP assignment.', price:2000, agency:'Labour', free:false },
-  { id:'t7', title:'AML/CFT Policy', icon:'🏦', desc:'Anti-money laundering and counter-terrorism financing policy for CBN-regulated entities, PSPs, and fintechs.', price:8000, agency:'CBN', free:false },
-  { id:'t8', title:'NAFDAC Registration Checklist', icon:'✅', desc:'Step-by-step NAFDAC product registration checklist for food, beverage, and pharmaceutical manufacturers. Updated 2024.', price:0, agency:'NAFDAC', free:true },
+  { id:'t7', title:'AML/CFT Policy', icon:'FIN', desc:'Anti-money laundering and counter-terrorism financing policy for CBN-regulated entities, PSPs, and fintechs.', price:8000, agency:'CBN', free:false },
+  { id:'t8', title:'NAFDAC Registration Checklist', icon:'CHK', desc:'Step-by-step NAFDAC product registration checklist for food, beverage, and pharmaceutical manufacturers. Updated 2024.', price:0, agency:'NAFDAC', free:true },
 ];
 
 const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac', Labour:'tag-firs' };
@@ -5602,7 +5607,7 @@ function loadTemplates() {
       <div class="tmpl-footer">
         <div class="tmpl-price ${t.free ? 'free' : ''}">${t.free ? 'Free' : '₦'+t.price.toLocaleString()}</div>
         ${t.free
-          ? `<button class="tmpl-btn-free" onclick="downloadTemplate('${t.id}')">⬇ Download</button>`
+          ? `<button class="tmpl-btn-free" onclick="downloadTemplate('${t.id}')">Download</button>`
           : `<button class="tmpl-btn-paid" onclick="buyTemplate('${t.id}')">Buy →</button>`}
       </div>
     </div>
@@ -5648,7 +5653,7 @@ async function loadAlerts() {
   } catch(e) { console.warn('loadAlerts error:', e); }
   document.getElementById('alert-badge').textContent = alerts.length;
   const agClass = { CBN:'tag-cbn', FIRS:'tag-firs', CAC:'tag-cac', NITDA:'tag-nitda', SEC:'tag-sec', NAFDAC:'tag-nafdac' };
-  const icons = { critical:'🚨', high:'⚠️', medium:'ℹ️', info:'📢' };
+  const icons = { critical:'!', high:'^', medium:'i', info:'·' };
   list.innerHTML = alerts.map(a => `
     <div class="alert-card">
       <div class="alert-icon sev-${a.severity}">${icons[a.severity]||'📢'}</div>
@@ -5822,7 +5827,7 @@ function adminViewEntered() {
   if (isAdmin()) {
     gate.style.display  = 'none';
     panel.style.display = 'flex';
-    document.getElementById('admin-user-badge').textContent = '🔐 ' + (currentUser.email);
+    document.getElementById('admin-user-badge').textContent = (currentUser.email);
     adminSwitchTab('add');
   } else {
     gate.style.display  = 'flex';
@@ -5929,14 +5934,14 @@ async function adminSubmitAlert() {
     const { error } = await sb.from('reg_alerts').insert({ agency, title, description: desc, severity: sev });
     if (error) throw new Error(error.message);
     adminLogEntry('admin-alert-log', { title, agency, severity: sev }, 'ok');
-    showToast(`🚨 Alert published: "${title}"`, 'var(--red)');
+    showToast(`Alert published: "${title}"`, 'var(--red)');
     loadAlerts();
     adminClearAlertForm();
   } catch(e) {
     adminLogEntry('admin-alert-log', { title, agency, severity: sev, error: e.message }, 'err');
     showToast('Error: ' + e.message, 'var(--red)');
   }
-  btn.disabled = false; btn.textContent = '🚨 Publish Alert';
+  btn.disabled = false; btn.textContent = 'Publish Alert';
 }
 
 function adminClearAlertForm() {
@@ -6342,7 +6347,7 @@ async function teamLoadSharedReports() {
     if (!reports.length) {
       list.innerHTML = `
         <div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:14px">
-          <div style="font-size:36px;margin-bottom:12px">📋</div>
+          <div style="font-size:12px;font-weight:800;letter-spacing:.05em;margin-bottom:12px">RPT</div>
           <strong style="color:var(--text);display:block;margin-bottom:6px">No shared reports yet</strong>
           Generate a checklist and save it — it will appear here for your whole team.
         </div>`;
@@ -6357,7 +6362,7 @@ async function teamLoadSharedReports() {
       const date = new Date(r.created_at).toLocaleDateString('en-NG', { day:'numeric', month:'short', year:'numeric' });
       return `
         <div class="shared-report-row">
-          <div style="font-size:22px;flex-shrink:0">📋</div>
+          <div style="font-size:11px;font-weight:800;flex-shrink:0">RPT</div>
           <div style="flex:1;min-width:0">
             <div style="font-size:14px;font-weight:700;color:var(--text)">${r.business_name || r.business_type || 'Checklist'}</div>
             <div style="font-size:12px;color:var(--text-muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap">
@@ -6603,7 +6608,7 @@ async function leaveOrg() {
 <div id="doc-viewer-modal" onclick="if(event.target===this)closeDocViewer()">
   <div id="doc-viewer-box">
     <div id="dvm-header">
-      <div style="font-size:28px;flex-shrink:0">📄</div>
+      <div style="font-size:13px;font-weight:700;flex-shrink:0">DOC</div>
       <div id="dvm-header-info">
         <div id="dvm-title">Document</div>
         <div id="dvm-agency"></div>
@@ -6664,40 +6669,52 @@ const NG_STATES = [
 
 // ── Module definitions for progress label ──
 const J_MODULES = [
-  { id:'A', label:'MODULE A — BUSINESS IDENTITY', range:[0,5] },
-  { id:'B', label:'MODULE B — SCALE & FINANCE',   range:[6,10] },
-  { id:'C', label:'MODULE C — OPERATIONS',         range:[11,17] },
+  { id:'A', label:'MODULE A — BUSINESS IDENTITY', range:[0,9] },
+  { id:'B', label:'MODULE B — SCALE & FINANCE',   range:[10,15] },
+  { id:'C', label:'MODULE C — OPERATIONS',         range:[16,27] },
 ];
 
 // ── Dynamic question definitions ──
+// Order: Business name → CAC status → RC number (if registered) / timeline (if not) →
+//        Entity type → Industry → State → Years in operation → Turnover →
+//        TIN → VAT → Employees → Payments → Personal data → Food/pharma →
+//        Imports/exports → Physical premises → Financial sector →
+//        Existing licences → Regulatory history → Expansion plans →
+//        Professional certifications → Compliance readiness → Pain points
 const J_QUESTION_DEFS = [
   // ─── MODULE A: IDENTITY ───────────────────────────────
-  // 0
-  () => ({ id:'businessName', text:'What is the name of your business?',
+  // 0 — Business name
+  () => ({ id:'businessName', text:'What is the registered or trading name of your business?',
     type:'text', placeholder:'e.g. Apex Foods Limited', key:'businessName', required:true,
     module:'A' }),
-  // 1
-  () => ({ id:'cacRegistered', text:'Is your business currently registered with the CAC?',
+  // 1 — CAC registration status
+  () => ({ id:'cacRegistered', text:'Is your business currently registered with the Corporate Affairs Commission (CAC)?',
     type:'options', key:'cacRegistered', required:true, module:'A',
     options:['Yes — already registered','No — not yet registered'] }),
-  // 2 — only if registered
+  // 2 — RC number (only if registered)
   () => jState.intake.cacRegistered === 'Yes — already registered'
-    ? { id:'rcNumber', text:'What is your RC Number (CAC registration number)?',
-        type:'text', placeholder:'e.g. RC 1234567', key:'rcNumber', required:false, module:'A' }
+    ? { id:'rcNumber', text:'What is your RC Number from the CAC? (7 digits)',
+        type:'text', placeholder:'e.g. 1234567', key:'rcNumber', required:false, module:'A' }
     : null,
-  // 3 — only if NOT registered
+  // 3 — Incorporation date (only if registered, helps calculate deadlines)
+  () => jState.intake.cacRegistered === 'Yes — already registered'
+    ? { id:'incorporationDate', text:'When was your business registered with the CAC?',
+        type:'text', placeholder:'e.g. 15-Jan-2022',
+        key:'incorporationDate', required:false, module:'A' }
+    : null,
+  // 4 — CAC timeline (only if NOT registered)
   () => jState.intake.cacRegistered === 'No — not yet registered'
     ? { id:'cacTimeline', text:'When do you plan to register with the CAC?',
         type:'options', key:'cacTimeline', required:true, module:'A',
         options:['Within a week','Within a month','Within 3 months','Within 6 months','Not sure yet'] }
     : null,
-  // 4
-  () => ({ id:'entityType', text:'What type of business entity is this?',
+  // 5 — Entity type
+  () => ({ id:'entityType', text:'What type of legal entity is your business?',
     type:'options', key:'entityType', required:true, module:'A',
     options:['Sole Proprietorship','Partnership','Limited Liability Company (Ltd)',
       'Public Limited Company (PLC)','Non-Governmental Organisation (NGO)',
       'Cooperative Society','Franchise','Joint Venture','Incorporated Trustee','Other'] }),
-  // 5
+  // 6 — Industry
   () => ({ id:'industry', text:'Which industry best describes your business?',
     type:'options', key:'industry', required:true, module:'A',
     options:['Food & Beverage','Technology / Fintech','Retail & E-Commerce',
@@ -6705,127 +6722,116 @@ const J_QUESTION_DEFS = [
       'Agriculture','Real Estate & Construction','Education','Logistics & Transportation',
       'Media & Entertainment','Oil & Gas','Hospitality & Tourism','Legal & Compliance',
       'Financial Services','Insurance','Telecommunications','Other'] }),
-  // 6 — Other industry free text
+  // 7 — Other industry free text
   () => jState.intake.industry === 'Other'
-    ? { id:'industryOther', text:'Describe your industry:', type:'text',
-        placeholder:'e.g. Waste Management, Renewable Energy…', key:'industryOther', required:true, module:'A' }
+    ? { id:'industryOther', text:'Describe your industry:',
+        type:'text', placeholder:'e.g. Waste Management, Renewable Energy…',
+        key:'industryOther', required:true, module:'A' }
     : null,
-  // 7
+  // 8 — State
   () => ({ id:'state', text:'Which state will your business primarily operate from?',
     type:'options-scroll', key:'state', required:true, module:'A', options:NG_STATES }),
-  
-  // ┌─ NEW QUESTIONS: Business Structure & Timeline ─────────────┐
-  // 7b — Business structure (partnership, sole trader, etc.)
-  () => ({ id:'businessStructure', text:'What is your business structure?',
-    type:'options', key:'businessStructure', required:false, module:'A',
-    options:['Sole Proprietor','Partnership (2–3 partners)','Limited Liability Company (LLC)','Public Company','NGO / Non-profit','Cooperative','Not sure yet'] }),
-  // 7c — Incorporation date (for accurate deadline calculation)
-  () => ({ id:'incorporationDate', text:'When was or will your business be registered with CAC?',
-    type:'text', placeholder:'e.g. 15-Jan-2024 or "Planning to register in 3 months"', 
-    key:'incorporationDate', required:false, module:'A' }),
-  // 7d — Years in operation
+  // 9 — Years in operation
   () => ({ id:'yearsInOperation', text:'How long has your business been operating?',
     type:'options', key:'yearsInOperation', required:false, module:'A',
     options:['Less than 1 month','1–3 months','3–12 months','1–2 years','2–5 years','5+ years','Not yet started'] }),
 
   // ─── MODULE B: SCALE & FINANCE ────────────────────────
-  // 8
+  // 10 — Turnover
   () => ({ id:'turnover', text:'What is your estimated annual turnover?',
     type:'options', key:'turnover', required:true, module:'B',
     options:['Under ₦5 Million','₦5M – ₦25 Million','₦25M – ₦100 Million','Above ₦100 Million','Pre-revenue / Not sure'] }),
-  // 9
-  () => ({ id:'hasTIN', text:'Do you have a Tax Identification Number (TIN) from FIRS?',
+  // 11 — TIN
+  () => ({ id:'hasTIN', text:'Do you have a Tax Identification Number (TIN) from FIRS? (10–11 digits)',
     type:'options', key:'hasTIN', required:true, module:'B',
     options:['Yes — TIN registered','No — not yet registered','Not sure'] }),
-  // 10
-  () => ({ id:'hasVAT', text:'Are you currently registered for VAT?',
+  // 12 — VAT
+  () => ({ id:'hasVAT', text:'Are you registered for Value Added Tax (VAT) with FIRS?',
     type:'options', key:'hasVAT', required:true, module:'B',
     options:['Yes — VAT registered','No','Not applicable (below ₦25M threshold)'] }),
-  // 11 — employees
-  () => ({ id:'hasEmployees', text:'Do you currently have any employees?',
+  // 13 — Employees
+  () => ({ id:'hasEmployees', text:'Do you currently have any employees on payroll?',
     type:'options', key:'hasEmployees', required:true, module:'B',
     options:['Yes','No'] }),
-  // 12a — if yes, how many
+  // 14a — If yes, how many
   () => jState.intake.hasEmployees === 'Yes'
     ? { id:'employeeCount', text:'How many employees do you currently have?',
         type:'options', key:'employeeCount', required:true, module:'B',
         options:['1 – 5','6 – 20','21 – 50','51 – 200','200+'] }
     : null,
-  // 12b — if no, hiring plan
+  // 14b — If no, hiring plan
   () => jState.intake.hasEmployees === 'No'
-    ? { id:'hiringTimeline', text:'Are you planning to hire employees?',
+    ? { id:'hiringTimeline', text:'Are you planning to hire employees in the near future?',
         type:'options', key:'hiringTimeline', required:true, module:'B',
         options:['Yes — within 3 months','Yes — within 6–12 months','Not anytime soon','No plans to hire'] }
     : null,
 
   // ─── MODULE C: OPERATIONS ────────────────────────────
-  // 13
-  () => ({ id:'processesPayments', text:'Do you process electronic or card payments from customers?',
+  // 15 — Payments
+  () => ({ id:'processesPayments', text:'Do you accept electronic or card payments from customers?',
     type:'options', key:'processesPayments', required:true, module:'C',
-    options:['Yes — we accept card / mobile / bank transfers','No — cash only','No — B2B invoicing only'] }),
-  // 14
-  () => ({ id:'collectsPersonalData', text:'Do you collect, store or process personal data from customers or employees?',
+    options:['Yes — card / mobile money / bank transfer','No — cash only','No — B2B invoicing only'] }),
+  // 16 — Personal data
+  () => ({ id:'collectsPersonalData', text:'Do you collect or store personal data from customers or employees? (e.g. names, emails, BVN [11 digits], NIN [11 digits])',
     type:'options', key:'collectsPersonalData', required:true, module:'C',
-    options:['Yes — names, emails, addresses, BVN etc.','Minimal — only what\'s strictly necessary','No'] }),
-  // 15
-  () => ({ id:'importsExports', text:'Do you import or export goods or services?',
-    type:'options', key:'importsExports', required:true, module:'C',
-    options:['Yes — import goods','Yes — export goods','Yes — both','No'] }),
-  // 16
-  () => ({ id:'sellsFood', text:'Does your business sell, manufacture or distribute food, beverages or health products?',
+    options:['Yes — names, emails, addresses, BVN, NIN etc.','Minimal — only what is strictly necessary','No'] }),
+  // 17 — Food / pharma
+  () => ({ id:'sellsFood', text:'Does your business sell, manufacture, or distribute food, beverages, or health products?',
     type:'options', key:'sellsFood', required:true, module:'C',
     options:['Yes — food / beverages','Yes — health / pharma products','Yes — both','No'] }),
-  // 17
-  () => ({ id:'hasPhysicalPremises', text:'Do you operate from a physical business premises (office, shop, factory, warehouse)?',
+  // 18 — Import / export
+  () => ({ id:'importsExports', text:'Do you import or export goods or services across Nigerian borders?',
+    type:'options', key:'importsExports', required:true, module:'C',
+    options:['Yes — import goods','Yes — export goods','Yes — both import and export','No'] }),
+  // 19 — Physical premises
+  () => ({ id:'hasPhysicalPremises', text:'Do you operate from a physical business location (office, shop, factory, or warehouse)?',
     type:'options', key:'hasPhysicalPremises', required:true, module:'C',
-    options:['Yes — owned premises','Yes — rented premises','No — fully remote / online'] }),
-  // 18
-  () => ({ id:'financialSector', text:'Does your business operate in the financial sector?',
+    options:['Yes — owned premises','Yes — rented / leased premises','No — fully remote / online only'] }),
+  // 20 — Financial sector
+  () => ({ id:'financialSector', text:'Does your business operate in the financial or fintech sector?',
     type:'options', key:'financialSector', required:true, module:'C',
     options:['Yes — fintech / payments','Yes — lending / credit','Yes — insurance',
       'Yes — investment / securities','Yes — forex / remittance','No'] }),
-  // 19
-  () => ({ id:'hasExistingLicences', text:'Do you already hold any government licences or permits?',
+  // 21 — Existing licences
+  () => ({ id:'hasExistingLicences', text:'Do you already hold any government licences or regulatory permits?',
     type:'options', key:'hasExistingLicences', required:true, module:'C',
     options:['Yes','No'] }),
-  // 20 — list existing licences if yes
+  // 22 — List existing licences if yes
   () => jState.intake.hasExistingLicences === 'Yes'
-    ? { id:'existingLicencesDetail', text:'List the licences / permits you already hold:',
-        type:'text', placeholder:'e.g. NAFDAC registration, CBN licence…',
+    ? { id:'existingLicencesDetail', text:'List the licences or permits you already hold:',
+        type:'text', placeholder:'e.g. NAFDAC registration number, CBN licence…',
         key:'existingLicencesDetail', required:false, module:'C' }
     : null,
-  
-  // ┌─ NEW QUESTIONS: Compliance Readiness & Expansion ─────────┐
-  // 21 — Any previous regulatory warnings/violations
-  () => ({ id:'regulatoryHistory', text:'Has your business received any regulatory warnings, violations, or rejections?',
+  // 23 — Regulatory history
+  () => ({ id:'regulatoryHistory', text:'Has your business received any regulatory warnings, fines, or rejections in the past?',
     type:'options', key:'regulatoryHistory', required:false, module:'C',
     options:['No — clean record','Yes — minor warning','Yes — significant violation','Yes — but resolved','Not sure'] }),
-  // 22 — Expansion/growth plans
-  () => ({ id:'expansionPlans', text:'Are you planning to expand your business in the next 12 months?',
+  // 24 — Expansion plans
+  () => ({ id:'expansionPlans', text:'Are you planning to expand your business operations in the next 12 months?',
     type:'options', key:'expansionPlans', required:false, module:'C',
-    options:['Yes — new products/services','Yes — new locations/states','Yes — significant hiring','No plans','Reviewing options'] }),
-  // 23 — Industry certifications/memberships
-  () => ({ id:'professionalCertifications', text:'Do you have professional certifications or industry memberships?',
+    options:['Yes — new products or services','Yes — new locations or states','Yes — significant hiring','No plans to expand','Reviewing options'] }),
+  // 25 — Professional certifications
+  () => ({ id:'professionalCertifications', text:'Does your business hold professional body memberships or industry certifications?',
     type:'options', key:'professionalCertifications', required:false, module:'C',
-    options:['Yes — professional body membership (e.g. ICAN, NBA)','Yes — quality/ISO certification','Yes — both','No'] }),
-  // 24 — Current compliance readiness
-  () => ({ id:'complianceReadiness', text:'How would you rate your current compliance readiness?',
+    options:['Yes — professional body membership (e.g. ICAN, NBA, COREN)','Yes — quality or ISO certification','Yes — both','No'] }),
+  // 26 — Compliance readiness
+  () => ({ id:'complianceReadiness', text:'How would you rate your current level of compliance readiness?',
     type:'options', key:'complianceReadiness', required:false, module:'C',
-    options:['Very prepared — documented systems in place','Moderately prepared — some compliance in place','Minimal — just started','Not sure — need expert guidance'] }),
-  // 25 — Specific pain points
+    options:['Well prepared — documented systems in place','Moderately prepared — some compliance in place','Just starting out — minimal compliance','Not sure — need guidance'] }),
+  // 27 — Pain points
   () => ({ id:'compliancePainPoints', text:'What is your biggest compliance concern right now? (optional)',
-    type:'text', placeholder:'e.g. "Unsure about NDPR requirements", "Don\'t know if we need NAFDAC"…',
+    type:'text', placeholder:'e.g. Unsure about NDPR requirements, need NAFDAC registration…',
     key:'compliancePainPoints', required:false, module:'C' }),
 ];
 
 // ── Module D upload slots ──
 const J_UPLOAD_SLOTS = [
-  { id:'cac_cert',     icon:'📄', label:'CAC Certificate of Incorporation', sub:'Required for all registered businesses' },
-  { id:'director_id',  icon:'🪪', label:'Director / Owner ID (NIN or Passport)', sub:'Valid government-issued ID' },
-  { id:'tin_cert',     icon:'🏦', label:'Tax Identification Number (TIN) Certificate', sub:'Issued by FIRS' },
-  { id:'address_proof',icon:'📍', label:'Business Address Proof', sub:'Utility bill, tenancy agreement, or LASRA document' },
-  { id:'vat_cert',     icon:'💰', label:'VAT Registration Certificate', sub:'If applicable' },
-  { id:'existing_lic', icon:'📋', label:'Existing Licences / Permits', sub:'Any current government approvals' },
+  { id:'cac_cert',      icon:'CAC', label:'CAC Certificate of Incorporation', sub:'Required for all registered businesses' },
+  { id:'director_id',   icon:'ID',  label:'Director / Owner ID — NIN (11 digits) or Passport', sub:'Valid government-issued ID' },
+  { id:'tin_cert',      icon:'TIN', label:'Tax Identification Number (TIN) Certificate — 10–11 digits', sub:'Issued by FIRS' },
+  { id:'address_proof', icon:'ADR', label:'Business Address Proof', sub:'Utility bill, tenancy agreement, or LASRA document' },
+  { id:'vat_cert',      icon:'VAT', label:'VAT Registration Certificate', sub:'If applicable' },
+  { id:'existing_lic',  icon:'LIC', label:'Existing Licences / Permits', sub:'Any current government approvals' },
 ];
 // Track Module D uploads keyed by slot id
 let jModuleDUploads = {}; // slotId → {name, size}
@@ -6858,13 +6864,13 @@ function jStartIntake() {
     // Module A — Identity
     businessName:'', cacRegistered:'', cacTimeline:'', incorporationDate:'',
     entityType:'', industry:'', industryOther:'', state:'', rcNumber:'',
-    businessStructure:'', yearsInOperation:'', // NEW
+    yearsInOperation:'',
     // Module B — Scale
     turnover:'', hasEmployees:'', employeeCount:'', hiringTimeline:'', hasTIN:'', hasVAT:'',
     // Module C — Operations
     processesPayments:'', collectsPersonalData:'', importsExports:'', sellsFood:'',
     hasPhysicalPremises:'', financialSector:'', hasExistingLicences:'', existingLicencesDetail:'',
-    regulatoryHistory:'', expansionPlans:'', professionalCertifications:'', complianceReadiness:'', compliancePainPoints:'', // NEW
+    regulatoryHistory:'', expansionPlans:'', professionalCertifications:'', complianceReadiness:'', compliancePainPoints:'',
   };
   jState.journey = null; jState.completed = new Set(); jState.score = 0; jState.activeStep = null;
   jModuleDUploads = {};
@@ -6934,6 +6940,9 @@ function jShowQuestion(idx) {
     if (btnSkip) btnSkip.style.display = q.required ? 'none' : '';
     const next = document.getElementById('j-btn-next');
     if (next) next.disabled = q.required && !jState.intake[q.key];
+    // Show/hide Previous button
+    const prev = document.getElementById('j-btn-prev');
+    if (prev) prev.style.display = idx > 0 ? '' : 'none';
   }, 120);
 }
 
@@ -6967,6 +6976,20 @@ function jSkipQuestion() {
   jActiveQuestions = jBuildQuestions();
   jCurrentQ++;
   if (jCurrentQ >= jActiveQuestions.length) { jShowDocUploadScreen(); return; }
+  jRenderProgress();
+  jShowQuestion(jCurrentQ);
+}
+
+function jPrevQuestion() {
+  if (jCurrentQ <= 0) return;
+  // Save current text input if any
+  const q = jActiveQuestions[jCurrentQ];
+  if (q && q.type === 'text') {
+    const input = document.getElementById('j-q-current-input');
+    if (input) jState.intake[q.key] = input.value.trim();
+  }
+  jCurrentQ--;
+  jActiveQuestions = jBuildQuestions();
   jRenderProgress();
   jShowQuestion(jCurrentQ);
 }
@@ -7028,7 +7051,7 @@ function jHandleSlotUpload(input, slotId) {
     }
     if (status) {
       status.innerHTML = result.expiryWarning 
-        ? `✓ Scanned · ⚠️ Expires ${result.expiryDate}`
+        ? `Scanned · Expires ${result.expiryDate}`
         : '✓ Scanned';
     }
     
@@ -7157,7 +7180,7 @@ function jRenderStepUploadedFiles(stepId) {
   if (countEl) countEl.textContent = files.length ? `${files.length} file${files.length>1?'s':''} uploaded` : '';
   container.innerHTML = files.map((f,i) => `
     <div class="j-step-file-chip${f.verified?' verified':''}">
-      <span style="font-size:14px">${f.verified?'✅':'📎'}</span>
+      <span style="font-size:14px">${f.verified ? '✓' : '·'}</span>
       <span class="j-step-file-name">${f.name}</span>
       <span class="j-step-file-status">${f.verified?'Verified':formatBytes(f.size)}</span>
       <span class="j-step-file-remove" onclick="jRemoveStepFile('${stepId}',${i})">×</span>
@@ -7223,7 +7246,7 @@ function jRenderVault() {
       <div style="padding:10px 14px;font-size:11px;font-weight:700;color:var(--j-sub);text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--j-border)">${title}</div>
       ${files.map(f => `
         <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--j-border);font-size:13px">
-          <span style="font-size:16px">${f.verified?'✅':'📎'}</span>
+          <span style="font-size:16px">${f.verified ? '✓' : '·'}</span>
           <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--j-text);font-weight:500">${f.name}</span>
           <span style="font-size:11px;color:var(--j-muted);flex-shrink:0">${f.verified?'<span style="color:var(--j-green);font-weight:700">Verified</span>':formatBytes(f.size)}</span>
         </div>`).join('')}
@@ -7582,7 +7605,7 @@ function jRenderDeadlineTracker() {
                 <div style="font-size:13px;font-weight:600;color:var(--j-text)">${d.title}</div>
               </div>
               ${overdue ? '<span style="font-size:11px;color:#CC1F1F;font-weight:700">OVERDUE</span>' : 
-                urgent ? `<span style="font-size:11px;color:#F59E0B;font-weight:700">🔔 ${daysUntil} days</span>` :
+                urgent ? `<span style="font-size:11px;color:#F59E0B;font-weight:700">${daysUntil} days</span>` :
                 '<span style="font-size:11px;color:var(--j-sub)">' + dateStr + '</span>'}
             </div>
             <div style="font-size:12px;color:var(--j-sub)">${d.description}</div>
@@ -7608,8 +7631,8 @@ function jRenderStepCard(step) {
         <div class="j-step-desc">${step.description}</div>
         <div class="j-step-meta">
           <span>⏱ ${step.estimatedDays}</span>
-          <span>💰 ${step.estimatedCost}</span>
-          ${uploads ? `<span style="color:var(--j-green);font-weight:600">📎 ${uploads} doc${uploads>1?'s':''}</span>` : ''}
+          <span>${step.estimatedCost}</span>
+          ${uploads ? `<span style="color:var(--j-green);font-weight:600">${uploads} doc doc${uploads>1?'s':''}</span>` : ''}
           <div class="j-step-pts">+${step.weight}pts</div>
         </div>
       </div>
@@ -7644,15 +7667,15 @@ function jOpenStep(id) {
   document.getElementById('j-panel-title').textContent = step.title;
   document.getElementById('j-panel-meta-row').innerHTML = [
     `<div class="j-panel-meta-chip">⏱ <strong>${step.estimatedDays}</strong></div>`,
-    `<div class="j-panel-meta-chip">💰 <strong>${step.estimatedCost}</strong></div>`,
+    `<div class="j-panel-meta-chip">Cost: <strong>${step.estimatedCost}</strong></div>`,
     `<div class="j-panel-meta-chip">⭐ <strong>+${step.weight} points</strong></div>`
   ].join('');
   document.getElementById('j-panel-why').innerHTML = `<p>${step.whyItMatters}</p>`;
   document.getElementById('j-panel-docs').innerHTML = (step.documents||[]).map(d =>
-    `<div class="j-doc-item">📋 ${d}</div>`).join('');
+    `<div class="j-doc-item">${d}</div>`).join('');
   document.getElementById('j-panel-citations').innerHTML = (step.legalBasis||[]).map(lb => `
     <a class="j-citation-link" href="${lb.url}" target="_blank" rel="noopener noreferrer">
-      <div class="j-citation-icon">⚖️</div>
+      <div class="j-citation-icon" style="font-size:11px;font-weight:800">REF</div>
       <div class="j-citation-content">
         <div class="j-citation-ref">${lb.citation} <span class="j-citation-ext">↗ OPEN</span></div>
         <div class="j-citation-desc">${lb.description}</div>
@@ -7965,7 +7988,7 @@ function jRenderField(f) {
   const scannedValue = jGetScannedValue(f.key);
   const displayValue = f.value || scannedValue || '';
   const fromScanned = scannedValue && !f.value;
-  const indicator = fromScanned ? ' 📄' : '';
+  const indicator = fromScanned ? ' *' : '';
   
   if (f.type === 'select') return `<div class="j-form-field ${full}">
     <label class="j-form-label">${f.label}${indicator}</label>
