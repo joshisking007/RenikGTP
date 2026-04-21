@@ -2333,10 +2333,59 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .rmb-next-step-text { font-size: 13px; color: var(--text-sub); line-height: 1.5; }
 .rmb-next-step-text strong { color: var(--text); }
 
+/* ── RMB extra classes ── */
+.rmb-step-title-row { margin-bottom: 20px; }
+.rmb-step-heading { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -.02em; margin-bottom: 4px; }
+.rmb-step-sub { font-size: 13px; color: var(--text-sub); line-height: 1.6; }
+
+.rmb-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* Override card to be block (not flex row) for the grid layout */
+.rmb-cards-grid .rmb-card { flex-direction: column; gap: 8px; }
+.rmb-card-badge {
+  font-size: 10px; font-weight: 800; letter-spacing: .06em;
+  padding: 3px 9px; border-radius: 6px; align-self: flex-start;
+  background: var(--bg-hover); color: var(--text-muted);
+  border: 1px solid var(--border-em); font-family: var(--font-mono);
+}
+.rmb-card.selected .rmb-card-badge { background: var(--red-dim); color: var(--red); border-color: rgba(184,50,50,.2); }
+.rmb-card-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.rmb-card-meta span { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+.rmb-card-form { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
+
+.rmb-check-btn {
+  padding: 11px 14px; background: var(--bg-hover); border: 1.5px solid var(--border-em);
+  border-radius: var(--r); font-family: var(--font); font-size: 12px; font-weight: 700;
+  color: var(--text-sub); cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: all .2s;
+}
+.rmb-check-btn:hover { border-color: var(--red); color: var(--red); }
+
+.rmb-info-box {
+  padding: 12px 16px; background: var(--blue-dim); border: 1px solid rgba(26,58,107,.15);
+  border-radius: var(--r); font-size: 12px; color: var(--text-sub); line-height: 1.6;
+}
+.rmb-fee-box {
+  margin-top: 16px; border: 1.5px solid var(--border-em); border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.rmb-fee-title {
+  padding: 12px 16px; background: var(--bg-surface); border-bottom: 1px solid var(--border);
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-sub);
+}
+
+.rmb-add-director-btn {
+  width: 100%; padding: 12px; background: var(--bg-surface);
+  border: 1.5px dashed var(--border-em); border-radius: var(--r);
+  font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--text-sub);
+  cursor: pointer; transition: all .2s;
+}
+.rmb-add-director-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+
 @media (max-width:640px) {
   #view-register { height: 100dvh; }
   .rmb-body { padding: 20px 14px; }
   .rmb-row { grid-template-columns: 1fr; }
+  .rmb-cards-grid { grid-template-columns: 1fr; }
   .rmb-header { padding: 14px 16px; }
   .rmb-steps-bar { padding: 0 12px; }
   .rmb-step-pill { padding: 10px 10px; font-size: 11px; }
@@ -3590,6 +3639,256 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
       </div><!-- /team-org-panel -->
     </div><!-- /view-team -->
+
+<!-- ═══════════════════════════════════════════════════════
+     REGISTER MY BUSINESS — CAC Registration Wizard
+═══════════════════════════════════════════════════════ -->
+<div class="view" id="view-register">
+
+  <!-- Header -->
+  <div class="rmb-header">
+    <div class="chat-header-menu" onclick="openSidebar()">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </div>
+    <div class="rmb-header-text">
+      <div class="rmb-title">Register My Business</div>
+      <div class="rmb-sub">CAC Business Registration Wizard — BN · Ltd · LLP · NGO</div>
+    </div>
+    <div style="font-size:10px;font-weight:800;letter-spacing:.06em;padding:4px 10px;background:var(--green-dim);color:var(--green);border:1px solid var(--green-glow);border-radius:6px">CAC</div>
+  </div>
+
+  <!-- Steps bar -->
+  <div class="rmb-steps-bar">
+    <div class="rmb-step-pill active" id="rmb-pill-0"><div class="rmb-step-num">1</div>Entity Type</div>
+    <div class="rmb-step-sep">›</div>
+    <div class="rmb-step-pill" id="rmb-pill-1"><div class="rmb-step-num">2</div>Business Name</div>
+    <div class="rmb-step-sep">›</div>
+    <div class="rmb-step-pill" id="rmb-pill-2"><div class="rmb-step-num">3</div>Details</div>
+    <div class="rmb-step-sep">›</div>
+    <div class="rmb-step-pill" id="rmb-pill-3"><div class="rmb-step-num">4</div>Directors</div>
+    <div class="rmb-step-sep">›</div>
+    <div class="rmb-step-pill" id="rmb-pill-4"><div class="rmb-step-num">5</div>Documents</div>
+    <div class="rmb-step-sep">›</div>
+    <div class="rmb-step-pill" id="rmb-pill-5"><div class="rmb-step-num">6</div>Review</div>
+  </div>
+
+  <!-- Scrollable body -->
+  <div class="rmb-body" id="rmb-body">
+
+    <!-- STEP 0 — Entity Type -->
+    <div class="rmb-screen active" id="rmb-s0">
+      <div class="rmb-step-title-row">
+        <div class="rmb-step-heading">Choose your business structure</div>
+        <div class="rmb-step-sub">This determines your registration form, fees, and required documents</div>
+      </div>
+      <div class="rmb-cards-grid">
+        <div class="rmb-card" onclick="rmbSelectEntity('bn', this)">
+          <div class="rmb-card-badge">BN</div>
+          <div class="rmb-card-title">Business Name</div>
+          <div class="rmb-card-desc">Sole proprietorship or partnership. Simplest and cheapest. Owner is personally liable.</div>
+          <div class="rmb-card-meta">
+            <span>₦10,000 – ₦15,000</span><span>5–7 days</span>
+          </div>
+          <div class="rmb-card-form">Form BN 1</div>
+        </div>
+        <div class="rmb-card" onclick="rmbSelectEntity('ltd', this)">
+          <div class="rmb-card-badge">LTD</div>
+          <div class="rmb-card-title">Private Limited Company</div>
+          <div class="rmb-card-desc">Separate legal entity. Shareholders have limited liability. Most common for SMEs.</div>
+          <div class="rmb-card-meta">
+            <span>₦35,000 – ₦60,000</span><span>14–21 days</span>
+          </div>
+          <div class="rmb-card-form">Form CAC 1.1 / CAC 2</div>
+        </div>
+        <div class="rmb-card" onclick="rmbSelectEntity('llp', this)">
+          <div class="rmb-card-badge">LLP</div>
+          <div class="rmb-card-title">Limited Liability Partnership</div>
+          <div class="rmb-card-desc">Hybrid of partnership and company. Partners enjoy limited liability protection.</div>
+          <div class="rmb-card-meta">
+            <span>₦25,000 – ₦40,000</span><span>10–14 days</span>
+          </div>
+          <div class="rmb-card-form">Form LLP 1</div>
+        </div>
+        <div class="rmb-card" onclick="rmbSelectEntity('ngo', this)">
+          <div class="rmb-card-badge">NGO</div>
+          <div class="rmb-card-title">NGO / Incorporated Trustees</div>
+          <div class="rmb-card-desc">For non-profits, charities, religious bodies, and associations under CAMA 2020.</div>
+          <div class="rmb-card-meta">
+            <span>₦20,000 – ₦30,000</span><span>21–30 days</span>
+          </div>
+          <div class="rmb-card-form">Form CAC IT 1</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1 — Business Name -->
+    <div class="rmb-screen" id="rmb-s1">
+      <div class="rmb-step-title-row">
+        <div class="rmb-step-heading">Propose your business name(s)</div>
+        <div class="rmb-step-sub">CAC requires up to 3 name options in order of preference. We'll check availability for you.</div>
+      </div>
+      <div id="rmb-name-prefill-banner" style="display:none;align-items:center;gap:10px;padding:12px 16px;background:rgba(196,123,26,0.08);border:1px solid rgba(196,123,26,0.25);border-radius:var(--r);margin-bottom:16px">
+        <div style="font-size:18px">✨</div>
+        <div style="font-size:13px;color:var(--text-sub)">Pre-filled from your profile: <strong id="rmb-prefill-bizname" style="color:var(--green)"></strong></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="rmb-name-row">
+          <div class="rmb-field">
+            <label>Name Option 1 <span style="color:var(--red)">*</span></label>
+            <div style="display:flex;gap:8px">
+              <input class="rmb-input" id="rmb-name1" type="text" placeholder="e.g. Kolade Ventures" oninput="rmbState.names.n1=this.value">
+              <button class="rmb-check-btn" onclick="rmbCheckName(1)">Check</button>
+            </div>
+            <div class="rmb-name-status" id="rmb-status1"></div>
+          </div>
+        </div>
+        <div class="rmb-name-row">
+          <div class="rmb-field">
+            <label>Name Option 2</label>
+            <div style="display:flex;gap:8px">
+              <input class="rmb-input" id="rmb-name2" type="text" placeholder="Alternate name" oninput="rmbState.names.n2=this.value">
+              <button class="rmb-check-btn" onclick="rmbCheckName(2)">Check</button>
+            </div>
+            <div class="rmb-name-status" id="rmb-status2"></div>
+          </div>
+        </div>
+        <div class="rmb-name-row">
+          <div class="rmb-field">
+            <label>Name Option 3</label>
+            <div style="display:flex;gap:8px">
+              <input class="rmb-input" id="rmb-name3" type="text" placeholder="Second alternate" oninput="rmbState.names.n3=this.value">
+              <button class="rmb-check-btn" onclick="rmbCheckName(3)">Check</button>
+            </div>
+            <div class="rmb-name-status" id="rmb-status3"></div>
+          </div>
+        </div>
+      </div>
+      <div class="rmb-info-box" style="margin-top:16px">
+        <strong>CAC Name Rules:</strong> Must be unique, not misleading, not offensive, and not already registered. Names ending in "Limited" or "Ltd" are reserved for Ltd companies. BN names must end with proprietor's name or indicate the nature of business.
+      </div>
+    </div>
+
+    <!-- STEP 2 — Business Details -->
+    <div class="rmb-screen" id="rmb-s2">
+      <div class="rmb-step-title-row">
+        <div class="rmb-step-heading">Business details</div>
+        <div class="rmb-step-sub">Registered address and nature of business — these appear on your certificate</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="rmb-field">
+          <label>Nature of Business <span style="color:var(--red)">*</span></label>
+          <textarea class="rmb-input" id="rmb-nature" rows="3" placeholder="e.g. General trading, importation and sale of electronics, software development and consultancy…" style="resize:vertical"></textarea>
+        </div>
+        <div class="rmb-row">
+          <div class="rmb-field">
+            <label>State <span style="color:var(--red)">*</span></label>
+            <select class="rmb-select" id="rmb-state">
+              <option value="">Select state…</option>
+              <option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option><option>Anambra</option>
+              <option>Bauchi</option><option>Bayelsa</option><option>Benue</option><option>Borno</option>
+              <option>Cross River</option><option>Delta</option><option>Ebonyi</option><option>Edo</option>
+              <option>Ekiti</option><option>Enugu</option><option>FCT — Abuja</option><option>Gombe</option>
+              <option>Imo</option><option>Jigawa</option><option>Kaduna</option><option>Kano</option>
+              <option>Katsina</option><option>Kebbi</option><option>Kogi</option><option>Kwara</option>
+              <option>Lagos</option><option>Nasarawa</option><option>Niger</option><option>Ogun</option>
+              <option>Ondo</option><option>Osun</option><option>Oyo</option><option>Plateau</option>
+              <option>Rivers</option><option>Sokoto</option><option>Taraba</option><option>Yobe</option><option>Zamfara</option>
+            </select>
+          </div>
+          <div class="rmb-field">
+            <label>LGA</label>
+            <input class="rmb-input" id="rmb-lga" type="text" placeholder="e.g. Ikeja">
+          </div>
+        </div>
+        <div class="rmb-field">
+          <label>Registered Business Address <span style="color:var(--red)">*</span></label>
+          <input class="rmb-input" id="rmb-address" type="text" placeholder="Street address, city, state">
+        </div>
+        <div class="rmb-field" id="rmb-capital-field">
+          <label>Share Capital (Ltd only)</label>
+          <input class="rmb-input" id="rmb-capital" type="text" placeholder="e.g. ₦100,000" value="₦100,000">
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Minimum share capital: ₦100,000. Filing fee = 1% of capital + stamp duty.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 — Directors / Proprietors -->
+    <div class="rmb-screen" id="rmb-s3">
+      <div class="rmb-step-title-row">
+        <div class="rmb-step-heading">Directors / proprietors</div>
+        <div class="rmb-step-sub">Personal details for all owners, directors, or trustees. Fields with amber border are pre-filled from your profile.</div>
+      </div>
+      <div id="rmb-directors-form" style="display:flex;flex-direction:column;gap:16px"></div>
+      <div id="rmb-add-director-wrap" style="display:none;margin-top:8px">
+        <button class="rmb-add-director-btn" onclick="rmbAddDirector()">+ Add Another Director</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 — Documents -->
+    <div class="rmb-screen" id="rmb-s4">
+      <div class="rmb-step-title-row">
+        <div class="rmb-step-heading">Required documents</div>
+        <div class="rmb-step-sub">Tap each document to mark it as ready. All items marked Required must be provided to CAC.</div>
+      </div>
+      <div id="rmb-docs-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      <div class="rmb-info-box" style="margin-top:16px">
+        Documents are submitted directly to CAC via their online portal or a CAC-accredited agent. RenikGPT helps you prepare — we do not submit on your behalf.
+      </div>
+    </div>
+
+    <!-- STEP 5 — Review & Submit -->
+    <div class="rmb-screen" id="rmb-s5">
+      <div class="rmb-step-title-row">
+        <div class="rmb-step-heading">Review your application</div>
+        <div class="rmb-step-sub">Double-check all details before submitting. You can tap Edit on any section to go back.</div>
+      </div>
+      <div id="rmb-review-body" style="display:flex;flex-direction:column;gap:0"></div>
+      <div class="rmb-fee-box">
+        <div class="rmb-fee-title">Fee Estimate</div>
+        <div id="rmb-fee-table" style="display:flex;flex-direction:column;gap:6px"></div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:10px">Fees are paid directly to CAC via Remita. Amounts are indicative and subject to change. Service charge covers CAC processing.</div>
+      </div>
+      <div class="rmb-info-box" style="margin-top:4px">
+        <strong>CAC Payment:</strong> All fees payable via <strong>Remita</strong> on the CAC online portal (pre-registration.cac.gov.ng). Payment reference is generated after name approval. No payment should be made to any individual agent.
+      </div>
+    </div>
+
+    <!-- SUCCESS SCREEN -->
+    <div class="rmb-screen" id="rmb-success">
+      <div style="text-align:center;max-width:480px;margin:0 auto;padding:40px 0">
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--green-dim);border:2px solid var(--green-glow);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px">✓</div>
+        <div style="font-family:var(--font-d);font-size:22px;font-weight:700;color:var(--text);margin-bottom:8px">Application Prepared!</div>
+        <div style="font-size:14px;color:var(--text-sub);line-height:1.65;margin-bottom:20px">Your CAC registration application has been prepared. Take note of your reference number and proceed to the CAC portal to submit and pay.</div>
+        <div style="display:inline-flex;align-items:center;gap:10px;background:var(--bg-surface);border:1.5px solid var(--border-em);border-radius:10px;padding:12px 20px;margin-bottom:24px">
+          <span style="font-size:11px;color:var(--text-muted);font-weight:600">REFERENCE</span>
+          <span id="rmb-ref-num" style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--green);letter-spacing:.06em"></span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;text-align:left;background:var(--bg-surface);border-radius:var(--r-lg);padding:16px 20px">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Next Steps</div>
+          <div style="font-size:13px;color:var(--text-sub);display:flex;gap:10px"><span style="color:var(--green);font-weight:700;flex-shrink:0">1.</span> Visit <strong>pre-registration.cac.gov.ng</strong> and create an account</div>
+          <div style="font-size:13px;color:var(--text-sub);display:flex;gap:10px"><span style="color:var(--green);font-weight:700;flex-shrink:0">2.</span> Submit your proposed business name for availability search</div>
+          <div style="font-size:13px;color:var(--text-sub);display:flex;gap:10px"><span style="color:var(--green);font-weight:700;flex-shrink:0">3.</span> Pay fees via Remita once name is approved</div>
+          <div style="font-size:13px;color:var(--text-sub);display:flex;gap:10px"><span style="color:var(--green);font-weight:700;flex-shrink:0">4.</span> Upload required documents and submit application</div>
+          <div style="font-size:13px;color:var(--text-sub);display:flex;gap:10px"><span style="color:var(--green);font-weight:700;flex-shrink:0">5.</span> Collect your Certificate of Incorporation / Registration</div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="rmb-btn-primary" onclick="window.open('https://pre-registration.cac.gov.ng','_blank')" style="padding:12px 22px;font-size:14px">Go to CAC Portal →</button>
+          <button class="rmb-btn-secondary" onclick="rmbRestart()" style="padding:12px 22px;font-size:14px">Start New Application</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /rmb-body -->
+
+  <!-- CTA row -->
+  <div class="rmb-cta-row" id="rmb-cta">
+    <button class="rmb-btn-secondary" id="rmb-btn-back" style="display:none" onclick="rmbGoBack()">← Back</button>
+    <button class="rmb-btn-primary" id="rmb-btn-next" onclick="rmbGoNext()" disabled>
+      <span id="rmb-btn-next-label">Continue →</span>
+    </button>
+  </div>
+
+</div><!-- /view-register -->
 
 <!-- ═══════════════════════════════════════════════════════
      COMPLIANCE JOURNEY VIEW
